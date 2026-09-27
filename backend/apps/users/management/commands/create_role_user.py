@@ -22,7 +22,7 @@ PASSWORD_ENV_VAR = "FLASH_NEW_USER_PASSWORD"  # noqa: S105 - variable name, not 
 class Command(BaseCommand):
     help = (
         "Create a user with a role, or update it with --update (sets password, role, "
-        "is_staff and is_superuser to the given values). Password from --password-stdin "
+        "is_staff, is_superuser and is_active to the given values). Password from --password-stdin "
         f"or ${PASSWORD_ENV_VAR}; never from argv."
     )
     # Lets tests pass a stdin stream through call_command().
@@ -36,6 +36,11 @@ class Command(BaseCommand):
         parser.add_argument(
             "--superuser", action="store_true", help="Superuser (requires --role ADMIN)."
         )
+        parser.add_argument(
+            "--inactive",
+            action="store_true",
+            help="Create/keep the user inactive (cannot log in). Not with --staff/--superuser.",
+        )
         parser.add_argument("--update", action="store_true", help="Update an existing user.")
         parser.add_argument(
             "--password-stdin", action="store_true", help="Read the password from stdin."
@@ -47,9 +52,12 @@ class Command(BaseCommand):
         role = options["role"]
         superuser = options["superuser"]
         staff = options["staff"] or superuser
+        inactive = options["inactive"]
 
         if superuser and role != user_model.Role.ADMIN:
             raise CommandError("--superuser requires --role ADMIN.")
+        if inactive and staff:
+            raise CommandError("--inactive cannot be combined with --staff or --superuser.")
 
         password = self._read_password(options)
 
@@ -65,12 +73,18 @@ class Command(BaseCommand):
             user.role = role
             user.is_staff = staff
             user.is_superuser = superuser
+            # Desired state, like --staff: omitting --inactive re-activates on --update.
+            user.is_active = not inactive
             self._validate_password(password, user)
             user.set_password(password)
             user.save()
 
         action = "Created" if created else "Updated"
-        flags = [name for name, on in (("staff", staff), ("superuser", superuser)) if on]
+        flags = [
+            name
+            for name, on in (("staff", staff), ("superuser", superuser), ("inactive", inactive))
+            if on
+        ]
         suffix = f" ({', '.join(flags)})" if flags else ""
         self.stdout.write(
             self.style.SUCCESS(f"{action} user '{username}' with role {role}{suffix}.")

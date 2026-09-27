@@ -300,7 +300,10 @@ cmd_backend() {
     ref="${ref:-HEAD}"
     local sha
     sha="$(git -C "$REPO_ROOT" rev-parse --verify --quiet "$ref^{commit}")" || die "git ref '$ref' not found" 2
-    tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
+    # Global (not local): the EXIT trap runs after this function returned, under set -u.
+    REMOTE_TEST_TMP="$(mktemp -d "${TMPDIR:-/tmp}/flash-remote-test-XXXXXX")"
+    tmp="$REMOTE_TEST_TMP"
+    trap 'rm -rf -- "${REMOTE_TEST_TMP:-}"' EXIT
     git -C "$REPO_ROOT" archive --format=tar "$sha" backend 2>/dev/null | tar -x -C "$tmp" \
       || die "commit ${sha:0:12} has no backend/ directory (use --worktree for uncommitted work)" 2
     src="$tmp/backend"; label="ref $ref (${sha:0:12})"

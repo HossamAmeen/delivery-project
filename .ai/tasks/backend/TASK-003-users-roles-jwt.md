@@ -58,7 +58,7 @@ Yes — authentication architecture; irreversible after first migration. **Pre-a
 
 ## Status
 
-REVIEW
+READY_FOR_QA
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created from sprint-01 technical plan
@@ -66,6 +66,7 @@ REVIEW
 - 2026-09-27 | backend | TODO → IN_PROGRESS | started after TASK-004 code complete; plan written under the pre-approved constraints
 - 2026-09-27 | backend | IN_PROGRESS → READY_FOR_REVIEW | implementation + tests done; full server run `make test-backend-remote WORKTREE=1` green (run 20260927-175239-1501198: ruff, format, check, makemigrations, 238 passed, coverage 98.42%)
 - 2026-09-27 | team-lead | READY_FOR_REVIEW → REVIEW | code inspection done, decisions recorded; verdict pending the TL's own server validation run (denied by the session permission policy)
+- 2026-09-27 | team-lead | REVIEW → READY_FOR_QA | code review APPROVED; TL server run 20260927-204315-12107 at 0a5f845: ruff/format/check/makemigrations PASS, 238 passed, coverage 98.42%
 
 ## Implementation Plan
 (backend, 2026-09-27 — follows the Acceptance Criteria and api-contracts.md § Identity; no deviation)
@@ -111,6 +112,28 @@ REVIEW
 **Decisions / follow-ups:**
 - simplejwt 5.5 writes `user_id` as a string claim — ACCEPTED (clients never read JWT claims; the PWA uses `/api/users/me/`).
 - **QA request (TASK-008): an inactive QA user.** `create_role_user` cannot create or keep an inactive user. Not a defect of this task; created **TASK-016** (Backend, `--inactive` flag, desired-state semantics) to start after this task's verdict, consumed by TASK-013 `seed-qa-users` (`qa_inactive`).
+
+### Review — 2026-09-27 — team-lead — code (final)
+
+**Verdict:** APPROVED
+
+**Checked:** the inspection and decisions of the in-progress review above, plus the TL's own validation run below.
+- [x] Scope limited to the task; no business rules invented; authorization order respected where applicable
+- [x] API contract matches `api-contracts.md` (Foundation/Identity rows and error codes updated in this review)
+- [x] Tests meaningful; validation commands pass on the server; `makemigrations --check` clean (only `users/0001_initial`, non-destructive)
+- [x] No hardcoded secrets/domains/ports/paths; complies with `DRF_SKILL.md` and ADR-015/017/019
+
+**Commands run:** `make test-backend-remote REF=0a5f845` (DRF_SKILL §57 on the server, ADR-018), run `20260927-204315-12107`, ref `0a5f845` (`0a5f845768c0`), Python 3.13.15, explicit test env (`shared/.env` not read); results in `backend/.remote-results/20260927-204315-12107/`:
+```
+ruff-check      PASS
+ruff-format     PASS
+check           PASS   (manage.py check)
+makemigrations  PASS   (makemigrations --check --dry-run)
+pytest          PASS   238 passed in 4.94s; junit tests=238 failures=0 errors=0 skipped=0
+coverage        TOTAL 771 stmts, 7 miss, 98.42% (gate 80%: reached)
+== exit code: 0   (remote)
+```
+The local wrapper then exited 1 with `deploy/scripts/remote-test.sh: line 1: tmp: unbound variable`. That is a runner defect in the `--ref` path (EXIT trap references a `local` variable; TASK-012 sent back), **not** a test failure: every step reported PASS and the remote exit code was 0.
 
 ## QA Log
 

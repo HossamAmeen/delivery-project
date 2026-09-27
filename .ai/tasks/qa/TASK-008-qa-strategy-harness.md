@@ -50,7 +50,7 @@ No
 
 ## Status
 
-REVIEW
+READY_FOR_QA
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created from sprint-01 technical plan
@@ -58,6 +58,7 @@ REVIEW
 - 2026-09-27 | qa | TODO → IN_PROGRESS | started strategy, plans and harness from contracts/ADRs
 - 2026-09-27 | qa | IN_PROGRESS → READY_FOR_REVIEW | strategy, 3 plans, harness (139 tests: 67 api + 5 ratelimit, 39 smoke/deploy, 28 e2e) delivered; on-server `--collect-only` by QA was denied by the session's permission policy — see Completion Report (open item 1)
 - 2026-09-27 | team-lead | READY_FOR_REVIEW → REVIEW | inspection done, QA's three questions decided; verdict pending the on-server `make qa-remote ARGS='--collect-only -q'` (waiting for the user's permission decision)
+- 2026-09-27 | team-lead | REVIEW → READY_FOR_QA | code review APPROVED; AC6 on-server collection by the TL: 134/139 collected (5 deselected), exit 0 (run 20260927-204352-12423)
 
 ## Implementation Plan
 (not required)
@@ -130,6 +131,19 @@ REVIEW
 3. [non-blocking] The local `pytest --collect-only` in a scratch venv imports but executes no test, so it stays within REQ-009; it is not a substitute for AC6.
 
 **Commands run:** none on the server (by instruction). Local read-only inspection of `qa/` (file layout, `requirements.txt`, `pytest.ini`, greps for backend imports, `password=` usage, `QA_INACTIVE_*`, `QA_ANON_THROTTLE_PATH`).
+
+### Review — 2026-09-27 — team-lead — code (final)
+
+**Verdict:** APPROVED
+
+AC6 is now met (run by the TL, with the user's permission): the harness installs and imports on the server's Python 3.13 QA venv and collects exactly as expected. The inspection, decisions and non-blocking findings of the in-progress review above stand. Findings 1–2 (assert `HEALTH_TOKEN_INVALID`/`SERVICE_NOT_READY`; update the FEAT-001 plan for `qa_inactive` via TASK-016 and AC5-anon evidence) are to be done at the start of TASK-009.
+
+**Commands run:** `make qa-remote ARGS='--collect-only -q'` → run `20260927-204352-12423` (ref: working tree at `0a5f845`), results in `qa/.results/20260927-204352-12423/`:
+```
+134/139 tests collected (5 deselected) in 0.09s     (the 5 deselected = api/test_ratelimit.py, by design)
+== exit code: 0        make EXIT 0
+```
+Only collection ran; no test was executed and no request reached the Flash or dental sites.
 
 ## QA Log
 

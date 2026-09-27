@@ -31,10 +31,12 @@ validate_template_vars() {
   [[ "$API_DOMAIN" != "$WEB_DOMAIN" ]] || die "API_DOMAIN and WEB_DOMAIN must differ" 2
   [[ "$CERT_NAME" =~ ^[A-Za-z0-9._-]+$ ]] || die "CERT_NAME contains invalid characters" 2
   [[ "$BACKEND_SYSTEMD_SERVICE" =~ ^[A-Za-z0-9_.-]+$ ]] || die "BACKEND_SYSTEMD_SERVICE is invalid" 2
+  # BLK-013 RESOLVED (TL): http2 is mandatory OFF. nginx 1.24 applies `listen … http2` to the whole 443
+  # socket shared with dental-clinic, so "on" would switch dental to HTTP/2 as well.
   case "${NGINX_HTTP2:-off}" in
-    on) NGINX_LISTEN_HTTP2=" http2" ;;
     off) NGINX_LISTEN_HTTP2="" ;;
-    *) die "NGINX_HTTP2 must be on or off" 2 ;;
+    on) die "NGINX_HTTP2=on is refused (BLK-013): http2 on the shared 443 socket would change dental-clinic; set NGINX_HTTP2=off" 2 ;;
+    *) die "NGINX_HTTP2 must be off (BLK-013)" 2 ;;
   esac
   export NGINX_LISTEN_HTTP2
 }

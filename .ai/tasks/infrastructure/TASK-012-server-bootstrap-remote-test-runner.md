@@ -71,6 +71,10 @@ READY_FOR_QA
 - 2026-09-27 | infrastructure | IN_PROGRESS → READY_FOR_REVIEW | runners validated on the server (pass/fail/exit-code/lock/redaction probes, real qa/ collect 106 tests); evidence .ai/reports/infrastructure/TASK-012-validation-2026-09-27.md
 - 2026-09-27 | team-lead | READY_FOR_REVIEW → REVIEW | code review started
 - 2026-09-27 | team-lead | REVIEW → READY_FOR_QA | code review APPROVED (Review Log); ADR-015/016/017/018 amended; TASK-013/014 amended; QA verification via TASK-015
+- 2026-09-27 | team-lead | READY_FOR_QA → IN_PROGRESS | defect found in TL use: `remote-test.sh backend --ref` exits 1 after a green run (`tmp: unbound variable` in the EXIT trap); see Review Log
+- 2026-09-27 | infrastructure | IN_PROGRESS → READY_FOR_REVIEW | EXIT-trap fix in `remote-test.sh` (global `REMOTE_TEST_TMP`, `${REMOTE_TEST_TMP:-}`); `make test-backend-remote REF=0a5f845` exit 0, no /tmp leftover; failing probes exit 1 / 4 (Completion Report § Fix)
+- 2026-09-27 | team-lead | READY_FOR_REVIEW → REVIEW | re-review of the EXIT-trap fix
+- 2026-09-27 | team-lead | REVIEW → READY_FOR_QA | re-review APPROVED: `make test-backend-remote REF=0a5f845` exits 0, no /tmp leftovers, failing probe propagates; QA via TASK-015
 
 ## Implementation Plan
 1. Read-only server audit (ssh as hossam; sudo only for `nginx -T`, `certbot certificates`, `ss -ltnp`) → `.ai/reports/infrastructure/server-audit-2026-09-27.md`.
@@ -114,6 +118,15 @@ READY_FOR_QA
   - The uv installer wrote `~/.local/bin/uvx` and `~/.config/uv/uv-receipt.json`, just outside the listed server paths. Both are inherent to the prescribed installer and harmless.
   - `shared/.env`, `qa/credentials.env` and the Playwright browsers don't exist yet (TASK-013/014). `qa-remote` reports this and runs anyway.
   - Hint for Backend (not an infra issue): `test_logging_writes_to_stream_handlers_only` fails on the server because pytest's logging plugin attaches its own `_FileHandler` (to `os.devnull`) to the root logger during the run.
+
+### Fix — 2026-09-27 — reopen (TL finding 1, `tmp: unbound variable`)
+- **Change** (`deploy/scripts/remote-test.sh`, `cmd_backend`): the `git archive` copy now lives in the **global** `REMOTE_TEST_TMP` (`mktemp -d ${TMPDIR:-/tmp}/flash-remote-test-XXXXXX`), and the EXIT trap is `rm -rf -- "${REMOTE_TEST_TMP:-}"`, which is safe under `set -u` after the function returns. `--worktree` mode is unchanged.
+- **Evidence:**
+  - `bash -n` on all 22 files + `shellcheck -x` (0.11.0) → clean.
+  - `/tmp` before: 0 `tmp.*` / `flash-remote-test-*` dirs.
+  - `make test-backend-remote REF=0a5f845` (run `20260927-204656-15284`): ruff-check, ruff-format, check, makemigrations, pytest all PASS (238 passed, coverage 98.42 %), remote `== exit code: 0`, **make exit 0**, no `unbound variable`. `/tmp` after: 0 leftovers.
+  - Failing probes in REF mode (script called directly for the exact code): `--steps pytest -- --cov-fail-under=100` → `FAIL Required test coverage of 100% not reached. Total coverage: 98.42%` → **exit 1**; `--steps pytest -- tests/does_not_exist.py` → **exit 4**. 0 leftovers afterwards.
+
 
 ## Review Log
 - 2026-09-27 | team-lead | PLAN PRE-APPROVED (conditional) | valid within the Technical Notes constraints and ADR-015/016/018
@@ -164,6 +177,34 @@ server (read-only): nginx `user www-data`; stat of /srv/flash tree as reported; 
   `sudo certbot show_account` → production account present
 ```
 The real bootstrap, idempotent re-run and runner probes are accepted from the validation report (re-running them would only repeat state changes); QA re-verifies on the server in TASK-015.
+
+### Review — 2026-09-27 — team-lead — code (re-opened)
+
+**Verdict:** CHANGES_REQUESTED
+
+**Findings:**
+1. [blocking] `deploy/scripts/remote-test.sh:295,303` — `cmd_backend` declares `local ... tmp=""` and then sets `trap 'rm -rf "$tmp"' EXIT`. The EXIT trap runs after the function returned, when the `local` is out of scope, so under `set -u` it fails with `tmp: unbound variable`. Result: `make test-backend-remote REF=<ref>` **exits 1 even when every step passed** (breaks the ADR-018 rule "exit code = test exit code"; the TL runs `REF=` in every backend review), and the `mktemp -d` copy of `backend/` is **leaked in /tmp** (the TL removed the one from its own run). Required change: keep the path in a global (e.g. `REMOTE_TEST_TMP`) or clean it up explicitly before returning, and make the trap safe (`"${REMOTE_TEST_TMP:-}"`). Evidence: re-run `make test-backend-remote REF=<sha>` on a green commit → make exit 0 and no leftover `/tmp/tmp.*`; plus a failing probe → the pytest exit code propagates.
+
+Reproduced: `make test-backend-remote REF=0a5f845` (run `20260927-204315-12107`): all 5 steps PASS, remote `exit code: 0`, then `deploy/scripts/remote-test.sh: line 1: tmp: unbound variable`, `make: *** [Makefile:69: test-backend-remote] Error 1`.
+
+`--worktree` mode is not affected (no trap), so Backend/QA workflows keep working meanwhile. May be fixed within TASK-014's allowed `deploy/**` fixes if Infrastructure is already there; it then comes back through TL review with this task.
+
+### Review — 2026-09-27 — team-lead — code (re-review of the fix)
+
+**Verdict:** APPROVED
+
+**Checked:** `deploy/scripts/remote-test.sh` `cmd_backend`: the archive dir is now a global `REMOTE_TEST_TMP` created as `${TMPDIR:-/tmp}/flash-remote-test-XXXXXX`, and the trap is `rm -rf -- "${REMOTE_TEST_TMP:-}"` (safe under `set -u`). The change is limited to those lines. The finding from the re-opened review is resolved.
+
+**Commands run:**
+```
+bash -n on all deploy/scripts/*.sh and lib/*.sh          → OK
+shellcheck -x (0.11.0) on all scripts                    → clean, EXIT 0
+/tmp/tmp.* + /tmp/flash-remote-test-* before             → 0
+make test-backend-remote REF=0a5f845                     → run 20260927-204936-16613: 5 steps PASS, 238 passed, remote exit 0, make EXIT 0 (no "unbound variable")
+remote-test.sh backend --ref 0a5f845 --steps pytest -- -k tl_probe_no_such_test
+                                                         → 0 selected, remote "exit code: 1", script EXIT 1 (exit code propagates)
+/tmp/tmp.* + /tmp/flash-remote-test-* after both runs    → 0 (no leftovers)
+```
 
 ## QA Log
 

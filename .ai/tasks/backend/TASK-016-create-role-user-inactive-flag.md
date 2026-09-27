@@ -47,24 +47,57 @@ No — small, fully specified change to an existing command
 
 ## Status
 
-TODO
+READY_FOR_QA
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created from QA TASK-008 request (qa_inactive for TC-001-JWT-07); small follow-up to TASK-003
+- 2026-09-27 | backend | TODO → IN_PROGRESS | started; TASK-003 approved by the TL (committed 0a5f845)
+- 2026-09-27 | backend | IN_PROGRESS → READY_FOR_REVIEW | `--inactive` added + 8 tests; server run 20260927-204538-13225 green (246 passed, coverage 98.43%)
+- 2026-09-27 | team-lead | READY_FOR_REVIEW → REVIEW | code review started
+- 2026-09-27 | team-lead | REVIEW → READY_FOR_QA | code review APPROVED; TL server run 20260927-204950-16782 (worktree): 246 passed, coverage 98.43%
 
 ## Implementation Plan
 (not required)
 
 ## Completion Report
-(assignee, when moving to READY_FOR_REVIEW)
-- Files changed:
-- Tests added:
-- Validation commands run + results:
-- Contract/OpenAPI changes:
-- Known limitations / remaining problems:
+- Files changed: `backend/apps/users/management/commands/create_role_user.py` (new `--inactive` flag: `is_active = not inactive`, desired state on `--update` like `--staff`; `--inactive` with `--staff`/`--superuser` → `CommandError` before any DB write; success line lists `(inactive)`; help text updated), `backend/apps/users/tests/test_commands.py`.
+- Tests added (8): active by default; create inactive via `--inactive --update --password-stdin` (the exact TASK-013 call) with `(inactive)` in the output and no password; update active → inactive → active; refused combinations `--staff`, `--superuser`, both (parametrized, no user created); refusal leaves an existing user untouched; the seeded inactive user gets 401 `INVALID_CREDENTIALS` on `/api/auth/token/`. The existing command tests are unchanged and still pass (the password is still never read from argv or printed).
+- Validation commands run + results (server, `make test-backend-remote WORKTREE=1`, run `20260927-204538-13225`, Python 3.13.15, HEAD 0a5f845 + uncommitted worktree):
+  ```
+  ruff-check      PASS   (All checks passed!)
+  ruff-format     PASS
+  check           PASS
+  makemigrations  PASS
+  pytest          PASS   246 passed in 4.59s
+  coverage        TOTAL 98.43% (gate 80%); create_role_user.py 100%
+  == exit code: 0
+  ```
+  No local run (local static-check venv was not available; ruff/format were verified by the server run).
+- Contract/OpenAPI changes: none (no model, migration or API change). Command contract for TASK-013: `create_role_user --username U --role ROLE [--staff] [--superuser] [--inactive] [--update] [--password-stdin]`.
+- Known limitations / remaining problems: none.
 
 ## Review Log
 (team-lead)
+
+### Review — 2026-09-27 — team-lead — code
+
+**Verdict:** APPROVED
+
+**Checked:**
+- [x] Scope: only `create_role_user.py` and `apps/users/tests/test_commands.py`; no model, migration or API change
+- [x] Business rules: none invented (inactive = Django `is_active=False`, the contract's "inactive user" case)
+- [x] Behaviour per the criteria: `--inactive` sets `is_active=False`; desired-state with `--update` (omitting it re-activates); refused with `--staff`/`--superuser` (`staff` already includes `--superuser`); `(inactive)` in the success line; password still only from stdin/env, never printed
+- [x] Tests meaningful (+8); validation passes on the server; `makemigrations --check` clean
+- [x] No secrets; DRF_SKILL-compliant; matches TASK-013's `seed-qa-users` detection (`create_role_user --help` contains `--inactive`)
+
+**Findings:** none.
+
+**Commands run:** `make test-backend-remote WORKTREE=1` (uncommitted worktree on top of `0a5f845`), run `20260927-204950-16782`, Python 3.13.15:
+```
+ruff-check PASS · ruff-format PASS · check PASS · makemigrations PASS
+pytest PASS — 246 passed in 4.07s (238 + 8 new); coverage TOTAL 776 stmts, 7 miss → 98.43% (gate 80%)
+== exit code: 0      make EXIT 0
+```
 
 ## QA Log
 

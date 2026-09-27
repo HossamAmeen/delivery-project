@@ -108,7 +108,7 @@ Two files (ADR-012/015):
 | `AUTO_DEPLOY` / `AUTO_ROLLBACK` | `false` / `true` | deploy behaviour |
 | `ROLLBACK_RESTORE_DB` | `auto` | ADR-017 |
 | `CERT_NAME` | `flash-delivery` | certbot cert name (not a dental name) |
-| `NGINX_HTTP2` | `off` | `http2` on the Flash 443 listeners; **keep `off`** until BLK-013 is decided (nginx 1.24 would switch dental to HTTP/2 too) |
+| `NGINX_HTTP2` | `off` | must be `off` (BLK-013 resolved): `on` is refused with exit 2, because nginx 1.24 would switch dental's shared 443 socket to HTTP/2 too |
 | `LETSENCRYPT_EMAIL` | *(empty)* | **optional**: the server already has a registered Let's Encrypt production ACME account, which certbot reuses when this is empty (no `-m`) |
 | `VITE_API_BASE_URL` | `https://api.delivery.hossam-ameen.online` | PWA build |
 | `DENTAL_GUARD_DOMAINS` | `dental.hossam-ameen.online,api.dental.hossam-ameen.online` | guard HTTPS checks |
@@ -194,7 +194,7 @@ Each `%` is doubled for systemd; the parsed argv was verified. `Restart=always`,
   `manifest.webmanifest` get `no-cache`; `/assets/` gets 1-year `immutable`. Logs go to `/var/log/nginx/flash-web.*.log`.
 - **Both:** port 80 serves `/.well-known/acme-challenge/` and a 301 to https. On 443: `ssl`, the certificate
   `/etc/letsencrypt/live/flash-delivery/`, and HSTS `max-age=31536000` without includeSubDomains/preload (the parent domain is
-  shared with dental). `http2` only if `NGINX_HTTP2=on` (BLK-013).
+  shared with dental). No `http2` (`NGINX_HTTP2=on` is refused, BLK-013).
 - **Phases:** until the certificate exists, `setup-server`/`deploy` install the `*.http.conf` variants (port 80 only).
   `make tls` issues the certificate and switches to the TLS variants.
 - **Safe-apply** (every nginx change): back up the Flash files to `/tmp/flash-nginx-backup-*` → write → `sudo nginx -t` →
@@ -209,8 +209,8 @@ Each `%` is doubled for systemd; the parsed argv was verified. `Restart=always`,
 ## Deploy
 
 `make deploy` (`deploy/scripts/deploy.sh`):
-1. **Preflight:** env + mode; `backend/` and `frontend/` clean (else refused, unless `ALLOW_DIRTY=1`, recorded
-   `dirty=true` in `REVISION`); HEAD contains `backend/requirements/production.txt`; SSH; disk ≥ `MIN_FREE_DISK_MB`;
+1. **Preflight:** env + mode; `backend/`, `frontend/`, `deploy/` and the root `Makefile` committed (else refused, unless
+   `ALLOW_DIRTY=1`: recorded as `dirty=true`, `dirty_paths=…`, `dirty_checked=…` in `REVISION`; never for the release of record); HEAD contains `backend/requirements/production.txt`; SSH; disk ≥ `MIN_FREE_DISK_MB`;
    dental snapshot + port guard.
 2. **Build locally:** `cd frontend && npm ci && VITE_API_BASE_URL=… npm run build` (dist must contain `id="app"`).
 3. **Stage:** `git archive HEAD backend` + `frontend/dist` + `REVISION` (release, sha, dirty, time, builder).

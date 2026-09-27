@@ -62,15 +62,26 @@ Yes — production deployment on a shared server. **Pre-approved** by the TL on 
 
 ## Status
 
-TODO
+IN_PROGRESS
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created for FEAT-004; starts after TASK-013 + backend chain + TASK-007 reach READY_FOR_QA; plan pre-approved
 - 2026-09-27 | team-lead | TODO → TODO | amended from the TASK-012 review: permission evidence, `/static/` 200 check, `LETSENCRYPT_EMAIL` optional
 - 2026-09-27 | team-lead | TODO → TODO | amended from the backend/QA reviews: journald token check + query-string log check, `qa_inactive` seeding
+- 2026-09-27 | infrastructure | TODO → IN_PROGRESS | phase 1 (pre-live fixes, no live apply): NGINX_HTTP2=on refused (exit 2), dirty-tree check extended to deploy/ + Makefile (recorded in REVISION); waiting for the orchestrator's commit + go for the live phase
+- 2026-09-27 | team-lead | IN_PROGRESS → IN_PROGRESS | phase 1 (pre-live fixes) reviewed and APPROVED; live phase may start after the orchestrator's commit
 
 ## Implementation Plan
-(assignee: short plan, then proceed when dependencies are met — pre-approved)
+Phase 1 (done, no live apply): `lib/templates.sh` refuses `NGINX_HTTP2=on` (exit 2, BLK-013); the `deploy.sh` dirty-tree check covers `backend/ frontend/ deploy/ Makefile` and records `dirty`, `dirty_paths` and `dirty_checked` in `REVISION`; the TASK-012 EXIT-trap fix is in `remote-test.sh`.
+Phase 2 (live, after the orchestrator's commit + go). Every step is dental-guarded; STOP on any guard difference (restore the preceding Flash change, set BLOCKED + a blocker file, report to the TL):
+1. Read-only baseline: `make status`, dental snapshot, `curl -sI --http2 https://dental.hossam-ameen.online/` protocol.
+2. `make setup-server` → modes `stat` evidence, `shared/.env` (0600), unit installed + enabled, http bootstrap sites via safe-apply (`nginx -t` without `protocol options redefined`).
+3. `make deploy` (clean commit, no `--allow-dirty`) → `ss -ltn` shows 127.0.0.1:8010 only, HTTP health green.
+4. `make tls` (≤ 2 attempts; on failure stay on HTTP and report) → cert excerpt, 301s, renew dry-run, dental certificate unchanged.
+5. `make health` (https token checks), `/driver` deep link, a `/static/` file 200, token/query-string log counts on the server.
+6. `make seed-qa-users` (incl. `qa_inactive` if TASK-016 is merged), `make setup-server WITH_E2E=1` (disk before/after).
+7. Rollback exercise: second release → `make rollback` → health → `make deploy` back to the latest; crash recovery via `systemctl kill -s KILL`.
+8. Resource evidence, final dental check + dental http2 protocol comparison, `make throttle-reset`, `FEAT-004-deployment-report.md`.
 
 ## Completion Report
 (assignee, when moving to READY_FOR_REVIEW)
@@ -82,6 +93,27 @@ TODO
 
 ## Review Log
 - 2026-09-27 | team-lead | PLAN PRE-APPROVED (conditional) | valid within the TASK-013 constraints and ADR-015/017
+
+### Review — 2026-09-27 — team-lead — code (phase 1: pre-live fixes)
+
+**Verdict:** APPROVED (phase 1 only; the live execution evidence is reviewed when the task reaches READY_FOR_REVIEW)
+
+**Checked:**
+- [x] `deploy/scripts/lib/templates.sh`: `NGINX_HTTP2=on` → exit 2 naming BLK-013; any other value except `off` → exit 2; `off` renders `listen 443 ssl;` with no `http2` (BLK-013, ADR-015)
+- [x] `deploy/scripts/deploy.sh`: the dirty-tree check covers `backend frontend deploy Makefile`; refuses with the list of dirty top-level paths unless `--allow-dirty`; `REVISION` records `dirty`, `dirty_paths`, `dirty_checked`; the release content is still `git archive <sha> backend` + locally built `dist`
+- [x] `deploy/README.md` and root `.env.example` wording matches (http2 must be off; the dirty check scope; never `--allow-dirty` for the release of record)
+- [x] No secrets; scope limited to the two phase-1 fixes plus docs
+
+**Commands run:**
+```
+bash -n + shellcheck -x on all scripts                                → OK / clean
+NGINX_HTTP2=on  render-templates.sh                                   → "NGINX_HTTP2=on is refused (BLK-013) …" EXIT 2
+NGINX_HTTP2=yes render-templates.sh                                   → "NGINX_HTTP2 must be off (BLK-013)" EXIT 2
+render-templates.sh (off)                                             → EXIT 0; no "http2" in any rendered nginx file
+make deploy DRY_RUN=1 (with the uncommitted review changes present)   → "uncommitted change(s) in backend,deploy (6 path(s)) — commit them or use --allow-dirty" EXIT 2
+```
+
+**Before the live phase:** the orchestrator commits the reviewed changes (TASK-016, the TASK-012 fix, phase 1 and the `.ai` updates), so `make deploy` runs from a clean tree without `--allow-dirty`. The remaining TASK-014 notes (http2 evidence against dental, https health after `make tls`, the dental guard around certbot) still apply.
 
 ## QA Log
 

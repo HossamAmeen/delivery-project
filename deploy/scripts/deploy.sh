@@ -9,7 +9,8 @@
 # Failure before the switch: the half-built release is removed, the live site is untouched, exit 1.
 # Failure after the switch: AUTO_ROLLBACK=true → rollback.sh to the previous release; exit 1 either way.
 # Usage: deploy.sh [--allow-dirty] [--dry-run]
-#   --allow-dirty  ship the working tree of backend/ and frontend/ (recorded as dirty=true in REVISION)
+#   --allow-dirty  accept uncommitted changes in backend/ frontend/ deploy/ Makefile (the working tree of
+#                  backend/ and frontend/ is shipped; recorded as dirty=true + dirty_paths in REVISION)
 FLASH_SCRIPT=deploy
 set -euo pipefail
 # shellcheck source=lib/common.sh
@@ -23,7 +24,7 @@ while (($#)); do
   parse_common_flag "$1" && { shift; continue; }
   case "$1" in
     --allow-dirty) allow_dirty=1; shift ;;
-    -h|--help) sed -n '2,12p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) sed -n '2,13p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) die "unknown argument: $1" 2 ;;
   esac
 done
@@ -57,11 +58,15 @@ cd "$REPO_ROOT"
 sha="$(git rev-parse HEAD)" || die "not a git repository" 2
 git cat-file -e "HEAD:backend/requirements/production.txt" 2>/dev/null || [[ $allow_dirty == 1 ]] \
   || die "HEAD has no backend/requirements/production.txt — commit the backend first (or --allow-dirty)" 2
-dirty_files="$(git status --porcelain -- backend frontend | wc -l)"
+# Release content (backend/, frontend/) AND the tooling that deploys it (deploy/, root Makefile) must be committed,
+# so the release of record is reproducible from one sha. The result is recorded in REVISION.
+dirty_paths=(backend frontend deploy Makefile)
+dirty_files="$(git status --porcelain -- "${dirty_paths[@]}" | wc -l)"
+dirty_list="$(git status --porcelain -- "${dirty_paths[@]}" | awk '{print $2}' | cut -d/ -f1 | sort -u | paste -sd, -)"
 dirty=false
 if [[ "$dirty_files" -gt 0 ]]; then
-  [[ $allow_dirty == 1 ]] || die "backend/ or frontend/ has $dirty_files uncommitted change(s) — commit them or use --allow-dirty" 2
-  dirty=true; warn "--allow-dirty: shipping the working tree ($dirty_files uncommitted change(s))"
+  [[ $allow_dirty == 1 ]] || die "uncommitted change(s) in ${dirty_list} ($dirty_files path(s)) — commit them or use --allow-dirty" 2
+  dirty=true; warn "--allow-dirty: $dirty_files uncommitted path(s) in ${dirty_list} (backend/ and frontend/ shipped from the working tree)"
 fi
 info "release $release from ${sha:0:12} (dirty=$dirty) → $(ssh_target):$DEPLOY_PATH"
 check_ssh
@@ -83,8 +88,10 @@ if [[ "$dirty" == true ]]; then
 else
   git archive --format=tar "$sha" backend | tar -x -C "$stage"
 fi
-printf 'release=%s\nsha=%s\ndirty=%s\nbuilt_at=%s\nbuilt_by=%s@%s\nvite_api_base_url=%s\n' \
-  "$release" "$sha" "$dirty" "$(date -u +%FT%TZ)" "$(id -un)" "$(hostname -s)" "$VITE_API_BASE_URL" > "$stage/REVISION"
+printf 'release=%s\nsha=%s\ndirty=%s\ndirty_paths=%s\ndirty_checked=%s\nbuilt_at=%s\nbuilt_by=%s@%s\nvite_api_base_url=%s\n' \
+  "$release" "$sha" "$dirty" "${dirty_list:-none}" "${dirty_paths[*]}" "$(date -u +%FT%TZ)" "$(id -un)" "$(hostname -s)" \
+  "$VITE_API_BASE_URL" > "$stage/REVISION"
+sed 's/^/  REVISION /' "$stage/REVISION" >&2
 info "staged: backend $(find "$stage/backend" -type f | wc -l) files, frontend/dist $(find "$stage/frontend/dist" -type f 2>/dev/null | wc -l) files"
 
 # ------------------------------------------------------------------ upload
