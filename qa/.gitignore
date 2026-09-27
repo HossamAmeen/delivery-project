@@ -1,0 +1,4 @@
+# Test outputs copied back by `make qa-remote` (JUnit, logs, screenshots). Never committed.
+.results/
+__pycache__/
+.pytest_cache/

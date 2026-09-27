@@ -41,8 +41,13 @@ Product Owner (via PM) + Team Lead
 
 ## Status
 
-BLOCKED
+BLOCKED (partially resolved; the provider/remote part is still open)
 
 ## Resolution
 
-(pending)
+- **Partial decision, 2026-09-27, Product Owner via orchestrator:**
+  - `git init` approved and done. Initial commit `8b5dc17` on branch `main`, made by the orchestrator with the PO's consent.
+  - `flash_business_logic_complete.zip` (duplicate) is **not** committed. It is git-ignored.
+- **Still open:** git hosting provider / remote, CI platform, image registry.
+- **Effect:** TASK-011 (backend CI) stays BLOCKED. The FEAT-004 CI/CD criterion is deferred until this is resolved. Sprint-01 deploys are operator-triggered from the local machine (`make deploy` over SSH), which needs no remote.
+- **Owner of the remaining decision:** Product Owner (via PM).

@@ -44,4 +44,8 @@ PM (feature, sprint) → TL (design, contracts, tasks) → [TL plan review]
 ## Current state (update as it changes)
 - 2026-09-27: Discovery done (`.ai/reports/pm/discovery-report.md`). Sprint 01 is planned and decomposed into TASK-001…011. No application code yet.
 - 2026-09-27: Infrastructure agent added (ADR-012/013/014). TASK-006 is now Infrastructure's. TASK-011 (backend CI) is blocked on BLK-012.
-- The runtime is Python 3.13 via Docker (ADR-009). The local interpreter is 3.12.
+- The runtime is Python 3.13 via uv on the server (ADR-016, which supersedes ADR-009). The local interpreter is 3.12, for building only.
+- 2026-09-27: PO decisions: BLK-001 (username + password), BLK-002 (Vue 3 PWA) and BLK-011 are RESOLVED. BLK-012 is partial: git init done at `8b5dc17` on `main`, no remote, so CI is still blocked.
+- Sprint-01 scope is now FEAT-001, FEAT-003 and FEAT-004 (deployment pulled forward).
+- Target: shared VPS `hossam@34.123.215.195` (the dental-clinic app also runs there; never touch it), systemd mode, SQLite, no Redis/Docker, `api.delivery.hossam-ameen.online` + `delivery.hossam-ameen.online`, backend on `127.0.0.1:8010`.
+- **QA runs on the server, never locally.** The local machine is for building only.

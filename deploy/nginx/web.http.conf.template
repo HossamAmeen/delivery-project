@@ -1,0 +1,40 @@
+# Flash web (PWA) site (${WEB_DOMAIN}) — HTTP BOOTSTRAP variant (port 80 only), used until the
+# certificate ${CERT_NAME} exists; tls.sh then switches to web.conf.template. ADR-015.
+# Rendered by deploy/scripts/render-templates.sh. Do not edit on the server.
+
+log_format flash_web '$remote_addr - [$time_local] "$request_method $uri $server_protocol" '
+                     '$status $body_bytes_sent $request_time "$http_user_agent"';
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name ${WEB_DOMAIN};
+
+    access_log /var/log/nginx/flash-web.access.log flash_web;
+    error_log  /var/log/nginx/flash-web.error.log warn;
+
+    location ^~ /.well-known/acme-challenge/ {
+        root /var/www/html;
+        default_type text/plain;
+    }
+
+    root ${DEPLOY_PATH}/current/frontend/dist;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+    location = /index.html {
+        add_header Cache-Control "no-cache" always;
+    }
+    location = /sw.js {
+        add_header Cache-Control "no-cache" always;
+    }
+    location = /manifest.webmanifest {
+        add_header Cache-Control "no-cache" always;
+    }
+    location /assets/ {
+        try_files $uri =404;
+        add_header Cache-Control "public, max-age=31536000, immutable" always;
+    }
+}

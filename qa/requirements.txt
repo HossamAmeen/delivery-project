@@ -1,0 +1,6 @@
+# Flash QA harness (ADR-007, ADR-018). Installed on the server by `make qa-remote`
+# into /srv/flash/qa/venv (uv, Python 3.13). Never installed or run locally for QA.
+pytest==9.1.1
+httpx==0.28.1
+playwright==1.63.0
+pytest-playwright==0.9.0

@@ -1,0 +1,30 @@
+# Local environment (never commit)
+.env
+.env.*
+!.env.example
+
+# Local data
+*.sqlite3
+*.sqlite3-*
+db.sqlite3*
+staticfiles/
+media/
+
+# Python / tooling
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+junit*.xml
+
+# Results copied back from the server test runner (ADR-018)
+.remote-results/
+
+# Generated OpenAPI file (make schema)
+schema.yml

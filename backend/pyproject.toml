@@ -1,0 +1,42 @@
+# Tool configuration only; dependencies live in requirements/*.txt.
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+extend-exclude = ["migrations", ".remote-results", "staticfiles", "media"]
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "UP", "DJ", "SIM", "C4", "S"]
+ignore = ["SIM300"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["S101", "S105", "S106", "S108"]
+"conftest.py" = ["S101", "S105", "S106"]
+"config/settings/*.py" = ["F405"]
+"config/settings/test.py" = ["F405", "S105"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["config", "common", "apps", "tests"]
+
+[tool.coverage.run]
+source = ["."]
+branch = true
+omit = [
+    "*/migrations/*",
+    "*/tests/*",
+    "tests/*",
+    "conftest.py",
+    "manage.py",
+    "config/wsgi.py",
+    "config/asgi.py",
+    ".venv/*",
+    "venv/*",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+exclude_also = [
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+]

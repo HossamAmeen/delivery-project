@@ -40,8 +40,15 @@ PM + Team Lead
 
 ## Status
 
-BLOCKED
+RESOLVED
 
 ## Resolution
 
-(pending)
+- **Decision (quoted):** "BLK-002 client platforms → RESOLVED: Vue 3 PWA scaffold (Vite) is the MVP web client served at the web domain; Flutter later. So FEAT-003 is IN scope for sprint-01 (not conditional any more)."
+- **Decided by:** Product Owner, via orchestrator. **Date:** 2026-09-27. Recorded by PM.
+- **Consequences:**
+  - FEAT-003 (Vue PWA foundation) is unconditionally in sprint-01. The PWA is served at `WEB_DOMAIN=delivery.hossam-ameen.online` (see BLK-011).
+  - Flutter (FEAT-017) is after the MVP.
+  - ADR-008 (Vue 3 + Vite stack) can be accepted by the TL.
+- **Still open for the TL (technical, not a business rule):** ADR-011, meaning whether the Store and Admin MVP surfaces are role areas of the same Vue PWA. The PO named one MVP web client. The TL records the ADR, and the PM escalates only if it needs a second client.
+- **Documents updated:** `.ai/business/business-logic.md` §1, `.ai/business/requirements.md` (Change Log), `.ai/planning/backlog.md` (FEAT-003, FEAT-017), `.ai/planning/roadmap.md`, `.ai/planning/sprints/sprint-01.md`.

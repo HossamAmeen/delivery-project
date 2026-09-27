@@ -1,0 +1,4 @@
+-r base.txt
+gunicorn==26.2.0
+# Celery is not installed in production while CELERY_ENABLED=False (ADR-017);
+# config/__init__.py guards the import. Add `-r celery.txt` when it is enabled.

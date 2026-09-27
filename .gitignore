@@ -21,3 +21,8 @@ dist/
 *.log
 # Duplicate archive of flash_business_logic/
 flash_business_logic_complete.zip
+backend/.remote-results/
+qa/.results/
+
+# Claude Code local settings
+.claude/settings.local.json

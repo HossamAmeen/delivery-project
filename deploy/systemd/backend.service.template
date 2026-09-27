@@ -1,0 +1,50 @@
+# Flash backend (gunicorn) — ${BACKEND_SYSTEMD_SERVICE}.service. ADR-015.
+# Rendered by deploy/scripts/render-templates.sh and installed to /etc/systemd/system/ by setup-server.sh.
+# Every literal % is written %% (systemd specifier escaping).
+# Access log: path only (%(U)s), never the request line %(r)s or the query string %(q)s.
+
+[Unit]
+Description=Flash backend (gunicorn, ${APP_NAME}) on 127.0.0.1:${BACKEND_PORT}
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=exec
+User=${SERVER_USER}
+Group=${SERVER_USER}
+WorkingDirectory=${DEPLOY_PATH}/current/backend
+EnvironmentFile=${DEPLOY_PATH}/shared/.env
+ExecStart=${DEPLOY_PATH}/current/venv/bin/gunicorn config.wsgi:application \
+    --bind 127.0.0.1:${BACKEND_PORT} \
+    --workers ${GUNICORN_WORKERS} \
+    --threads ${GUNICORN_THREADS} \
+    --timeout ${GUNICORN_TIMEOUT} \
+    --max-requests 1000 \
+    --max-requests-jitter 100 \
+    --access-logfile - \
+    --access-logformat "%%({x-forwarded-for}i)s %%(t)s \"%%(m)s %%(U)s %%(H)s\" %%(s)s %%(b)s %%(D)sus \"%%(a)s\"" \
+    --error-logfile -
+Restart=always
+RestartSec=5
+KillMode=mixed
+TimeoutStopSec=30
+# media files must stay readable by nginx (www-data, "other"): 0644 files, 0755 dirs
+UMask=0022
+
+# Resource guard (3.8 GB RAM, no swap, shared with dental-clinic)
+MemoryMax=${BACKEND_MEMORY_MAX}
+TasksMax=128
+
+# Hardening. The uv-managed Python lives in ~${SERVER_USER}/.local/share/uv (read-only is enough).
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=read-only
+ReadWritePaths=${DEPLOY_PATH}/shared
+
+SyslogIdentifier=${BACKEND_SYSTEMD_SERVICE}
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

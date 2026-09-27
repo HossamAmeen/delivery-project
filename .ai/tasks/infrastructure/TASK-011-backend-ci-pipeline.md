@@ -23,9 +23,8 @@ Infrastructure
 - CI notes in `deploy/README.md` (the CI/CD section)
 
 ## Dependencies
-- The git repository is initialized and pushed to a remote (pre-sprint action, user approval)
-- **BLK-012** (git provider) → ADR-014 ACCEPTED
-- TASK-001 (requirements, ruff, pytest config), TASK-006 (backend Dockerfile)
+- **BLK-012** (git provider/remote) → ADR-014 ACCEPTED. git init is done (`8b5dc17` on `main`); a remote is still missing.
+- TASK-001 (requirements, ruff, pytest config), TASK-013 (deploy tooling; replaces the former TASK-006 Dockerfile dependency — the CI image-build stage is dropped while Docker is deferred, ADR-015)
 
 ## Acceptance Criteria
 
@@ -54,6 +53,7 @@ BLOCKED
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created (Infrastructure agent introduced)
 - 2026-09-27 | team-lead | TODO → BLOCKED | waiting on BLK-012 (git provider) and on git init + remote
+- 2026-09-27 | team-lead | BLOCKED → BLOCKED | still waiting on BLK-012 remote/provider (git init done); dependency TASK-006 replaced by TASK-013; image build stage deferred with Docker (ADR-015)
 
 ## Implementation Plan
 (not required)

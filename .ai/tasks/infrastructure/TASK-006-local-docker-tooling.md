@@ -4,18 +4,15 @@
 TASK-006
 
 ## Title
-Local Docker environment & root ops tooling
+Local Docker environment (optional developer tooling) — DEFERRED
 
 ## Feature
 FEAT-001 — Backend Platform Foundation
 
 ## Description
-Provide the containerized local environment under the ADR-012 layout:
-- the backend Dockerfile and its entrypoint scripts
-- the local compose file
-- the first version of the root `Makefile` and the root `.env.example`
+**Re-scoped 2026-09-27 (ADR-015, ADR-016, ADR-018): deferred to the backlog.** The PO decided that the server is the reference runtime, there is no Docker on the server, and test suites run on the server (REQ-009). A local Docker environment is optional convenience tooling and is not an acceptance gate for FEAT-001.
 
-With these, `make up` brings up a working backend on Python 3.13.
+When picked up again, it provides under the ADR-012 layout: the backend Dockerfile (`python:3.13-slim`, non-root, gunicorn) and entrypoint, `deploy/docker/compose/local.yml`, and local-only root Makefile targets (`up`, `down`, `logs`). The root `Makefile` and root `.env.example` are now created by **TASK-012/TASK-013**; this task would only add local targets to them.
 
 ## Business Requirement
 REQ-002; DRF_SKILL.md §41–42, §52, §57; ADR-009, ADR-012; FEAT-001 criterion 1
@@ -30,9 +27,8 @@ Infrastructure
 - `deploy/README.md` (the "Local development" section only)
 
 ## Dependencies
-- TASK-001 (requirements files, settings), TASK-005 (cache/Celery toggles)
-- TASK-003 before final verification (`migrate` needs the custom user model, ADR-003)
-- TASK-004 for the container health check (uses `/api/health/`)
+- TASK-013 (root Makefile/.env.example exist), TASK-003 (migrate needs the custom user model)
+- A PO/PM decision to schedule it (not in sprint-01)
 
 ## Acceptance Criteria
 
@@ -46,9 +42,8 @@ Infrastructure
 
 ## Technical Notes
 
-- The build context is the repo root, so the image can copy `backend/`.
-- Staging/production compose files, Nginx, systemd, the SSH deploy scripts and rollback are **FEAT-004** (sprint-02). Do not create them now, but use names and variables that stay compatible with ADR-012 and ADR-013.
-- `backend/Makefile` belongs to Backend (TASK-001). Coordinate with the TL so its `docker-local` target delegates to `make -C .. up`.
+- Scope unchanged if resumed, except: no container tests are QA evidence (ADR-018), and no Docker on the server (ADR-015).
+- `backend/Makefile` belongs to Backend (TASK-001).
 
 ## Testing Requirements
 
@@ -56,15 +51,16 @@ Infrastructure
 - `bash -n` / `shellcheck` on the scripts.
 
 ## Plan Review Required
-Yes — first infrastructure design (ADR-012 layout in practice)
+Yes — Docker architecture (when resumed)
 
 ## Status
 
-TODO
+BACKLOG
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created from sprint-01 technical plan (as Backend task)
 - 2026-09-27 | team-lead | TODO → TODO | reassigned Backend → Infrastructure, scope moved to `deploy/` (ADR-012)
+- 2026-09-27 | team-lead | TODO → BACKLOG | PO: server is the reference runtime, no Docker on server, tests on server (ADR-015/016/018); local Docker optional; root Makefile/.env.example moved to TASK-012/013
 
 ## Implementation Plan
 (assignee: required before coding — wait for TL APPROVED)

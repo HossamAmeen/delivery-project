@@ -1,0 +1,38 @@
+# Flash API site (${API_DOMAIN}) — HTTP BOOTSTRAP variant (port 80 only), used until the
+# certificate ${CERT_NAME} exists; tls.sh then switches to api.conf.template. ADR-015.
+# Rendered by deploy/scripts/render-templates.sh. Do not edit on the server.
+
+log_format flash_api '$remote_addr - [$time_local] "$request_method $uri $server_protocol" '
+                     '$status $body_bytes_sent $request_time "$http_user_agent"';
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name ${API_DOMAIN};
+
+    access_log /var/log/nginx/flash-api.access.log flash_api;
+    error_log  /var/log/nginx/flash-api.error.log warn;
+
+    client_max_body_size 10m;
+
+    location ^~ /.well-known/acme-challenge/ {
+        root /var/www/html;
+        default_type text/plain;
+    }
+    location /static/ {
+        alias ${DEPLOY_PATH}/shared/static/;
+        expires 30d;
+    }
+    location /media/ {
+        alias ${DEPLOY_PATH}/shared/media/;
+    }
+    location / {
+        proxy_pass http://127.0.0.1:${BACKEND_PORT};
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_redirect off;
+        proxy_read_timeout 60s;
+    }
+}

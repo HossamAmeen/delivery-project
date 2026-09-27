@@ -1,0 +1,3 @@
+# shellcheck config for deploy/scripts (run: cd deploy/scripts && shellcheck -x -P . *.sh lib/*.sh)
+# SC2119: ops_init/validate_common take OPTIONAL extra variable names; calling them without "$@" is intended.
+disable=SC2119

@@ -1,0 +1,2 @@
+# Optional background processing (DRF_SKILL §28). Only needed when CELERY_ENABLED=True.
+celery==5.6.3

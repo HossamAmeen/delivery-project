@@ -13,12 +13,14 @@ Status: `DEFINED` (ready for design) · `PARTIAL` (usable, but has open points) 
 | REQ-005 | Assignment, transitions, completion and ledger are race-safe and idempotent | core/09, core/06 | DEFINED |
 | REQ-006 | Public APIs are rate limited; auth endpoints are stricter | DRF_SKILL §61–83 | DEFINED |
 | REQ-007 | Localization, language(s), RTL, timezone | — | BLOCKED (BLK-009) |
+| REQ-008 | The system is deployed to the PO's shared VPS: systemd mode, nginx + Let's Encrypt TLS, `api.delivery.hossam-ameen.online` (API) and `delivery.hossam-ameen.online` (web), SQLite, no Redis/Docker, operator-triggered deploy, with health check and rollback. It never disturbs the co-hosted dental-clinic app | PO decision 2026-09-27 (BLK-011) | DEFINED |
+| REQ-009 | QA and backend test suites run on the server against the deployed instance, not on the local machine | PO decision 2026-09-27 | DEFINED |
 
 ## Identity & accounts
 | ID | Requirement | Source | Status |
 |---|---|---|---|
 | REQ-010 | Roles: Customer, Driver, Store, Admin | core/01–02 | DEFINED |
-| REQ-011 | Customer can register and log in; the other roles can log in | core/02 | PARTIAL (identifier → BLK-001; onboarding → BLK-007) |
+| REQ-011 | Customer can register and log in; the other roles can log in. Every role logs in with **username + password** (no OTP in the MVP) | core/02; PO decision 2026-09-27 (BLK-001) | PARTIAL (email/phone collection & verification, onboarding → BLK-007) |
 | REQ-012 | Customer manages their profile and delivery addresses | core/02 | PARTIAL (address fields/geo → BLK-008) |
 | REQ-013 | Store manages the store profile | core/02, store | PARTIAL (store fields, opening hours → BLK-008) |
 | REQ-014 | Admin manages users, stores and drivers | core/02, admin | PARTIAL (onboarding → BLK-007) |
@@ -87,3 +89,7 @@ Advanced analytics, deep reconciliation, configurable assignment rules, advanced
 | Date | Change | Requested by | Approved by | Docs updated |
 |---|---|---|---|---|
 | 2026-09-27 | Initial catalog created from `flash_business_logic/` | PM (setup) | — | — |
+| 2026-09-27 | Login identifier = username + password for all roles (REQ-011) | Product Owner | Product Owner | BLK-001, business-logic §2, backlog |
+| 2026-09-27 | MVP client = Vue 3 PWA (Vite) at the web domain; Flutter later | Product Owner | Product Owner | BLK-002, business-logic §1, backlog, roadmap |
+| 2026-09-27 | REQ-008 added: hosting and deployment on the shared VPS (systemd, SQLite, no Redis, TLS, two domains) | Product Owner | Product Owner | BLK-011, backlog FEAT-004, sprint-01 |
+| 2026-09-27 | REQ-009 added: QA runs on the server, not locally | Product Owner | Product Owner | sprint-01, backlog FEAT-001/003/004 |

@@ -1,0 +1,72 @@
+# Flash web (PWA) site (${WEB_DOMAIN}) — FULL variant (TLS). ADR-015.
+# Rendered by deploy/scripts/render-templates.sh. Do not edit on the server.
+# Static build only (Vite dist/ built on the operator machine); no server-side process.
+
+log_format flash_web '$remote_addr - [$time_local] "$request_method $uri $server_protocol" '
+                     '$status $body_bytes_sent $request_time "$http_user_agent"';
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name ${WEB_DOMAIN};
+
+    access_log /var/log/nginx/flash-web.access.log flash_web;
+    error_log  /var/log/nginx/flash-web.error.log warn;
+
+    location ^~ /.well-known/acme-challenge/ {
+        root /var/www/html;
+        default_type text/plain;
+    }
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl${NGINX_LISTEN_HTTP2};
+    listen [::]:443 ssl${NGINX_LISTEN_HTTP2};
+    server_name ${WEB_DOMAIN};
+
+    ssl_certificate     /etc/letsencrypt/live/${CERT_NAME}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${CERT_NAME}/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    access_log /var/log/nginx/flash-web.access.log flash_web;
+    error_log  /var/log/nginx/flash-web.error.log warn;
+
+    root ${DEPLOY_PATH}/current/frontend/dist;
+    index index.html;
+
+    # add_header in a location replaces the server-level ones, so every location repeats HSTS.
+    add_header Strict-Transport-Security "max-age=31536000" always;
+    add_header X-Content-Type-Options "nosniff" always;
+
+    # SPA fallback: unknown paths serve index.html (internal redirect → no-cache location below).
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+    # Always revalidated: the app shell, the service worker and the manifest.
+    location = /index.html {
+        add_header Cache-Control "no-cache" always;
+        add_header Strict-Transport-Security "max-age=31536000" always;
+        add_header X-Content-Type-Options "nosniff" always;
+    }
+    location = /sw.js {
+        add_header Cache-Control "no-cache" always;
+        add_header Strict-Transport-Security "max-age=31536000" always;
+        add_header X-Content-Type-Options "nosniff" always;
+    }
+    location = /manifest.webmanifest {
+        add_header Cache-Control "no-cache" always;
+        add_header Strict-Transport-Security "max-age=31536000" always;
+        add_header X-Content-Type-Options "nosniff" always;
+    }
+    # Content-hashed build assets: cache for a year.
+    location /assets/ {
+        try_files $uri =404;
+        add_header Cache-Control "public, max-age=31536000, immutable" always;
+        add_header Strict-Transport-Security "max-age=31536000" always;
+        add_header X-Content-Type-Options "nosniff" always;
+    }
+}

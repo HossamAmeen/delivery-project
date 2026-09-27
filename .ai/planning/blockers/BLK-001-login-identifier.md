@@ -41,8 +41,15 @@ Product Owner (via PM)
 
 ## Status
 
-BLOCKED
+RESOLVED
 
 ## Resolution
 
-(pending)
+- **Decision (quoted):** "BLK-001 login identifier → RESOLVED: username + password (Django default `USERNAME_FIELD = "username"`)."
+- **Decided by:** Product Owner, via orchestrator. **Date:** 2026-09-27. Recorded by PM.
+- **Interpretation recorded by PM (no new rule):**
+  - Every role (Customer, Driver, Store, Admin) logs in with username + password. There is one `USERNAME_FIELD`, so a username is unique across all users regardless of role.
+  - OTP is not part of the MVP login (not selected).
+- **Still open (not decided here, not to be invented):** whether email and/or phone are collected and verified at registration, and account onboarding/approval. These stay with **BLK-007** / FEAT-002.
+- **Documents updated:** `.ai/business/business-logic.md` §2, `.ai/business/requirements.md` (REQ-011, Change Log), `.ai/planning/backlog.md` (FEAT-001, FEAT-002), `.ai/planning/sprints/sprint-01.md`.
+- **Pending (not PM-writable in this session):** mirror into `flash_business_logic/00_core/02_roles_and_permissions.md` (PO-approved; orchestrator to schedule). TASK-003 Activity Log notification is carried in the sprint-01 handoff to the TL.

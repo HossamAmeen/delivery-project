@@ -8,7 +8,7 @@
 > **UNDEFINED** marks a rule the business has not specified yet. Do not implement a guess.
 > Follow the linked blocker (`.ai/planning/blockers/`).
 
-Last synced with `flash_business_logic/`: 2026-09-27
+Last synced with `flash_business_logic/`: 2026-09-27. Also includes PO decisions of 2026-09-27 (BLK-001, BLK-002) that are not yet mirrored into `flash_business_logic/`.
 
 ---
 
@@ -16,6 +16,8 @@ Last synced with `flash_business_logic/`: 2026-09-27
 Flash is a delivery platform. A **Customer** orders items from a **Store** (pharmacy, supermarket, flower shop, restaurant, other). The **system** assigns a **Driver** who picks up and delivers the order and may collect money from the customer. An **Admin** operates the platform. [core/01]
 
 Product surfaces: Customer app, Driver app, Store app, Admin dashboard. The Vue PWA and Flutter support the customer and driver roles with the same rules. [README]
+
+**MVP client platform (PO decision 2026-09-27, BLK-002):** the Vue 3 PWA (Vite) is the MVP web client, served at the web domain. Flutter comes after the MVP. Whether Store and Admin are role areas of that PWA is ADR-011 (TL).
 
 ## 2. Actors & roles
 | Role | Summary | Source |
@@ -27,7 +29,7 @@ Product surfaces: Customer app, Driver app, Store app, Admin dashboard. The Vue 
 | System | Assigns drivers, calculates prices and fees, enforces transitions | [core/04], [core/05] |
 
 - One user account per role, or several roles per account: **UNDEFINED** → BLK-007
-- Login identifier (email/phone/OTP) per role: **UNDEFINED** → BLK-001
+- Login identifier: **username + password for every role** (PO decision 2026-09-27, BLK-001). Django default `USERNAME_FIELD = "username"`, so a username is unique across all users. No OTP in the MVP login. Collecting or verifying email/phone: **UNDEFINED** → BLK-007
 - Who creates store and driver accounts (self-signup vs admin), and any approval/verification: **UNDEFINED** → BLK-007
 
 ## 3. Permissions [core/02]
