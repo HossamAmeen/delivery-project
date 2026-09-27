@@ -62,13 +62,14 @@ Infrastructure
 
 ## Testing Requirements
 - As in the validation criterion above. No live nginx/systemd/certbot change in this task.
+- 2026-09-28 | infrastructure | IN_PROGRESS → READY_FOR_REVIEW | BUG-002 fixed in the API templates (proxy_hide_header X-Content-Type-Options in location /; http variant also gets the server-level nosniff); isolated nginx -t + functional header count on the server; no live apply (ships with the next make deploy)
 
 ## Plan Review Required
 Yes — production deployment, nginx, systemd, TLS on a shared server. **Pre-approved** by the TL on 2026-09-27 against ADR-015/016/017 and the constraints above: write `.ai/reports/infrastructure/FEAT-004-infra-design.md` (short: script responsibilities, variable list, safe-apply and rollback flow diagrams) and a ≤ 20-line `## Implementation Plan`, then proceed without waiting. Deviations from ADR-015 need TL approval first. The TL reviews the implementation (infrastructure.md §6 validation list).
 
 ## Status
 
-QA_IN_PROGRESS
+READY_FOR_QA
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created for FEAT-004 (ADR-015/016/017); runs in parallel with backend/frontend; plan pre-approved
@@ -80,6 +81,9 @@ QA_IN_PROGRESS
 - 2026-09-27 | team-lead | READY_FOR_REVIEW → REVIEW | code review started
 - 2026-09-27 | team-lead | REVIEW → READY_FOR_QA | code review APPROVED (Review Log); BLK-013 RESOLVED (http2 off); sudo stop|start confirmed; live execution in TASK-014, QA via TASK-015
 - 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | FEAT-004 verification on the server started (TASK-015)
+- 2026-09-28 | team-lead | QA_IN_PROGRESS → IN_PROGRESS | BUG-002 (Low) routed to Infrastructure: `proxy_hide_header X-Content-Type-Options` in the proxied API location; constraints in BUG-002 § Routing; QA of the rest continues in TASK-015
+- 2026-09-28 | team-lead | READY_FOR_REVIEW → REVIEW | BUG-002 fix review
+- 2026-09-28 | team-lead | REVIEW → READY_FOR_QA | BUG-002 fix APPROVED incl. the http-variant deviation; ships with TASK-015's roll-forward deploy; QA re-test TC-001-SEC-03 + TASK-015
 
 ## Implementation Plan
 1. Design note `.ai/reports/infrastructure/FEAT-004-infra-design.md` (script map, variables, safe-apply / deploy / rollback flows).
@@ -127,6 +131,31 @@ QA_IN_PROGRESS
   - `certbot certonly --nginx` temporarily edits the Flash site file during the challenge and reverts it. The dental guard will show whether it touches anything else (e.g. `options-ssl-nginx.conf`); if it does, TASK-014 stops and reports to the TL, as instructed.
   - No remote `make` target was denied by the permission policy during this task.
 
+### Fix — 2026-09-28 — BUG-002 (duplicate `X-Content-Type-Options` on proxied API responses)
+- **TL decision (BUG-002 § Routing):** keep nginx's server-level `add_header X-Content-Type-Options "nosniff" always;` and hide the upstream (Django) copy in the proxied location. Django is unchanged.
+- **Changes:**
+  - `deploy/nginx/api.conf.template`: `proxy_hide_header X-Content-Type-Options;` in `location /`.
+  - `deploy/nginx/api.http.conf.template`: the same `proxy_hide_header` in `location /`, **plus** the server-level `add_header X-Content-Type-Options "nosniff" always;`. The bootstrap variant had no nginx-level nosniff, so hiding the upstream copy alone would have left **zero** headers. With both, it is exactly one in both variants.
+  - No web-site template or script changes.
+- **Validation** (no live apply):
+  - Local render (`ENV_FILE=.env.example render-templates.sh`) exit 0; each API variant has 1 `proxy_hide_header` + 1 `add_header` for nosniff.
+  - On the server, under `/tmp/flash-bug002` (removed afterwards):
+    - `sudo nginx -t -c …` on the isolated **http** and **full** API variants → syntax ok / successful
+    - **combined** test (live `nginx.conf` + live dental, default and Flash web sites + the NEW Flash API TLS file) → syntax ok / successful
+  - Functional test: a temporary non-root nginx on 127.0.0.1:18080 ran the rendered API http variant (listen/upstream rewritten), in front of a throw-away upstream that sends `nosniff` like Django:
+```
+### functional (readiness-gated, status codes shown)
+upstream direct (Django stand-in, sends nosniff): status=200 nosniff-count=1
+via nginx, proxied /api/status/:                  status=200 nosniff-count=1
+via nginx, /static/ missing file (nginx 404):     status=404 nosniff-count=1
+via nginx, upstream down (nginx 502):             status=502 nosniff-count=1
+cleanup: /tmp/flash-* left = 0; temp processes left = 0
+live site (old template, for comparison): 2 nosniff headers on /api/status/
+```
+  - The first two functional attempts gave misleading 0 counts, caused by my harness (a root-owned log file from `sudo nginx -t` stopped the non-root nginx; then the upstream was not yet listening). The run above is readiness-gated and prints status codes.
+- **Deployment:** it ships with the next `make deploy`. The rendered API file differs, so safe-apply runs `nginx -t` and reloads. That is TASK-015's roll-forward. QA re-tests BUG-002 afterwards (expected: exactly 1 header on `/api/status/`, `/api/health/`, `/static/…`).
+
+
 ## Review Log
 - 2026-09-27 | team-lead | PLAN PRE-APPROVED (conditional) | valid within the Technical Notes constraints and ADR-015/016/017
 
@@ -171,6 +200,34 @@ code inspection: templates (api/web full + http), backend.service.template, shar
   lib/server.sh (_fs_health, safe-apply, TLS, rollback stop/start, seed-qa-users incl. qa_inactive detection), deploy.sh, tls.sh, health-check.sh
 ```
 Not run (by instruction): `make qa-remote`, `make test-backend-remote`, any live apply.
+
+### Bug routing — 2026-09-28 — team-lead
+
+BUG-002 (Low) confirmed and ASSIGNED to **Infrastructure**. Scope: `deploy/nginx/api*.conf.template` only. Decision: keep nginx's server-level `nosniff`, add `proxy_hide_header X-Content-Type-Options;` in the proxied `location /`; Django unchanged. Validation: local render + isolated `nginx -t` in `/tmp/flash-*` on the server; no live apply outside the next `make deploy`. Then READY_FOR_REVIEW → TL review → shipped by TASK-015's roll-forward deploy → QA re-test (TC-001-SEC-03, one value on `/api/status/`, `/static/…`, a 404). The TASK-015 verification of the other TASK-013 criteria is unaffected.
+
+### Review — 2026-09-28 — team-lead — code (BUG-002 fix)
+
+**Verdict:** APPROVED
+
+**Checked:**
+- [x] Scope: only `deploy/nginx/api.conf.template` and `deploy/nginx/api.http.conf.template`; Django unchanged; web site untouched
+- [x] TLS variant: `proxy_hide_header X-Content-Type-Options;` in the proxied `location /`; the server-level `add_header … nosniff always` is inherited by `/static/`, `/media/` and `/` (none of those locations has its own `add_header`, so inheritance is not broken) → exactly one header everywhere, including nginx-generated errors
+- [x] **Deviation ACCEPTED:** the http bootstrap variant also gets a server-level `add_header X-Content-Type-Options "nosniff" always;`. Without it, hiding the upstream copy would have left the pre-TLS variant with **no** header at all. It keeps both variants consistent and only affects the bootstrap phase (and the ACME location, harmlessly)
+- [x] No `http2`, no other header or location change (BLK-013/ADR-015 hold)
+
+**Findings:**
+1. [non-blocking] The new comment says "the server-level add_header below/above"; tidy the wording in a later change. No functional effect.
+
+**Commands run** (nothing applied live):
+```
+render-templates.sh --out <scratchpad>/render2                      → OK; api http: add_header nosniff (server) + proxy_hide_header in location /;
+                                                                      api full: add_header nosniff (server, line 39) + proxy_hide_header in location /
+server, /tmp/flash-tl-nginxtest2 only (temp self-signed cert, logs in /tmp, -e):
+  sudo nginx -t -c …/nginx-http.conf                                 → syntax ok, test successful
+  sudo nginx -t -c …/nginx-full.conf                                 → syntax ok, test successful
+  temp dir removed (0 /tmp/flash-tl-* left)
+```
+**After the roll-forward deploy (TASK-015):** the rendered API file differs, so `make deploy` safe-applies it (`nginx -t` → reload). Evidence for QA: one `x-content-type-options: nosniff` on `/api/status/`, a `/static/` file and a 404, and `Cache-Control: no-store` on `/api/health/` 401 (BUG-001).
 
 ## QA Log
 - 2026-09-28 | qa | IN PROGRESS | BUG-002 (Low) filed: duplicate X-Content-Type-Options on the API site; live deploy/restart/rollback observation pending (permission)

@@ -54,7 +54,15 @@ Backend. Suggested fix: set the header for every response of the health views, f
 
 ## Status
 
-OPEN
+ASSIGNED
 
-## Activity Log
+## Routing (TL, 2026-09-28)
+
+Confirmed: Backend, TASK-004 (`backend/apps/health/**`). Fix constraints:
+- Every response of `/api/health/` and `/api/health/ready/` carries `Cache-Control: no-store`: 200, 401 `HEALTH_TOKEN_INVALID`, 503 `SERVICE_NOT_READY` **and** 429 `THROTTLED`. Do it once, in the shared base view (e.g. `finalize_response` on `_HealthBaseView`, or `never_cache`), not per `Response`. `/api/status/` is not in the contract note; leave it unchanged.
+- No change to status codes, bodies, codes or the exception handler (`common/` stays as is); the `Retry-After` header on 429 must survive.
+- Tests: 401 (missing and wrong token), 503 (forced DB or cache failure), 429 (health scope), each asserting `Cache-Control: no-store`; the existing 200 tests keep passing.
+- Validation: `make test-backend-remote WORKTREE=1` (full run, coverage ≥ 80%), then READY_FOR_REVIEW → TL review. It ships in the next `make deploy` (TASK-015's roll-forward); QA re-tests TC-001-HLT-10 on the live site.
 - 2026-09-28 | qa | — → OPEN | filed from TASK-009 (TC-001-HLT-10)
+- 2026-09-28 | team-lead | OPEN → ASSIGNED | routed to Backend (TASK-004 → IN_PROGRESS); fix constraints in § Routing
+- 2026-09-28 | team-lead | ASSIGNED → ASSIGNED | fix reviewed and APPROVED by the TL; ships with TASK-015's roll-forward `make deploy`; awaiting QA re-test (VERIFIED/REOPENED)

@@ -55,7 +55,7 @@ No — standard work fully specified by DRF_SKILL.md and ADR-015/017
 
 ## Status
 
-QA_IN_PROGRESS
+READY_FOR_RELEASE
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created from sprint-01 technical plan
@@ -66,6 +66,7 @@ QA_IN_PROGRESS
 - 2026-09-27 | team-lead | REVIEW → READY_FOR_QA | code review APPROVED; TL server run 20260927-204315-12107 at 0a5f845: ruff/format/check/makemigrations PASS, 238 passed, coverage 98.42%
 - 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | FEAT-001 verification on the server started (TASK-009)
 - 2026-09-28 | qa | QA_IN_PROGRESS → QA_IN_PROGRESS | QA verdict PASS ticked; status left for TL final review (.ai/reports/qa/FEAT-001-qa-report.md; server runs 20260927-225552-109762 (API regression), 20260927-225436-108557 (ratelimit), backend audit 20260927-225853-111545)
+- 2026-09-28 | team-lead | QA_IN_PROGRESS → READY_FOR_RELEASE | TL final review signed off (QA PASS in .ai/reports/qa/FEAT-001-qa-report.md; no unreviewed changes)
 
 ## Implementation Plan
 (not required)
@@ -137,10 +138,18 @@ coverage        TOTAL 771 stmts, 7 miss, 98.42% (gate 80%: reached)
 ```
 The local wrapper then exited 1 with `deploy/scripts/remote-test.sh: line 1: tmp: unbound variable`. That is a runner defect in the `--ref` path (EXIT trap references a `local` variable; TASK-012 sent back), **not** a test failure: every step reported PASS and the remote exit code was 0.
 
+### Review — 2026-09-28 — team-lead — final
+
+**Verdict:** APPROVED — TL final sign-off.
+- QA evidence exists: QA verdict PASS ticked, report `.ai/reports/qa/FEAT-001-qa-report.md` with server run ids.
+- No unreviewed changes after the TL code review: backend/ (reviewed at 0a5f845; unchanged through HEAD 81e197a).
+- Contracts/OpenAPI/docs: as recorded in the code review (api-contracts and ADRs updated in the same session; OpenAPI validated by `spectacular --validate` in the server suite and by QA TC-001-DOC-01..08 where applicable).
+- Open bugs against this task: none (BUG-001 is TASK-004, BUG-002 is TASK-013; both Low).
+
 ## QA Log
 - 2026-09-28 | qa | PASS | .ai/reports/qa/FEAT-001-qa-report.md; server runs 20260927-225552-109762 (API regression), 20260927-225436-108557 (ratelimit), backend audit 20260927-225853-111545
 
 ## Sign-off
-- TL final review: ☐
+- TL final review: ☑ (team-lead, 2026-09-28)
 - QA verdict: ☑ PASS (.ai/reports/qa/FEAT-001-qa-report.md; server runs 20260927-225552-109762 (API regression), 20260927-225436-108557 (ratelimit), backend audit 20260927-225853-111545)
 - PM acceptance: ☐

@@ -39,6 +39,15 @@ class _HealthBaseView(APIView):
     authentication_classes: list = []
     permission_classes = [AllowAny]
     throttle_classes = [HealthRateThrottle]
+    # BUG-001: token-protected endpoints must never be cached, whatever the
+    # outcome (200, 401, 503, 429). Set once here; /api/status/ keeps it off.
+    no_store = False
+
+    def finalize_response(self, request, response, *args, **kwargs):
+        response = super().finalize_response(request, response, *args, **kwargs)
+        if self.no_store:
+            response["Cache-Control"] = "no-store"
+        return response
 
 
 class StatusView(_HealthBaseView):
@@ -57,6 +66,8 @@ class StatusView(_HealthBaseView):
 class HealthView(_HealthBaseView):
     """The Django application is running (no dependency checks)."""
 
+    no_store = True
+
     @extend_schema(
         tags=["health"],
         summary="Health check (token)",
@@ -66,11 +77,13 @@ class HealthView(_HealthBaseView):
     )
     def get(self, request):
         services.verify_health_token(request)
-        return Response({"status": "healthy"}, headers={"Cache-Control": "no-store"})
+        return Response({"status": "healthy"})
 
 
 class ReadinessView(_HealthBaseView):
     """Database, cache and (when enabled) Celery broker."""
+
+    no_store = True
 
     @extend_schema(
         tags=["health"],
@@ -92,6 +105,4 @@ class ReadinessView(_HealthBaseView):
         checks = services.run_readiness_checks()
         if not services.is_ready(checks):
             raise services.ServiceNotReady(extra={"checks": checks})
-        return Response(
-            {"status": "ready", "checks": checks}, headers={"Cache-Control": "no-store"}
-        )
+        return Response({"status": "ready", "checks": checks})

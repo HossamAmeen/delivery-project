@@ -47,7 +47,7 @@ No — small, fully specified change to an existing command
 
 ## Status
 
-QA_IN_PROGRESS
+READY_FOR_RELEASE
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created from QA TASK-008 request (qa_inactive for TC-001-JWT-07); small follow-up to TASK-003
@@ -57,6 +57,7 @@ QA_IN_PROGRESS
 - 2026-09-27 | team-lead | REVIEW → READY_FOR_QA | code review APPROVED; TL server run 20260927-204950-16782 (worktree): 246 passed, coverage 98.43%
 - 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | FEAT-001 verification on the server started (TASK-009)
 - 2026-09-28 | qa | QA_IN_PROGRESS → QA_IN_PROGRESS | QA verdict PASS ticked; status left for TL final review (.ai/reports/qa/FEAT-001-qa-report.md; server runs 20260927-225552-109762 (API regression), 20260927-225436-108557 (ratelimit), backend audit 20260927-225853-111545)
+- 2026-09-28 | team-lead | QA_IN_PROGRESS → READY_FOR_RELEASE | TL final review signed off (QA PASS in .ai/reports/qa/FEAT-001-qa-report.md; no unreviewed changes)
 
 ## Implementation Plan
 (not required)
@@ -101,10 +102,18 @@ pytest PASS — 246 passed in 4.07s (238 + 8 new); coverage TOTAL 776 stmts, 7 m
 == exit code: 0      make EXIT 0
 ```
 
+### Review — 2026-09-28 — team-lead — final
+
+**Verdict:** APPROVED — TL final sign-off.
+- QA evidence exists: QA verdict PASS ticked, report `.ai/reports/qa/FEAT-001-qa-report.md` with server run ids.
+- No unreviewed changes after the TL code review: backend/ (reviewed on the worktree, committed as f85848b; `git diff f85848b HEAD -- backend` empty).
+- Contracts/OpenAPI/docs: as recorded in the code review (api-contracts and ADRs updated in the same session; OpenAPI validated by `spectacular --validate` in the server suite and by QA TC-001-DOC-01..08 where applicable).
+- Open bugs against this task: none (BUG-001 is TASK-004, BUG-002 is TASK-013; both Low).
+
 ## QA Log
 - 2026-09-28 | qa | PASS | .ai/reports/qa/FEAT-001-qa-report.md; server runs 20260927-225552-109762 (API regression), 20260927-225436-108557 (ratelimit), backend audit 20260927-225853-111545
 
 ## Sign-off
-- TL final review: ☐
+- TL final review: ☑ (team-lead, 2026-09-28)
 - QA verdict: ☑ PASS (.ai/reports/qa/FEAT-001-qa-report.md; server runs 20260927-225552-109762 (API regression), 20260927-225436-108557 (ratelimit), backend audit 20260927-225853-111545)
 - PM acceptance: ☐

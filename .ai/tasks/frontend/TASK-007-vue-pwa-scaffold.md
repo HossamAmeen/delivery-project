@@ -57,7 +57,7 @@ Yes — first frontend architecture. **Pre-approved** against ADR-008/011/019 an
 
 ## Status
 
-QA_IN_PROGRESS
+READY_FOR_RELEASE
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created from sprint-01 technical plan
@@ -69,6 +69,7 @@ QA_IN_PROGRESS
 - 2026-09-27 | team-lead | REVIEW → READY_FOR_QA | code review APPROVED (Review Log); build gates re-run green; browser/installability checks → QA TASK-010
 - 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | FEAT-003 verification on the deployed web domain started (TASK-010)
 - 2026-09-28 | qa | QA_IN_PROGRESS → QA_IN_PROGRESS | QA verdict PASS ticked; status left for TL final review (.ai/reports/qa/FEAT-003-qa-report.md; E2E run 20260927-225312-107600 (30 passed), web smoke in 20260927-225552-109762)
+- 2026-09-28 | team-lead | QA_IN_PROGRESS → READY_FOR_RELEASE | TL final review signed off (QA PASS in .ai/reports/qa/FEAT-003-qa-report.md; no unreviewed changes)
 
 ## Implementation Plan
 (frontend, 2026-09-27 — written under the TL's conditional pre-approval; no deviation from ADR-008/011/019)
@@ -189,10 +190,18 @@ code inspection: api/client.ts, api/errors.ts, stores/auth.ts, app/authBridge.ts
                  views/{Login,Status}View.vue, config/env.ts, vite.config.ts, .env.example, .gitignore
 ```
 
+### Review — 2026-09-28 — team-lead — final
+
+**Verdict:** APPROVED — TL final sign-off.
+- QA evidence exists: QA verdict PASS ticked, report `.ai/reports/qa/FEAT-003-qa-report.md` with server run ids. QA E2E run 20260927-225312-107600 (30 passed) incl. 360/1280 px and installability (decision (e) of the code review).
+- No unreviewed changes after the TL code review: frontend/ (reviewed at 0a5f845; `git diff 0a5f845 HEAD -- frontend` empty).
+- Contracts/OpenAPI/docs: as recorded in the code review (api-contracts and ADRs updated in the same session; OpenAPI validated by `spectacular --validate` in the server suite and by QA TC-001-DOC-01..08 where applicable).
+- Open bugs against this task: none (BUG-001 is TASK-004, BUG-002 is TASK-013; both Low).
+
 ## QA Log
 - 2026-09-28 | qa | PASS | .ai/reports/qa/FEAT-003-qa-report.md; E2E run 20260927-225312-107600 (30 passed), web smoke in 20260927-225552-109762
 
 ## Sign-off
-- TL final review: ☐
+- TL final review: ☑ (team-lead, 2026-09-28)
 - QA verdict: ☑ PASS (.ai/reports/qa/FEAT-003-qa-report.md; E2E run 20260927-225312-107600 (30 passed), web smoke in 20260927-225552-109762)
 - PM acceptance: ☐

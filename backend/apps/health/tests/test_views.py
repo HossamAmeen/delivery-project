@@ -300,3 +300,63 @@ def test_status_rejects_other_methods(api_client):
 
     assert response.status_code == 405
     assert response.json()["errors"]["code"] == "METHOD_NOT_ALLOWED"
+
+
+# --- Cache-Control: no-store on every health/ready response (BUG-001) ----------------
+
+
+@pytest.mark.parametrize("url", [HEALTH_URL, READY_URL])
+@pytest.mark.parametrize(
+    "token_kwargs",
+    [{}, {"HTTP_X_HEALTH_CHECK_TOKEN": "wrong"}],
+    ids=["missing-token", "wrong-token"],
+)
+def test_unauthorized_health_responses_are_not_cacheable(api_client, url, token_kwargs):
+    response = api_client.get(url, **token_kwargs)
+
+    assert response.status_code == 401
+    assert response.json() == INVALID
+    assert response["Cache-Control"] == "no-store"
+
+
+@pytest.mark.parametrize("url", [HEALTH_URL, READY_URL])
+def test_successful_health_responses_are_not_cacheable(api_client, url):
+    response = api_client.get(url, HTTP_X_HEALTH_CHECK_TOKEN=HEALTH_TOKEN)
+
+    assert response.status_code == 200
+    assert response["Cache-Control"] == "no-store"
+
+
+@pytest.mark.parametrize("failing", ["database", "cache"])
+def test_not_ready_response_is_not_cacheable(api_client, monkeypatch, failing):
+    monkeypatch.setitem(services.CHECKS, failing, lambda: services.ERROR)
+
+    response = api_client.get(READY_URL, HTTP_X_HEALTH_CHECK_TOKEN=HEALTH_TOKEN)
+
+    assert response.status_code == 503
+    assert response.json()["errors"]["code"] == "SERVICE_NOT_READY"
+    assert response.json()["errors"]["checks"][failing] == "error"
+    assert response["Cache-Control"] == "no-store"
+
+
+@pytest.mark.ratelimit
+@pytest.mark.parametrize("url", [HEALTH_URL, READY_URL])
+def test_throttled_health_response_is_not_cacheable_and_keeps_retry_after(
+    api_client, throttle_rates, url
+):
+    throttle_rates(health="1/minute")
+    api_client.get(url, HTTP_X_HEALTH_CHECK_TOKEN=HEALTH_TOKEN)
+
+    response = api_client.get(url, HTTP_X_HEALTH_CHECK_TOKEN=HEALTH_TOKEN)
+
+    assert response.status_code == 429
+    assert response.json()["errors"]["code"] == "THROTTLED"
+    assert response["Cache-Control"] == "no-store"
+    assert int(response["Retry-After"]) > 0
+
+
+def test_status_cache_headers_are_unchanged(api_client):
+    response = api_client.get(STATUS_URL)
+
+    assert response.status_code == 200
+    assert "Cache-Control" not in response

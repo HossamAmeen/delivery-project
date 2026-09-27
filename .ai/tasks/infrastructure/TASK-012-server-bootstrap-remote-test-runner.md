@@ -62,7 +62,7 @@ Yes — production server (shared) and infrastructure architecture. **Pre-approv
 
 ## Status
 
-QA_IN_PROGRESS
+READY_FOR_RELEASE
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created for FEAT-004 (ADR-015/016/018); first in the Infrastructure queue; plan pre-approved
@@ -77,6 +77,7 @@ QA_IN_PROGRESS
 - 2026-09-27 | team-lead | REVIEW → READY_FOR_QA | re-review APPROVED: `make test-backend-remote REF=0a5f845` exits 0, no /tmp leftovers, failing probe propagates; QA via TASK-015
 - 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | FEAT-004 verification on the server started (TASK-015)
 - 2026-09-28 | qa | QA_IN_PROGRESS → QA_IN_PROGRESS | QA verdict PASS ticked; status left for TL final review (.ai/reports/qa/FEAT-004-qa-report.md; runners used in 15 qa-remote runs + backend audit 20260927-225853-111545)
+- 2026-09-28 | team-lead | QA_IN_PROGRESS → READY_FOR_RELEASE | TL final review signed off (QA PASS in .ai/reports/qa/FEAT-004-qa-report.md; no unreviewed changes)
 
 ## Implementation Plan
 1. Read-only server audit (ssh as hossam; sudo only for `nginx -T`, `certbot certificates`, `ss -ltnp`) → `.ai/reports/infrastructure/server-audit-2026-09-27.md`.
@@ -208,10 +209,18 @@ remote-test.sh backend --ref 0a5f845 --steps pytest -- -k tl_probe_no_such_test
 /tmp/tmp.* + /tmp/flash-remote-test-* after both runs    → 0 (no leftovers)
 ```
 
+### Review — 2026-09-28 — team-lead — final
+
+**Verdict:** APPROVED — TL final sign-off.
+- QA evidence exists: QA verdict PASS ticked, report `.ai/reports/qa/FEAT-004-qa-report.md` with server run ids. The runners were used for 15 `qa-remote` runs and the backend audit without defects.
+- No unreviewed changes after the TL code review: remote-test.sh, lib/common.sh, lib/dental_guard.sh (fix reviewed, committed f85848b; `git diff f85848b HEAD` on them empty); setup-server.sh later extended by TASK-013 under its own review.
+- Contracts/OpenAPI/docs: as recorded in the code review (api-contracts and ADRs updated in the same session; OpenAPI validated by `spectacular --validate` in the server suite and by QA TC-001-DOC-01..08 where applicable).
+- Open bugs against this task: none (BUG-001 is TASK-004, BUG-002 is TASK-013; both Low).
+
 ## QA Log
 - 2026-09-28 | qa | PASS | .ai/reports/qa/FEAT-004-qa-report.md; runners used in 15 qa-remote runs + backend audit 20260927-225853-111545
 
 ## Sign-off
-- TL final review: ☐
+- TL final review: ☑ (team-lead, 2026-09-28)
 - QA verdict: ☑ PASS (.ai/reports/qa/FEAT-004-qa-report.md; runners used in 15 qa-remote runs + backend audit 20260927-225853-111545)
 - PM acceptance: ☐

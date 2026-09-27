@@ -50,7 +50,15 @@ Infrastructure. Suggested fix: remove `add_header X-Content-Type-Options` from t
 
 ## Status
 
-OPEN
+ASSIGNED
 
-## Activity Log
+## Routing (TL, 2026-09-28)
+
+Confirmed: Infrastructure, TASK-013 (`deploy/nginx/api.conf.template`). Decision: **nginx stays the single edge source of `X-Content-Type-Options`; hide the upstream copy.**
+- Add `proxy_hide_header X-Content-Type-Options;` in the proxied `location /` of the API TLS template (and the http bootstrap variant if it proxies). Keep the server-level `add_header X-Content-Type-Options "nosniff" always;` so `/static/`, `/media/` and nginx-generated errors (e.g. 502) still get exactly one.
+- Do **not** change Django (`SECURE_CONTENT_TYPE_NOSNIFF=True` stays: it covers direct 127.0.0.1 access and `check --deploy`); no change to other headers or to the web site.
+- Validation: bash -n/shellcheck unaffected; local render; isolated `sudo nginx -t -c /tmp/flash-*` on the server (TASK-013 method); no live apply by itself. READY_FOR_REVIEW → TL review. It ships with the next `make deploy` (the rendered file differs → safe-apply → reload), which is TASK-015's roll-forward.
+- Live evidence after that deploy: exactly one `x-content-type-options: nosniff` on `/api/status/`, a `/static/` file and a 404; QA re-tests TC-001-SEC-03 (strict: one value).
 - 2026-09-28 | qa | — → OPEN | filed from TASK-009 (TC-001-SEC-03)
+- 2026-09-28 | team-lead | OPEN → ASSIGNED | routed to Infrastructure (TASK-013 → IN_PROGRESS); fix constraints in § Routing
+- 2026-09-28 | team-lead | ASSIGNED → ASSIGNED | fix reviewed and APPROVED by the TL; ships with TASK-015's roll-forward `make deploy`; awaiting QA re-test (VERIFIED/REOPENED)

@@ -61,7 +61,7 @@ Scopes are `anon`, `user`, `auth`, `sensitive` and `health`, all configured from
 
 ## 2. Contract registry
 
-### Foundation (FEAT-001), status: APPROVED (revised 2026-09-27: ADR-015, ADR-019; error codes and health bodies fixed in the TASK-002/004 review)
+### Foundation (FEAT-001), status: APPROVED — moves to ACTIVE after the BUG-001 re-test (revised 2026-09-27: ADR-015, ADR-019; error codes and health bodies fixed in the TASK-002/004 review)
 Base URL on the server: `https://api.delivery.hossam-ameen.online` (ADR-015). All JSON responses below are enveloped (§1.2) unless marked "raw".
 
 | Method | Path | Auth | Throttle | Request | Response `data` | Errors |
@@ -79,7 +79,7 @@ Notes:
 - Throttle scopes vs. permissions: DRF checks authentication and permissions **before** throttles, so a request rejected with 401/403 is not counted. In sprint-01 no public endpoint uses the `anon` scope (status/health use `health`, login/refresh use `auth`, docs are staff-only in production); the `anon` scope is proven by the backend suite on the server (see FEAT-001 AC5 note in TASK-008's review).
 - `celery` is `"skipped"` whenever `CELERY_ENABLED=False` (the server configuration, ADR-017).
 
-### Identity (FEAT-001 foundation), status: APPROVED (BLK-001 RESOLVED: username + password)
+### Identity (FEAT-001 foundation), status: ACTIVE (2026-09-28: implemented, QA PASS in TASK-009, matches OpenAPI; BLK-001 RESOLVED: username + password)
 | Method | Path | Auth | Throttle | Request | Response `data` | Errors |
 |---|---|---|---|---|---|---|
 | POST | `/api/auth/token/` | none | auth | `{"username": "string", "password": "string"}` | `{"access": "<jwt>", "refresh": "<jwt>"}` | 400 validation (missing field → `errors.<field>`), 401 `{"success":false,"message":"Invalid username or password.","errors":{"code":"INVALID_CREDENTIALS"}}` (same response for unknown user, wrong password **and inactive user**: never reveals which), 429 |

@@ -53,7 +53,7 @@ No — contract fixed in api-contracts.md § Foundation and ADR-019
 
 ## Status
 
-QA_FAILED
+READY_FOR_QA
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created from sprint-01 technical plan
@@ -64,6 +64,10 @@ QA_FAILED
 - 2026-09-27 | team-lead | REVIEW → READY_FOR_QA | code review APPROVED; TL server run 20260927-204315-12107 at 0a5f845: ruff/format/check/makemigrations PASS, 238 passed, coverage 98.42%
 - 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | FEAT-001 verification on the server started (TASK-009)
 - 2026-09-28 | qa | QA_IN_PROGRESS → QA_FAILED | BUG-001 (Low): /api/health/* 401 lacks Cache-Control: no-store (TC-001-HLT-10); all other TASK-004 checks passed — .ai/reports/qa/FEAT-001-qa-report.md
+- 2026-09-28 | team-lead | QA_FAILED → IN_PROGRESS | BUG-001 (Low) routed to Backend: `Cache-Control: no-store` on every health/ready response; constraints in BUG-001 § Routing
+- 2026-09-28 | backend | IN_PROGRESS → READY_FOR_REVIEW | BUG-001 fixed: `Cache-Control: no-store` on every /api/health/ and /api/health/ready/ response (200/401/503/429) via `_HealthBaseView`; server run 20260927-230909-120452 green (257 passed, coverage 98.45%)
+- 2026-09-28 | team-lead | READY_FOR_REVIEW → REVIEW | BUG-001 fix review
+- 2026-09-28 | team-lead | REVIEW → READY_FOR_QA | BUG-001 fix APPROVED (TL run 20260927-231223-122519: 257 passed, 98.45%); ships with TASK-015's roll-forward deploy; QA re-test TC-001-HLT-10
 
 ## Implementation Plan
 (not required)
@@ -89,6 +93,21 @@ QA_FAILED
   - Health responses send `Cache-Control: no-store`.
   - Docs 401/403 are the JSON error envelope (`NOT_AUTHENTICATED` / `PERMISSION_DENIED`) even though the views render YAML/HTML on success.
 - Known limitations / remaining problems: Swagger UI/Redoc load their JS from the drf-spectacular default CDN (jsdelivr); fine for staff-only docs, can switch to the sidecar package later if the CSP requires it.
+
+**BUG-001 fix (2026-09-28, round 2)**
+- Files changed: `backend/apps/health/views.py` (`_HealthBaseView.finalize_response` sets `Cache-Control: no-store` once for every response of views with `no_store = True`, i.e. `HealthView` and `ReadinessView`, including the 401/503 from the exception handler and the 429 from the throttle; the two per-`Response` headers were removed; `StatusView` keeps `no_store = False` and is unchanged), `backend/apps/health/tests/test_views.py`.
+- Tests added (11): 401 missing + wrong token on `/api/health/` and `/api/health/ready/` (body still `HEALTH_TOKEN_INVALID`), 200 on both, 503 with forced database and forced cache failure (body still `SERVICE_NOT_READY`), 429 on both under the health scope (code `THROTTLED`, `Retry-After` still present), `/api/status/` still sends no `Cache-Control`. All assert `Cache-Control: no-store` where required; the existing tests pass unchanged.
+- Validation (server, `make test-backend-remote WORKTREE=1`, run `20260927-230909-120452`, Python 3.13.15, HEAD 81e197a + uncommitted worktree):
+  ```
+  ruff-check      PASS
+  ruff-format     PASS
+  check           PASS
+  makemigrations  PASS
+  pytest          PASS   257 passed in 4.71s
+  coverage        TOTAL 98.45% (gate 80%); apps/health/views.py 100%
+  == exit code: 0
+  ```
+- Contract/OpenAPI changes: none (status codes, bodies, error codes and `common/` untouched). Not deployed, not committed; QA re-tests TC-001-HLT-10 after the next `make deploy`.
 
 ## Review Log
 ### Review — 2026-09-27 — team-lead — code (in progress)
@@ -123,6 +142,24 @@ coverage        TOTAL 771 stmts, 7 miss, 98.42% (gate 80%: reached)
 == exit code: 0   (remote)
 ```
 The local wrapper then exited 1 with `deploy/scripts/remote-test.sh: line 1: tmp: unbound variable`. That is a runner defect in the `--ref` path (EXIT trap references a `local` variable; TASK-012 sent back), **not** a test failure: every step reported PASS and the remote exit code was 0.
+
+### Bug routing — 2026-09-28 — team-lead
+
+BUG-001 (Low) confirmed and ASSIGNED to **Backend**. Scope: `backend/apps/health/**` only. Constraints (also in the bug file): `Cache-Control: no-store` on **every** `/api/health/` and `/api/health/ready/` response (200, 401, 503, 429), set once in `_HealthBaseView`; no change to bodies, codes, `common/` or `/api/status/`; `Retry-After` kept on 429; tests for 401/503/429; `make test-backend-remote WORKTREE=1` green. Then READY_FOR_REVIEW → TL code review → shipped by the next `make deploy` (TASK-015's roll-forward) → QA re-test of TC-001-HLT-10.
+
+### Review — 2026-09-28 — team-lead — code (BUG-001 fix)
+
+**Verdict:** APPROVED
+
+**Checked:**
+- [x] Scope: only `backend/apps/health/views.py` and `apps/health/tests/test_views.py`
+- [x] Matches the routing constraints: `Cache-Control: no-store` set once in `_HealthBaseView.finalize_response` (runs for returned responses and for those built by the exception handler: 401, 503, 429), switched on for `HealthView`/`ReadinessView`, off for `StatusView`; the per-`Response` headers removed; bodies, codes, `common/` unchanged; `Retry-After` kept on 429
+- [x] Tests (+11 incl. parametrisation): 401 missing/wrong token × both URLs, 200 × both, 503 for DB and cache failure, 429 × both with `Retry-After`, `/api/status/` unchanged (no `Cache-Control`)
+- [x] Contract: api-contracts § Foundation note ("responses carry `Cache-Control: no-store`") now holds for every outcome; no contract change
+
+**Findings:** none.
+
+**Commands run:** `make test-backend-remote WORKTREE=1` → run `20260927-231223-122519` (worktree on `81e197a`), Python 3.13.15: ruff-check, ruff-format, check, makemigrations PASS; pytest **257 passed**; coverage TOTAL 784 stmts, 7 miss → **98.45 %**; remote exit 0; make EXIT 0.
 
 ## QA Log
 - 2026-09-28 | qa | FAIL | BUG-001 (Low): /api/health/* 401 lacks Cache-Control: no-store (TC-001-HLT-10); all other TASK-004 checks passed — .ai/reports/qa/FEAT-001-qa-report.md
