@@ -29,12 +29,8 @@ Demo accounts: `demo_admin`, `demo_store`, `demo_driver`, `demo_customer` (the p
 
 ## 3. Open later (not blocking)
 
-- [ ] **BLK-012:** git provider and remote (GitHub/GitLab), to unblock CI (TASK-011)
-- [ ] **BLK-007:** onboarding and accounts (FEAT-002 registration, sprint-02)
 - [ ] **BLK-009:** language and currency (the UI is English-only for now)
-- [ ] **BLK-003 / 004 / 005 / 006 / 008 / 010:** pricing and fees, payments, cancellation, assignment, order scope, notifications
-- [ ] Confirm the sprint-01 dates
-- [ ] Copy the BLK-001 and BLK-002 decisions into `flash_business_logic/` (PM)
+- [ ] **BLK-004 / 006 / 010:** payments, assignment strategy, notifications
 - [ ] Hardening before real customer data: refresh token in an httpOnly cookie, and a logout/blacklist endpoint
 - [ ] Future: PostgreSQL/Redis instead of SQLite and a file cache; HTTP/2 only with the dental owner's consent
 - [ ] Local build machine: upgrade Node to ≥ 24.15 or 22 LTS (EBADENGINE warnings)
