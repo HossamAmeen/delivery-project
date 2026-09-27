@@ -62,7 +62,7 @@ Yes — production deployment on a shared server. **Pre-approved** by the TL on 
 
 ## Status
 
-READY_FOR_RELEASE
+DONE
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created for FEAT-004; starts after TASK-013 + backend chain + TASK-007 reach READY_FOR_QA; plan pre-approved
@@ -77,6 +77,7 @@ READY_FOR_RELEASE
 - 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | FEAT-004 verification on the server started (TASK-015)
 - 2026-09-28 | qa | QA_IN_PROGRESS → QA_IN_PROGRESS | QA verdict PASS ticked; status left for TL final review (.ai/reports/qa/FEAT-004-qa-report.md; release 20260927-232246 (d6669b6); runs 20260927-233545-139616, -233803-141021, -233920-141829, -233518-139162)
 - 2026-09-28 | team-lead | QA_IN_PROGRESS → READY_FOR_RELEASE | TL final review signed off (QA PASS in FEAT-004-qa-report.md)
+- 2026-09-28 | project-manager | READY_FOR_RELEASE → DONE | FEAT-004 accepted against the DoD (.ai/reports/pm/sprint-01-acceptance-2026-09-28.md)
 
 ## Implementation Plan
 Phase 1 (done, no live apply): `lib/templates.sh` refuses `NGINX_HTTP2=on` (exit 2, BLK-013); the `deploy.sh` dirty-tree check covers `backend/ frontend/ deploy/ Makefile` and records `dirty`, `dirty_paths` and `dirty_checked` in `REVISION`; the TASK-012 EXIT-trap fix is in `remote-test.sh`.
@@ -183,4 +184,4 @@ secret counts on the server (reports tar-streamed to a /tmp dir and removed): to
 ## Sign-off
 - TL final review: ☑ (team-lead, 2026-09-28)
 - QA verdict: ☑ PASS (.ai/reports/qa/FEAT-004-qa-report.md; release 20260927-232246 (d6669b6); runs 20260927-233545-139616, -233803-141021, -233920-141829, -233518-139162)
-- PM acceptance: ☐
+- PM acceptance: ☑ (project-manager, 2026-09-28; FEAT-004 accepted, .ai/reports/pm/sprint-01-acceptance-2026-09-28.md)

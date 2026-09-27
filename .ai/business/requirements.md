@@ -93,3 +93,4 @@ Advanced analytics, deep reconciliation, configurable assignment rules, advanced
 | 2026-09-27 | MVP client = Vue 3 PWA (Vite) at the web domain; Flutter later | Product Owner | Product Owner | BLK-002, business-logic §1, backlog, roadmap |
 | 2026-09-27 | REQ-008 added: hosting and deployment on the shared VPS (systemd, SQLite, no Redis, TLS, two domains) | Product Owner | Product Owner | BLK-011, backlog FEAT-004, sprint-01 |
 | 2026-09-27 | REQ-009 added: QA runs on the server, not locally | Product Owner | Product Owner | sprint-01, backlog FEAT-001/003/004 |
+| 2026-09-28 | BLK-001/BLK-002 decisions mirrored into `flash_business_logic/` (00_core/02 § Authentication; README § Product surfaces) | PM | Product Owner (2026-09-27) | flash_business_logic, business-logic.md sync line |

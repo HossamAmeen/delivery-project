@@ -30,6 +30,9 @@ assignment rule, permission, or financial behavior.
 The Vue PWA and Flutter application support the customer and driver roles
 with the same underlying business rules.
 
+MVP client platform (Product Owner decision, 2026-09-27, BLK-002):
+the Vue 3 PWA is the MVP web client. The Flutter application comes after the MVP.
+
 ## Critical confirmed rule
 A driver does NOT manually accept or reject an order.
 The system assigns the order to the driver. The assigned order then appears

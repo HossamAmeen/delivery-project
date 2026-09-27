@@ -49,7 +49,7 @@ No
 
 ## Status
 
-READY_FOR_RELEASE
+DONE
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → BACKLOG | created from sprint-01 technical plan
@@ -57,6 +57,7 @@ READY_FOR_RELEASE
 - 2026-09-28 | qa | TODO → IN_PROGRESS | started; E2E selectors confirmed against the built PWA
 - 2026-09-28 | qa | IN_PROGRESS → READY_FOR_REVIEW | FEAT-003 verification done: verdict PASS (.ai/reports/qa/FEAT-003-qa-report.md)
 - 2026-09-28 | team-lead | READY_FOR_REVIEW → READY_FOR_RELEASE | TL final review signed off (FEAT-003 PASS)
+- 2026-09-28 | project-manager | READY_FOR_RELEASE → DONE | FEAT-003 accepted against the DoD (.ai/reports/pm/sprint-01-acceptance-2026-09-28.md)
 
 ## Implementation Plan
 (not required)
@@ -95,4 +96,4 @@ READY_FOR_RELEASE
 ## Sign-off
 - TL final review: ☑ (team-lead, 2026-09-28)
 - QA verdict: n/a (QA's own task; its verdict is the report)
-- PM acceptance: ☐
+- PM acceptance: ☑ (project-manager, 2026-09-28; FEAT-003 accepted, .ai/reports/pm/sprint-01-acceptance-2026-09-28.md)

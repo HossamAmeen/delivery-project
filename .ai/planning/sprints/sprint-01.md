@@ -2,7 +2,7 @@
 
 - **Dates:** 2026-09-28 → 2026-10-09 (proposed; PO to confirm). The PO wants the build and deployment to start now.
 - **Owner:** PM · **Technical plan:** `.ai/reports/team-lead/sprint-01-technical-plan.md` (**the TL must revise it** for this replan)
-- **Status:** PLANNED (replanned 2026-09-27 after PO decisions)
+- **Status:** CLOSED 2026-09-28. Sprint goal met; FEAT-001, FEAT-003 and FEAT-004 accepted (`.ai/reports/pm/sprint-01-acceptance-2026-09-28.md`). It was replanned on 2026-09-27 after PO decisions.
 
 ## Sprint goal
 Deliver the DRF backend foundation and the Vue PWA shell, deployed over HTTPS to the PO's shared server (`api.delivery.hossam-ameen.online`, `delivery.hossam-ameen.online`), and independently QA-verified **on that server**.
@@ -79,23 +79,40 @@ Deliver the DRF backend foundation and the Vue PWA shell, deployed over HTTPS to
    - TASK-011: stays BLOCKED on BLK-012 (remote/provider).
 5. Constraints (unchanged): `DRF_SKILL.md` CREATE-mode order, custom User model before the first migration (ADR-003), no domain apps besides `users`. Never touch dental-clinic resources.
 
-## Sprint board
-*(PM rebuilds this from the task files each session; the statuses below are the task files' `## Status` as of 2026-09-27. FEAT-004 tasks are not created yet.)*
+## Exit criteria result (2026-09-28)
+| Exit criterion | Result |
+|---|---|
+| Both domains live over HTTPS with valid certificates | MET: cert `flash-delivery` valid until 2026-12-26; release `20260927-232246` / `d6669b6` |
+| Health endpoints green, `make health` passes | MET (TL check + QA run 14) |
+| Rollback exercised on the server and healthy | MET: run by the PO/operator, verified by QA from server records and a full regression |
+| Dental-clinic unaffected before/after | MET: nginx hashes and service identical to the baseline |
+| QA PASS on the server for FEAT-001/003/004 incl. backend suite ≥ 80% on Python 3.13 | MET: 257 passed, 98.45% |
+| TL final sign-off, PM acceptance | MET: TL 2026-09-28; PM 2026-09-28 |
 
-| Task | Title | Agent | Feature | Depends on | Status |
-|---|---|---|---|---|---|
-| TASK-001 | Backend skeleton, settings & env config | Backend | FEAT-001 | — | TODO |
-| TASK-002 | Common infrastructure (base model, errors, responses, pagination, throttling) | Backend | FEAT-001 | 001 | TODO |
-| TASK-003 | Custom User model, roles, JWT auth, role permissions | Backend | FEAT-001 | 002 (BLK-001 RESOLVED) | TODO |
-| TASK-004 | OpenAPI, Jazzmin & Health API | Backend | FEAT-001 | 002 | TODO |
-| TASK-005 | Cache & optional Celery configuration | Backend | FEAT-001 | 001 | TODO |
-| TASK-006 | Local Docker environment & root ops tooling | Infrastructure | FEAT-001 | 001, 005 | TODO (TL to re-scope) |
-| TASK-007 | Vue PWA scaffold & API client | Frontend | FEAT-003 | ADR-008 (BLK-002 RESOLVED) | BLOCKED (stale: TL to set TODO) |
-| TASK-008 | QA strategy, Sprint-1 test plan & black-box harness | QA | all | — | TODO |
-| TASK-009 | Verify FEAT-001 | QA | FEAT-001 | 001–006, 008, FEAT-004 deploy | TODO |
-| TASK-010 | Verify FEAT-003 | QA | FEAT-003 | 007, FEAT-004 deploy | BACKLOG (TL to set TODO) |
-| TASK-011 | Backend CI pipeline | Infrastructure | FEAT-004 (deferred) | BLK-012 | BLOCKED |
-| *(TBD)* | FEAT-004 deployment tasks | Infrastructure / Backend / Frontend / QA | FEAT-004 | TL to create | — |
+## Sprint board
+*(Rebuilt by the PM from the task files on 2026-09-28.)*
+
+| Task | Title | Agent | Feature | Status |
+|---|---|---|---|---|
+| TASK-001 | Backend skeleton, settings & env config | Backend | FEAT-001 | DONE |
+| TASK-002 | Common infrastructure | Backend | FEAT-001 | DONE |
+| TASK-003 | Custom User model, roles, JWT auth (username + password) | Backend | FEAT-001 | DONE |
+| TASK-004 | OpenAPI, Jazzmin & Health API | Backend | FEAT-001 | DONE |
+| TASK-005 | Cache & optional Celery configuration | Backend | FEAT-001 | DONE |
+| TASK-016 | `create_role_user --inactive` | Backend | FEAT-001 | DONE |
+| TASK-007 | Vue PWA scaffold & API client | Frontend | FEAT-003 | DONE |
+| TASK-012 | Server bootstrap (uv + Python 3.13) & on-server test runners | Infrastructure | FEAT-004 | DONE |
+| TASK-013 | Deploy tooling (systemd/nginx templates, scripts, Makefile, README) | Infrastructure | FEAT-004 | DONE |
+| TASK-014 | Server setup, first deployment, TLS, rollback exercise | Infrastructure | FEAT-004 | DONE |
+| TASK-017 | Rollback target from deploy history | Infrastructure | FEAT-004 | DONE |
+| TASK-008 | QA strategy & harness | QA | all | DONE |
+| TASK-009 | Verify FEAT-001 | QA | FEAT-001 | DONE |
+| TASK-010 | Verify FEAT-003 | QA | FEAT-003 | DONE |
+| TASK-015 | Verify FEAT-004 on the server | QA | FEAT-004 | DONE |
+| TASK-006 | Local Docker environment | Infrastructure | — (optional tooling) | BACKLOG (not in the release) |
+| TASK-011 | Backend CI pipeline | Infrastructure | FEAT-004 deferred | BLOCKED (BLK-012) |
+
+Bugs: BUG-001 (Low), BUG-002 (Low), both CLOSED.
 
 ## Change log
 | Date | Change | Reason |
@@ -103,3 +120,4 @@ Deliver the DRF backend foundation and the Vue PWA shell, deployed over HTTPS to
 | 2026-09-27 | Sprint planned | Discovery report §14 |
 | 2026-09-27 | Infrastructure agent added; TASK-006 reassigned Backend → Infrastructure; TASK-011 (backend CI) added; FEAT-004 moved to P0 for sprint-02 | Agent spec §25–49, ADR-012 |
 | 2026-09-27 | **Replan:** FEAT-003 unconditional; FEAT-004 (systemd deploy, nginx + TLS, health, rollback, QA on the server) pulled in from sprint-02; FEAT-001 AC1/AC9 changed to server evidence; FEAT-001 AC11 (CI) deferred; the sprint goal and exit criteria now require both domains live over HTTPS and a QA PASS on the server | PO decisions 2026-09-27: BLK-001/002/011 RESOLVED, BLK-012 partial, QA-on-server policy, "build and deploy now" |
+| 2026-09-28 | Sprint closed; FEAT-001/003/004 accepted; TASK-006 left in BACKLOG, TASK-011 BLOCKED on BLK-012 | TL final review + QA PASS on the server |

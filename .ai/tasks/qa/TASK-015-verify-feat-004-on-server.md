@@ -50,7 +50,7 @@ No
 
 ## Status
 
-READY_FOR_RELEASE
+DONE
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created: QA on-server verification of FEAT-004 (REQ-009, ADR-018)
@@ -58,6 +58,7 @@ READY_FOR_RELEASE
 - 2026-09-28 | qa | TODO → IN_PROGRESS | read-only half done (interim report); restart/migrate/rollback/deploy denied by the session permission policy — pending user permission; live release unchanged
 - 2026-09-28 | qa | IN_PROGRESS → READY_FOR_REVIEW | verification complete: verdict PASS (.ai/reports/qa/FEAT-004-qa-report.md); live rollback/deploy run by the operator, verified from server records
 - 2026-09-28 | team-lead | READY_FOR_REVIEW → READY_FOR_RELEASE | TL final review signed off (FEAT-004 PASS)
+- 2026-09-28 | project-manager | READY_FOR_RELEASE → DONE | FEAT-004 accepted against the DoD (.ai/reports/pm/sprint-01-acceptance-2026-09-28.md)
 
 ## Implementation Plan
 (not required)
@@ -102,4 +103,4 @@ READY_FOR_RELEASE
 ## Sign-off
 - TL final review: ☑ (team-lead, 2026-09-28)
 - QA verdict: n/a (QA's own task; its verdict is the report)
-- PM acceptance: ☐
+- PM acceptance: ☑ (project-manager, 2026-09-28; FEAT-004 accepted, .ai/reports/pm/sprint-01-acceptance-2026-09-28.md)

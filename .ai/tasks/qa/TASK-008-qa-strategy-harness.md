@@ -50,7 +50,7 @@ No
 
 ## Status
 
-READY_FOR_RELEASE
+DONE
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created from sprint-01 technical plan
@@ -60,6 +60,7 @@ READY_FOR_RELEASE
 - 2026-09-27 | team-lead | READY_FOR_REVIEW → REVIEW | inspection done, QA's three questions decided; verdict pending the on-server `make qa-remote ARGS='--collect-only -q'` (waiting for the user's permission decision)
 - 2026-09-27 | team-lead | REVIEW → READY_FOR_QA | code review APPROVED; AC6 on-server collection by the TL: 134/139 collected (5 deselected), exit 0 (run 20260927-204352-12423)
 - 2026-09-28 | team-lead | READY_FOR_QA → READY_FOR_RELEASE | TL final review signed off (harness used for every QA run of the sprint)
+- 2026-09-28 | project-manager | READY_FOR_RELEASE → DONE | FEAT-001/003/004 accepted against the DoD (.ai/reports/pm/sprint-01-acceptance-2026-09-28.md)
 
 ## Implementation Plan
 (not required)
@@ -157,4 +158,4 @@ Only collection ran; no test was executed and no request reached the Flash or de
 ## Sign-off
 - TL final review: ☑ (team-lead, 2026-09-28)
 - QA verdict: n/a (QA's own task; its verdict is the report)
-- PM acceptance: ☐
+- PM acceptance: ☑ (project-manager, 2026-09-28; FEAT-001/003/004 accepted, .ai/reports/pm/sprint-01-acceptance-2026-09-28.md)

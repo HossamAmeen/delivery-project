@@ -52,7 +52,7 @@ No
 
 ## Status
 
-READY_FOR_RELEASE
+DONE
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created from sprint-01 technical plan
@@ -64,6 +64,7 @@ READY_FOR_RELEASE
 - 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | FEAT-001 verification on the server started (TASK-009)
 - 2026-09-28 | qa | QA_IN_PROGRESS → QA_IN_PROGRESS | QA verdict PASS ticked; status left for TL final review (.ai/reports/qa/FEAT-001-qa-report.md; server runs 20260927-225552-109762 (API regression), 20260927-225436-108557 (ratelimit), backend audit 20260927-225853-111545)
 - 2026-09-28 | team-lead | QA_IN_PROGRESS → READY_FOR_RELEASE | TL final review signed off (QA PASS in .ai/reports/qa/FEAT-001-qa-report.md; no unreviewed changes)
+- 2026-09-28 | project-manager | READY_FOR_RELEASE → DONE | FEAT-001 accepted against the DoD (.ai/reports/pm/sprint-01-acceptance-2026-09-28.md)
 
 ## Implementation Plan
 (not required)
@@ -137,4 +138,4 @@ The local wrapper then exited 1 with `deploy/scripts/remote-test.sh: line 1: tmp
 ## Sign-off
 - TL final review: ☑ (team-lead, 2026-09-28)
 - QA verdict: ☑ PASS (.ai/reports/qa/FEAT-001-qa-report.md; server runs 20260927-225552-109762 (API regression), 20260927-225436-108557 (ratelimit), backend audit 20260927-225853-111545)
-- PM acceptance: ☐
+- PM acceptance: ☑ (project-manager, 2026-09-28; FEAT-001 accepted, .ai/reports/pm/sprint-01-acceptance-2026-09-28.md)

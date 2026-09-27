@@ -51,7 +51,7 @@ No
 
 ## Status
 
-READY_FOR_RELEASE
+DONE
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created from sprint-01 technical plan
@@ -60,6 +60,7 @@ READY_FOR_RELEASE
 - 2026-09-28 | qa | IN_PROGRESS → READY_FOR_REVIEW | FEAT-001 verification done: verdict FAIL on BUG-001 (Low) only; all ACs evidenced (.ai/reports/qa/FEAT-001-qa-report.md); re-test on fix
 - 2026-09-28 | qa | READY_FOR_REVIEW → READY_FOR_REVIEW | final verdict PASS after the BUG-001 re-test on 20260927-232246 (d6669b6)
 - 2026-09-28 | team-lead | READY_FOR_REVIEW → READY_FOR_RELEASE | TL final review signed off (FEAT-001 PASS)
+- 2026-09-28 | project-manager | READY_FOR_RELEASE → DONE | FEAT-001 accepted against the DoD (.ai/reports/pm/sprint-01-acceptance-2026-09-28.md)
 
 ## Implementation Plan
 (not required)
@@ -111,4 +112,4 @@ READY_FOR_RELEASE
 ## Sign-off
 - TL final review: ☑ (team-lead, 2026-09-28)
 - QA verdict: n/a (QA's own task; its verdict is the report)
-- PM acceptance: ☐
+- PM acceptance: ☑ (project-manager, 2026-09-28; FEAT-001 accepted, .ai/reports/pm/sprint-01-acceptance-2026-09-28.md)

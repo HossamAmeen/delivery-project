@@ -1,48 +1,31 @@
 # Flash — what's still needed
 
-Status on 2026-09-28: **Flash is live over HTTPS.**
+Status on 2026-09-28: **Sprint-01 is DONE and Flash is live over HTTPS.**
 - PWA: https://delivery.hossam-ameen.online
 - API: https://api.delivery.hossam-ameen.online/api/status/
 - Admin (staff only): https://api.delivery.hossam-ameen.online/admin/
 
-Live release: `20260927-205803` (commit `f85848b`). Latest commit: `d6669b6` (includes the bug fixes, not yet deployed).
+Live release: `20260927-232246` (commit `d6669b6`).
 
-## 1. Decision the owner needs to make (blocking)
+## 1. Sprint-01: DONE ✅ (2026-09-28)
 
-The permission policy denied `make restart`, `make migrate`, `make rollback` and `make deploy` to the QA agent as "Production Deploy", even though `.claude/settings.local.json` allows them. These commands are needed to:
-- finish TASK-015: the live rollback test and the roll-forward
-- ship the BUG-001 and BUG-002 fixes to the live site
+FEAT-001 (backend), FEAT-003 (PWA) and FEAT-004 (deployment) were accepted by the PM. There are 15 tasks DONE, no open bugs, QA PASS on the server, and dental-clinic untouched.
+Demo accounts: `demo_admin`, `demo_store`, `demo_driver`, `demo_customer` (the password is in `account.txt`, which is git-ignored).
 
-Choose one:
-- [ ] **A. Run them yourself** from the repo root, and QA observes and records the results:
-  ```bash
-  make rollback        # expected target: 20260927-205208
-  make health
-  make deploy          # ships d6669b6 (bug fixes + TASK-017), records PREVIOUS
-  make health
-  ```
-- [ ] **B. Approve the prompts** when the agents run these commands.
-- [ ] **C. Skip the live rollback test.** It was already exercised once in TASK-014. Only `make deploy` runs, which still needs A or B for that one command.
+## 2. Needed from the owner for Sprint-02
 
-## 2. After that (the agents do it)
-
-1. [ ] QA: TASK-015 live steps, then re-test BUG-001 (TC-001-HLT-10) and BUG-002 (TC-001-SEC-03), then the full regression
-2. [ ] TL: final sign-off for TASK-004, 013, 014, 015 and 017, and TASK-009 and 010
-3. [ ] PM: accept FEAT-001, FEAT-003 and FEAT-004 → DONE
-
-## Progress
-
-| Task | Status |
-|---|---|
-| TASK-001, 002, 003, 005, 016 (backend), 007 (PWA), 012 (server bootstrap) | READY_FOR_RELEASE |
-| TASK-004 (health, BUG-001 fix), TASK-013 (deploy tooling, BUG-002 fix) | READY_FOR_QA (fix reviewed, not deployed) |
-| TASK-014 (live deploy), TASK-017 (rollback target) | READY_FOR_QA (waiting on TASK-015 live steps) |
-| TASK-008 (QA harness) | READY_FOR_QA |
-| TASK-009 (verify FEAT-001) | FAIL on BUG-001 only; re-test after deploy |
-| TASK-010 (verify FEAT-003) | PASS |
-| TASK-015 (verify FEAT-004) | read-only half PASS; live half blocked (section 1) |
-| TASK-006 (local Docker) | BACKLOG |
-| TASK-011 (CI) | BLOCKED on BLK-012 |
+- [ ] **BLK-007: onboarding and accounts (blocking sprint-02):**
+  - who creates Store and Driver accounts (self-signup or admin)?
+  - is approval or verification needed?
+  - is email and/or phone collected or verified?
+  - can a store have several staff users?
+  - can one user hold several roles?
+  - what can each role see about the others?
+  - how long is history kept?
+- [ ] **BLK-012:** pick a git provider (GitHub, GitLab…), create the remote, and say whether an image registry may be used (needed for CI)
+- [ ] Confirm the sprint length (2 weeks?) and the sprint-02 start date
+- [ ] Before sprint-03: **BLK-008** (store profile and order scope). Before sprint-04: **BLK-003** (pricing and fees), **BLK-005** (cancellation), **BLK-009** (language and currency)
+- [ ] Before real customer data: approve moving the refresh token out of localStorage (ADR-008 review)
 
 ## 3. Open later (not blocking)
 

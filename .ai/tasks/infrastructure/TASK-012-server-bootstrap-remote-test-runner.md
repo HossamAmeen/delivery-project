@@ -62,7 +62,7 @@ Yes — production server (shared) and infrastructure architecture. **Pre-approv
 
 ## Status
 
-READY_FOR_RELEASE
+DONE
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created for FEAT-004 (ADR-015/016/018); first in the Infrastructure queue; plan pre-approved
@@ -78,6 +78,7 @@ READY_FOR_RELEASE
 - 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | FEAT-004 verification on the server started (TASK-015)
 - 2026-09-28 | qa | QA_IN_PROGRESS → QA_IN_PROGRESS | QA verdict PASS ticked; status left for TL final review (.ai/reports/qa/FEAT-004-qa-report.md; runners used in 15 qa-remote runs + backend audit 20260927-225853-111545)
 - 2026-09-28 | team-lead | QA_IN_PROGRESS → READY_FOR_RELEASE | TL final review signed off (QA PASS in .ai/reports/qa/FEAT-004-qa-report.md; no unreviewed changes)
+- 2026-09-28 | project-manager | READY_FOR_RELEASE → DONE | FEAT-004 accepted against the DoD (.ai/reports/pm/sprint-01-acceptance-2026-09-28.md)
 
 ## Implementation Plan
 1. Read-only server audit (ssh as hossam; sudo only for `nginx -T`, `certbot certificates`, `ss -ltnp`) → `.ai/reports/infrastructure/server-audit-2026-09-27.md`.
@@ -223,4 +224,4 @@ remote-test.sh backend --ref 0a5f845 --steps pytest -- -k tl_probe_no_such_test
 ## Sign-off
 - TL final review: ☑ (team-lead, 2026-09-28)
 - QA verdict: ☑ PASS (.ai/reports/qa/FEAT-004-qa-report.md; runners used in 15 qa-remote runs + backend audit 20260927-225853-111545)
-- PM acceptance: ☐
+- PM acceptance: ☑ (project-manager, 2026-09-28; FEAT-004 accepted, .ai/reports/pm/sprint-01-acceptance-2026-09-28.md)

@@ -69,7 +69,7 @@ Yes — production deployment, nginx, systemd, TLS on a shared server. **Pre-app
 
 ## Status
 
-READY_FOR_RELEASE
+DONE
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created for FEAT-004 (ADR-015/016/017); runs in parallel with backend/frontend; plan pre-approved
@@ -87,6 +87,7 @@ READY_FOR_RELEASE
 - 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | BUG-002 re-test and deploy/rollback evidence on release 20260927-232246
 - 2026-09-28 | qa | QA_IN_PROGRESS → QA_IN_PROGRESS | QA verdict PASS ticked; status left for TL final review (.ai/reports/qa/FEAT-004-qa-report.md; release 20260927-232246 (d6669b6); runs 20260927-233545-139616, -233803-141021, -233920-141829, -233518-139162)
 - 2026-09-28 | team-lead | QA_IN_PROGRESS → READY_FOR_RELEASE | TL final review signed off (QA PASS in FEAT-004-qa-report.md; BUG-002 VERIFIED)
+- 2026-09-28 | project-manager | READY_FOR_RELEASE → DONE | FEAT-004 accepted against the DoD (.ai/reports/pm/sprint-01-acceptance-2026-09-28.md)
 
 ## Implementation Plan
 1. Design note `.ai/reports/infrastructure/FEAT-004-infra-design.md` (script map, variables, safe-apply / deploy / rollback flows).
@@ -247,4 +248,4 @@ server, /tmp/flash-tl-nginxtest2 only (temp self-signed cert, logs in /tmp, -e):
 ## Sign-off
 - TL final review: ☑ (team-lead, 2026-09-28)
 - QA verdict: ☑ PASS (.ai/reports/qa/FEAT-004-qa-report.md; release 20260927-232246 (d6669b6); runs 20260927-233545-139616, -233803-141021, -233920-141829, -233518-139162)
-- PM acceptance: ☐
+- PM acceptance: ☑ (project-manager, 2026-09-28; FEAT-004 accepted, .ai/reports/pm/sprint-01-acceptance-2026-09-28.md)

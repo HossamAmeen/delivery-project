@@ -64,6 +64,13 @@ Can:
 - Review operational reports
 - Review audit logs
 
+## Authentication (login identifier)
+*Product Owner decision, 2026-09-27 (BLK-001).*
+- Every role (Customer, Driver, Store, Admin) logs in with **username + password**.
+- A username is unique across all users, whatever their role.
+- There is no OTP login in the MVP.
+- Whether email and/or phone are collected or verified, and how store/driver accounts are created or approved, is **not yet decided** (BLK-007).
+
 ## Authorization rule
 Every API action must validate:
 1. authenticated user

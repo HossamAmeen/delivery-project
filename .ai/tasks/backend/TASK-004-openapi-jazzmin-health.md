@@ -53,7 +53,7 @@ No — contract fixed in api-contracts.md § Foundation and ADR-019
 
 ## Status
 
-READY_FOR_RELEASE
+DONE
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created from sprint-01 technical plan
@@ -71,6 +71,7 @@ READY_FOR_RELEASE
 - 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | BUG-001 re-test on release 20260927-232246
 - 2026-09-28 | qa | QA_IN_PROGRESS → QA_IN_PROGRESS | QA verdict PASS ticked; status left for TL final review (.ai/reports/qa/FEAT-001-qa-report.md (re-test section); BUG-001 VERIFIED; runs 20260927-233545-139616, 20260927-234058-143079)
 - 2026-09-28 | team-lead | QA_IN_PROGRESS → READY_FOR_RELEASE | TL final review signed off (QA PASS in FEAT-001-qa-report.md; BUG-001 VERIFIED)
+- 2026-09-28 | project-manager | READY_FOR_RELEASE → DONE | FEAT-001 accepted against the DoD (.ai/reports/pm/sprint-01-acceptance-2026-09-28.md)
 
 ## Implementation Plan
 (not required)
@@ -179,4 +180,4 @@ BUG-001 (Low) confirmed and ASSIGNED to **Backend**. Scope: `backend/apps/health
 ## Sign-off
 - TL final review: ☑ (team-lead, 2026-09-28)
 - QA verdict: ☑ PASS (.ai/reports/qa/FEAT-001-qa-report.md (re-test section); BUG-001 VERIFIED; runs 20260927-233545-139616, 20260927-234058-143079)
-- PM acceptance: ☐
+- PM acceptance: ☑ (project-manager, 2026-09-28; FEAT-001 accepted, .ai/reports/pm/sprint-01-acceptance-2026-09-28.md)

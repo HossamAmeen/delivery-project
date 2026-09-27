@@ -57,7 +57,7 @@ Yes — first frontend architecture. **Pre-approved** against ADR-008/011/019 an
 
 ## Status
 
-READY_FOR_RELEASE
+DONE
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created from sprint-01 technical plan
@@ -70,6 +70,7 @@ READY_FOR_RELEASE
 - 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | FEAT-003 verification on the deployed web domain started (TASK-010)
 - 2026-09-28 | qa | QA_IN_PROGRESS → QA_IN_PROGRESS | QA verdict PASS ticked; status left for TL final review (.ai/reports/qa/FEAT-003-qa-report.md; E2E run 20260927-225312-107600 (30 passed), web smoke in 20260927-225552-109762)
 - 2026-09-28 | team-lead | QA_IN_PROGRESS → READY_FOR_RELEASE | TL final review signed off (QA PASS in .ai/reports/qa/FEAT-003-qa-report.md; no unreviewed changes)
+- 2026-09-28 | project-manager | READY_FOR_RELEASE → DONE | FEAT-003 accepted against the DoD (.ai/reports/pm/sprint-01-acceptance-2026-09-28.md)
 
 ## Implementation Plan
 (frontend, 2026-09-27 — written under the TL's conditional pre-approval; no deviation from ADR-008/011/019)
@@ -204,4 +205,4 @@ code inspection: api/client.ts, api/errors.ts, stores/auth.ts, app/authBridge.ts
 ## Sign-off
 - TL final review: ☑ (team-lead, 2026-09-28)
 - QA verdict: ☑ PASS (.ai/reports/qa/FEAT-003-qa-report.md; E2E run 20260927-225312-107600 (30 passed), web smoke in 20260927-225552-109762)
-- PM acceptance: ☐
+- PM acceptance: ☑ (project-manager, 2026-09-28; FEAT-003 accepted, .ai/reports/pm/sprint-01-acceptance-2026-09-28.md)

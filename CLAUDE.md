@@ -49,3 +49,5 @@ PM (feature, sprint) → TL (design, contracts, tasks) → [TL plan review]
 - Sprint-01 scope is now FEAT-001, FEAT-003 and FEAT-004 (deployment pulled forward).
 - Target: shared VPS `hossam@34.123.215.195` (the dental-clinic app also runs there; never touch it), systemd mode, SQLite, no Redis/Docker, `api.delivery.hossam-ameen.online` + `delivery.hossam-ameen.online`, backend on `127.0.0.1:8010`.
 - **QA runs on the server, never locally.** The local machine is for building only.
+- 2026-09-28: **Sprint-01 CLOSED.** FEAT-001, FEAT-003 and FEAT-004 are DONE, live at release `20260927-232246` / `d6669b6` (https://delivery.hossam-ameen.online, https://api.delivery.hossam-ameen.online). Sprint-02 (`.ai/planning/sprints/sprint-02.md`) is a DRAFT waiting on BLK-007 from the PO.
+- Permission note: the auto-mode classifier denies agents live production actions (`make deploy/rollback/restart/migrate`, remote user creation) even with allow rules, so the PO runs those. The agents can run the server tests (`make test-backend-remote`, `make qa-remote`) and the read-only ops.

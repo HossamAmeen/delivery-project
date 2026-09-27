@@ -8,7 +8,7 @@
 > **UNDEFINED** marks a rule the business has not specified yet. Do not implement a guess.
 > Follow the linked blocker (`.ai/planning/blockers/`).
 
-Last synced with `flash_business_logic/`: 2026-09-27. Also includes PO decisions of 2026-09-27 (BLK-001, BLK-002) that are not yet mirrored into `flash_business_logic/`.
+Last synced with `flash_business_logic/`: 2026-09-27. PO decisions of 2026-09-27 (BLK-001, BLK-002) were mirrored into `flash_business_logic/00_core/02_roles_and_permissions.md` and `README.md` on 2026-09-28.
 
 ---
 
