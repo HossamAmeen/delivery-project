@@ -68,6 +68,7 @@ QA_IN_PROGRESS
 - 2026-09-27 | team-lead | READY_FOR_REVIEW → REVIEW | code review started
 - 2026-09-27 | team-lead | REVIEW → READY_FOR_QA | code review APPROVED (Review Log); build gates re-run green; browser/installability checks → QA TASK-010
 - 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | FEAT-003 verification on the deployed web domain started (TASK-010)
+- 2026-09-28 | qa | QA_IN_PROGRESS → QA_IN_PROGRESS | QA verdict PASS ticked; status left for TL final review (.ai/reports/qa/FEAT-003-qa-report.md; E2E run 20260927-225312-107600 (30 passed), web smoke in 20260927-225552-109762)
 
 ## Implementation Plan
 (frontend, 2026-09-27 — written under the TL's conditional pre-approval; no deviation from ADR-008/011/019)
@@ -189,8 +190,9 @@ code inspection: api/client.ts, api/errors.ts, stores/auth.ts, app/authBridge.ts
 ```
 
 ## QA Log
+- 2026-09-28 | qa | PASS | .ai/reports/qa/FEAT-003-qa-report.md; E2E run 20260927-225312-107600 (30 passed), web smoke in 20260927-225552-109762
 
 ## Sign-off
 - TL final review: ☐
-- QA verdict: ☐
+- QA verdict: ☑ PASS (.ai/reports/qa/FEAT-003-qa-report.md; E2E run 20260927-225312-107600 (30 passed), web smoke in 20260927-225552-109762)
 - PM acceptance: ☐

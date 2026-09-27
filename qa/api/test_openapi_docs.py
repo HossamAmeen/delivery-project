@@ -18,6 +18,9 @@ CONTRACT_PATHS = (
     "/api/users/me/",
 )
 HTTP_METHODS = {"get", "post", "put", "patch", "delete"}
+# The docs UIs render HTML only; a browser Accept header is what real clients send. With
+# Accept: application/json DRF answers 406 NOT_ACCEPTABLE (enveloped) before auth runs.
+BROWSER_ACCEPT = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
 
 
 @pytest.fixture(scope="module")
@@ -47,15 +50,15 @@ def test_schema_denied_to_anonymous(api):
 @pytest.mark.parametrize("role", ["CUSTOMER", "DRIVER", "STORE"])
 def test_schema_and_docs_denied_to_non_staff(api, auth_headers, role):
     """TC-001-DOC-03"""
-    for path in ("/api/schema/", "/api/docs/", "/api/redoc/"):
-        assert_error(api.get(path, headers={**auth_headers(role), "Accept": "application/json"}), 403, "PERMISSION_DENIED")
+    for path, accept in (("/api/schema/", "application/json"), ("/api/docs/", BROWSER_ACCEPT), ("/api/redoc/", BROWSER_ACCEPT)):
+        assert_error(api.get(path, headers={**auth_headers(role), "Accept": accept}), 403, "PERMISSION_DENIED")
 
 
 @pytest.mark.security
 @pytest.mark.parametrize("path", ["/api/docs/", "/api/redoc/"])
 def test_docs_ui_denied_to_anonymous(api, path):
     """TC-001-DOC-04"""
-    resp = api.get(path, headers={"Accept": "application/json"})
+    resp = api.get(path, headers={"Accept": BROWSER_ACCEPT})
     assert_error(resp, 401, "NOT_AUTHENTICATED")
 
 

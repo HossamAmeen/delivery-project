@@ -33,7 +33,9 @@ def test_me_without_credentials(api):
     assert_error(api.get("/api/users/me/"), 401, "NOT_AUTHENTICATED")
 
 
-@pytest.mark.parametrize("header", ["Bearer", "Bearer ", "Token abc", "Basic cWE6cWE="])
+# "Bearer " (trailing space) is not sendable: httpx/h11 reject a header value with trailing
+# whitespace (RFC 9110 field-value), so it cannot reach the server; "Bearer" covers the case.
+@pytest.mark.parametrize("header", ["Bearer", "Token abc", "Basic cWE6cWE="])
 def test_me_with_malformed_authorization_header(api, header):
     """TC-001-ME-03: malformed/foreign schemes -> 401 envelope, never 500."""
     resp = api.get("/api/users/me/", headers={"Authorization": header})

@@ -68,7 +68,7 @@ Yes — production deployment, nginx, systemd, TLS on a shared server. **Pre-app
 
 ## Status
 
-READY_FOR_QA
+QA_IN_PROGRESS
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created for FEAT-004 (ADR-015/016/017); runs in parallel with backend/frontend; plan pre-approved
@@ -79,6 +79,7 @@ READY_FOR_QA
 - 2026-09-27 | infrastructure | IN_PROGRESS → READY_FOR_REVIEW | tooling complete and validated without live nginx/systemd/certbot changes; evidence .ai/reports/infrastructure/TASK-013-validation-2026-09-27.md
 - 2026-09-27 | team-lead | READY_FOR_REVIEW → REVIEW | code review started
 - 2026-09-27 | team-lead | REVIEW → READY_FOR_QA | code review APPROVED (Review Log); BLK-013 RESOLVED (http2 off); sudo stop|start confirmed; live execution in TASK-014, QA via TASK-015
+- 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | FEAT-004 verification on the server started (TASK-015)
 
 ## Implementation Plan
 1. Design note `.ai/reports/infrastructure/FEAT-004-infra-design.md` (script map, variables, safe-apply / deploy / rollback flows).
@@ -172,6 +173,7 @@ code inspection: templates (api/web full + http), backend.service.template, shar
 Not run (by instruction): `make qa-remote`, `make test-backend-remote`, any live apply.
 
 ## QA Log
+- 2026-09-28 | qa | IN PROGRESS | BUG-002 (Low) filed: duplicate X-Content-Type-Options on the API site; live deploy/restart/rollback observation pending (permission)
 
 ## Sign-off
 - TL final review: ☐

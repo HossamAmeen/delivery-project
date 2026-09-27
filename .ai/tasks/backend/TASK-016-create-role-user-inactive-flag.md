@@ -56,6 +56,7 @@ QA_IN_PROGRESS
 - 2026-09-27 | team-lead | READY_FOR_REVIEW → REVIEW | code review started
 - 2026-09-27 | team-lead | REVIEW → READY_FOR_QA | code review APPROVED; TL server run 20260927-204950-16782 (worktree): 246 passed, coverage 98.43%
 - 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | FEAT-001 verification on the server started (TASK-009)
+- 2026-09-28 | qa | QA_IN_PROGRESS → QA_IN_PROGRESS | QA verdict PASS ticked; status left for TL final review (.ai/reports/qa/FEAT-001-qa-report.md; server runs 20260927-225552-109762 (API regression), 20260927-225436-108557 (ratelimit), backend audit 20260927-225853-111545)
 
 ## Implementation Plan
 (not required)
@@ -101,8 +102,9 @@ pytest PASS — 246 passed in 4.07s (238 + 8 new); coverage TOTAL 776 stmts, 7 m
 ```
 
 ## QA Log
+- 2026-09-28 | qa | PASS | .ai/reports/qa/FEAT-001-qa-report.md; server runs 20260927-225552-109762 (API regression), 20260927-225436-108557 (ratelimit), backend audit 20260927-225853-111545
 
 ## Sign-off
 - TL final review: ☐
-- QA verdict: ☐
+- QA verdict: ☑ PASS (.ai/reports/qa/FEAT-001-qa-report.md; server runs 20260927-225552-109762 (API regression), 20260927-225436-108557 (ratelimit), backend audit 20260927-225853-111545)
 - PM acceptance: ☐

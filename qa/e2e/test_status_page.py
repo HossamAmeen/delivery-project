@@ -4,7 +4,7 @@ import pytest
 from playwright.sync_api import expect
 
 from harness.envelope import check
-from harness.pwa import API_REACHABLE, API_UNREACHABLE, DESKTOP, LOADING, MOBILE, RETRY_BUTTON
+from harness.pwa import API_REACHABLE, API_UNREACHABLE, DESKTOP, MOBILE, RETRY_BUTTON, TID_EMPTY, TID_ERROR, TID_LOADING, TID_SESSION_USER, TID_STATUS_OK
 
 pytestmark = [pytest.mark.regression]
 
@@ -27,12 +27,17 @@ def test_status_page_shows_api_reachable_via_status_endpoint(new_page, cfg, view
 def test_status_page_logged_in_shows_username_and_role(new_page, cfg, ui_login, creds, auth_pacer):
     """TC-003-E2E-11: logged in, the status page also shows username + role from /api/users/me/."""
     page = new_page()
+    api_calls: list[str] = []  # evidence: method, path, status (no bodies, no headers)
+    page.on("response", lambda r: api_calls.append(f"{r.request.method} {r.url.split('?')[0]} -> {r.status}") if "/api/" in r.url else None)
     ui_login(page, "STORE")
     page.wait_for_url(lambda u: "/login" not in u)
     auth_pacer.acquire()  # the reload may refresh the access token
     page.goto(f"{cfg.web_url}/status")
-    expect(page.get_by_text(creds("STORE").username).first).to_be_visible()
-    expect(page.get_by_text("STORE").first).to_be_visible()
+    page.wait_for_load_state("networkidle")
+    session = page.get_by_test_id(TID_SESSION_USER)
+    check(session.count() == 1, f"signed-in user not shown on /status; browser API calls: {api_calls}")
+    expect(session).to_contain_text(creds("STORE").username)
+    expect(session).to_contain_text("Store")
 
 
 def test_status_page_loading_then_unreachable_then_retry(new_page, cfg):
@@ -42,14 +47,22 @@ def test_status_page_loading_then_unreachable_then_retry(new_page, cfg):
     held = []
     page.route(f"{cfg.base_url}/api/status/", lambda route: held.append(route))
     page.goto(f"{cfg.web_url}/status")
-    expect(page.get_by_text(LOADING).first).to_be_visible()
+    expect(page.get_by_test_id(TID_LOADING).first).to_be_visible()
     page.wait_for_timeout(200)
     check(bool(held), "the status request was not issued")
     held.pop(0).abort("connectionrefused")
+    expect(page.get_by_test_id(TID_ERROR).first).to_be_visible()
     expect(page.get_by_text(API_UNREACHABLE).first).to_be_visible()
     page.unroute(f"{cfg.base_url}/api/status/")
     page.get_by_role("button", name=RETRY_BUTTON).click()
-    expect(page.get_by_text(API_REACHABLE)).to_be_visible()
+    expect(page.get_by_test_id(TID_STATUS_OK)).to_be_visible()
+
+
+def test_status_page_anonymous_shows_empty_session_state(new_page, cfg):
+    """TC-003-E2E-20 (AC3): not signed in -> the session card uses the empty-state component."""
+    page = new_page()
+    page.goto(f"{cfg.web_url}/status")
+    expect(page.get_by_test_id(TID_EMPTY)).to_be_visible()
 
 
 def test_status_page_server_error_shows_error_state(new_page, cfg):
@@ -59,5 +72,6 @@ def test_status_page_server_error_shows_error_state(new_page, cfg):
     page = new_page(block_sw=True)
     page.route(f"{cfg.base_url}/api/status/", lambda route: route.fulfill(**envelope_error(500, "SERVER_ERROR", "Something went wrong.")))
     page.goto(f"{cfg.web_url}/status")
+    expect(page.get_by_test_id(TID_ERROR).first).to_be_visible()
     expect(page.get_by_role("button", name=RETRY_BUTTON)).to_be_visible()
-    expect(page.get_by_text(API_REACHABLE)).to_have_count(0)
+    expect(page.get_by_test_id(TID_STATUS_OK)).to_have_count(0)

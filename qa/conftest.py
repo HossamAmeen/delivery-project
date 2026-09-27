@@ -186,7 +186,8 @@ def fresh_api(cfg: qa_config.QAConfig):
 
 @pytest.fixture(scope="session")
 def auth_pacer(cfg: qa_config.QAConfig) -> AuthPacer:
-    return AuthPacer(cfg.rate_auth)
+    # Persisted next to the suite on the server (QA-owned /srv/flash/qa), never in the repo.
+    return AuthPacer(cfg.rate_auth, state_file=os.path.join(cfg.deploy_path, "qa", ".auth-pacer.json"))
 
 
 @pytest.fixture(scope="session")

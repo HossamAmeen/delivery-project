@@ -169,3 +169,31 @@ def test_dental_path_untouched_by_flash(cfg):
     """TC-004-RUN-12 (AC9): the Flash deploy path is not under the dental path; port differs from 8000."""
     check(not os.path.realpath(cfg.deploy_path).startswith("/srv/dental-clinic"), "Flash deploy path is under /srv/dental-clinic")
     check(cfg.backend_port != 8000, "Flash backend port collides with dental's 8000")
+
+
+def test_release_runs_python_313(cfg, results_dir):
+    """TC-004-RUN-13 (FEAT-001 AC1, FEAT-004 AC4; ADR-016): the current release venv is Python 3.13
+    and the unit starts gunicorn from it."""
+    python = os.path.join(cfg.deploy_path, "current", "venv", "bin", "python")
+    check(os.path.exists(python), "current/venv/bin/python missing")
+    version = subprocess.run([python, "--version"], capture_output=True, text=True, timeout=20, check=False).stdout.strip()
+    (results_dir / "release-python.txt").write_text(version + "\n")
+    check(version.startswith("Python 3.13"), f"release venv runs {version!r}, expected Python 3.13.x")
+    exec_start = _systemctl("show", cfg.backend_service, "-p", "ExecStart", "--value")
+    check("/current/venv/bin/gunicorn" in exec_start, "ExecStart does not run gunicorn from current/venv")
+
+
+def test_previous_pointer_and_no_leftover_backups(cfg):
+    """TC-004-RUN-14 (TASK-017): the current release records PREVIOUS (an existing release, 0644),
+    and no safe-apply nginx backup directories are left in /tmp."""
+    import glob
+
+    current = os.path.realpath(os.path.join(cfg.deploy_path, "current"))
+    prev_file = os.path.join(current, "PREVIOUS")
+    check(os.path.isfile(prev_file), "current release has no PREVIOUS file")
+    check(stat.S_IMODE(os.stat(prev_file).st_mode) == 0o644, "PREVIOUS is not mode 0644")
+    with open(prev_file) as fh:
+        prev = fh.read().strip()
+    check(os.path.isdir(os.path.join(cfg.deploy_path, "releases", prev)), f"PREVIOUS names a missing release {prev!r}")
+    leftovers = glob.glob("/tmp/flash-nginx-backup-*")
+    check(not leftovers, f"leftover nginx backup dirs in /tmp: {leftovers}")

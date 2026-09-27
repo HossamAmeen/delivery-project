@@ -39,6 +39,9 @@ def test_cors_refuses_foreign_origins(api):
 def test_api_security_headers(api):
     """TC-001-SEC-03: nosniff and HSTS on API responses (Django SecurityMiddleware / nginx)."""
     resp = api.get("/api/status/")
-    check(resp.headers.get("x-content-type-options", "").lower() == "nosniff", f"missing X-Content-Type-Options: nosniff: {dict(resp.headers)}")
+    # Fetch spec: the first value of the (combined) header list decides. A duplicated header
+    # ("nosniff, nosniff") is still effective; the duplication is tracked as a hygiene bug.
+    xcto = resp.headers.get("x-content-type-options", "")
+    check(xcto.split(",")[0].strip().lower() == "nosniff", f"missing X-Content-Type-Options: nosniff: {dict(resp.headers)}")
     check("max-age=" in resp.headers.get("strict-transport-security", ""), "missing HSTS on the API")
 

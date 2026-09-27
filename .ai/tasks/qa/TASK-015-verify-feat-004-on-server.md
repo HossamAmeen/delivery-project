@@ -23,6 +23,7 @@ QA
 
 ## Dependencies
 - TASK-014 READY_FOR_QA (TL reviewed the deployment evidence); TASK-008
+- **TASK-017 READY_FOR_QA before the rollback step** (added 2026-09-28 by the TL: a bare `make rollback` currently picks the wrong release after a rollback + roll-forward). All other checks of this task may start now; until TASK-017 lands, any rollback must use `make rollback TO=<id>`.
 - Can run in parallel with TASK-009 and TASK-010 (same server; coordinate the rollback window so FEAT-001/003 runs are not in flight — run the rollback part first or last)
 
 ## Acceptance Criteria
@@ -49,10 +50,12 @@ No
 
 ## Status
 
-TODO
+IN_PROGRESS
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created: QA on-server verification of FEAT-004 (REQ-009, ADR-018)
+- 2026-09-28 | team-lead | TODO → TODO | dependency added: rollback step waits for TASK-017 (rollback target from deploy history)
+- 2026-09-28 | qa | TODO → IN_PROGRESS | read-only half done (interim report); restart/migrate/rollback/deploy denied by the session permission policy — pending user permission; live release unchanged
 
 ## Implementation Plan
 (not required)
@@ -68,6 +71,7 @@ TODO
 ## Review Log
 
 ## QA Log
+- 2026-09-28 | qa | IN PROGRESS | interim: .ai/reports/qa/FEAT-004-qa-report.md — verdict not issued; state-changing steps pending permission
 
 ## Sign-off
 - TL final review: ☐

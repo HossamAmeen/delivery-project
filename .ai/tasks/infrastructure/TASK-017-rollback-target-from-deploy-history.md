@@ -50,7 +50,7 @@ No — small, fully specified change to existing tooling within ADR-013/015
 
 ## Status
 
-READY_FOR_QA
+QA_IN_PROGRESS
 
 ## Activity Log
 - 2026-09-28 | team-lead | — → TODO | created from the TASK-014 review (finding 1); must reach READY_FOR_QA before QA TASK-015's rollback step
@@ -58,6 +58,7 @@ READY_FOR_QA
 - 2026-09-28 | infrastructure | IN_PROGRESS → READY_FOR_REVIEW | PREVIOUS recorded at deploy switch; bare rollback uses it or refuses (exit 2); prune keeps current+PREVIOUS; backfill 205803→205208 done; /tmp leftovers removed; safe-apply deletes its backup on success; evidence .ai/reports/infrastructure/TASK-017-validation-2026-09-28.md
 - 2026-09-28 | team-lead | READY_FOR_REVIEW → REVIEW | code review started
 - 2026-09-28 | team-lead | REVIEW → READY_FOR_QA | APPROVED; `make rollback DRY_RUN=1` targets 20260927-205208 from PREVIOUS; unblocks TASK-015's rollback step
+- 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | FEAT-004 verification on the server started (TASK-015)
 
 ## Implementation Plan
 (not required)
@@ -130,6 +131,7 @@ ssh (read-only): current → releases/20260927-205803; MainPID 41268; releases/2
 ```
 
 ## QA Log
+- 2026-09-28 | qa | IN PROGRESS | PREVIOUS file, make status line, rollback dry-run target 20260927-205208 + DB decision, /tmp cleanup: PASS; live bare rollback + roll-forward pending (permission)
 
 ## Sign-off
 - TL final review: ☐

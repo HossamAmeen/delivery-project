@@ -63,6 +63,7 @@ Level: **HTTP** = `qa/smoke/` httpx/ssl; **RUN** = `qa/smoke/test_server_runtime
 | ID | Preconditions | Steps | Expected | Level | Priority |
 |---|---|---|---|---|---|
 | TC-004-DEN-01 | — | GET each dental URL | Any status < 500, no connection error. The snapshot is written to `.results/dental-<UTC>.json` | HTTP | P1 |
+| TC-004-DEN-03 | — | Read-only sha256 of every non-Flash file under `/etc/nginx/{nginx.conf,conf.d,sites-available,sites-enabled}` and `systemctl is-active dental-clinic-backend`, written to `.results/dental-nginx-<UTC>.json` (automates the hash part of MAN-10) | Snapshots before, after the rollback and at the end are identical | HTTP | P1 |
 | TC-004-DEN-02 | baseline codes | Re-run with `--dental-expect="https://dental.hossam-ameen.online/=<c>,https://api.dental.hossam-ameen.online/=<c>"` | Identical to the baseline | HTTP | P1 |
 
 ### 2.4 Server runtime — `qa/smoke/test_server_runtime.py`
@@ -79,6 +80,8 @@ Level: **HTTP** = `qa/smoke/` httpx/ssl; **RUN** = `qa/smoke/test_server_runtime
 | TC-004-RUN-09 | — | `systemctl list-units flash-*`; connect to `127.0.0.1:6379` | No Celery unit. Nothing on 6379 | RUN | P1 |
 | TC-004-RUN-10 | journal readable | `journalctl -u flash-backend --since -24h`, count-only | 0 occurrences of the health token or QA passwords, no `password=`. **Skip → TC-004-MAN-06** if not readable | RUN | P1 |
 | TC-004-RUN-11 | logs readable | The Flash nginx access logs, count-only | 0 occurrences. **Skip → TC-004-MAN-06** if not readable | RUN | P1 |
+| TC-004-RUN-13 | — | `current/venv/bin/python --version`; ExecStart | Python 3.13.x; gunicorn from `current/venv` | RUN | P1 |
+| TC-004-RUN-14 | — | `PREVIOUS` in the current release; `/tmp/flash-nginx-backup-*` | `PREVIOUS` exists, 0644, names an existing release; no leftovers (TASK-017) | RUN | P1 |
 | TC-004-RUN-12 | — | Config sanity | Deploy path not under `/srv/dental-clinic`. Port ≠ 8000 | RUN | P3 |
 
 ### 2.5 Manual / observed operations (TASK-015)

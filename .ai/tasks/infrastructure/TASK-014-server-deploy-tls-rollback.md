@@ -62,7 +62,7 @@ Yes — production deployment on a shared server. **Pre-approved** by the TL on 
 
 ## Status
 
-READY_FOR_QA
+QA_IN_PROGRESS
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created for FEAT-004; starts after TASK-013 + backend chain + TASK-007 reach READY_FOR_QA; plan pre-approved
@@ -74,6 +74,7 @@ READY_FOR_QA
 - 2026-09-27 | team-lead | IN_PROGRESS → IN_PROGRESS | phase 1 (pre-live fixes) reviewed and APPROVED; live phase may start after the orchestrator's commit
 - 2026-09-28 | team-lead | READY_FOR_REVIEW → REVIEW | review of the live execution evidence
 - 2026-09-28 | team-lead | REVIEW → READY_FOR_QA | APPROVED; finding 1 routed to TASK-017 (before TASK-015's rollback step); QA via TASK-015
+- 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | FEAT-004 verification on the server started (TASK-015)
 
 ## Implementation Plan
 Phase 1 (done, no live apply): `lib/templates.sh` refuses `NGINX_HTTP2=on` (exit 2, BLK-013); the `deploy.sh` dirty-tree check covers `backend/ frontend/ deploy/ Makefile` and records `dirty`, `dirty_paths` and `dirty_checked` in `REVISION`; the TASK-012 EXIT-trap fix is in `remote-test.sh`.
@@ -167,6 +168,7 @@ secret counts on the server (reports tar-streamed to a /tmp dir and removed): to
 ```
 
 ## QA Log
+- 2026-09-28 | qa | IN PROGRESS | live checks PASS (smoke/deploy run 20260927-230332-114972, make health); rollback exercise pending (permission)
 
 ## Sign-off
 - TL final review: ☐

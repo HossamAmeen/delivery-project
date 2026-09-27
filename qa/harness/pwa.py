@@ -9,8 +9,8 @@ MOBILE = {"width": 360, "height": 780}
 DESKTOP = {"width": 1280, "height": 800}
 VIEWPORTS = {"mobile-360": MOBILE, "desktop-1280": DESKTOP}
 
-# Selectors follow TASK-007's acceptance-criteria wording (accessible names). If the built
-# PWA uses different accessible names, QA adjusts them here — never the expected behaviour.
+# Selectors confirmed 2026-09-28 against the built PWA (frontend/src/i18n/en.ts, views and
+# state components of TASK-007). QA adjusts selectors here — never the expected behaviour.
 USERNAME_LABEL = re.compile(r"user\s*name", re.I)
 PASSWORD_LABEL = re.compile(r"password", re.I)
 LOGIN_BUTTON = re.compile(r"^\s*(log\s*in|sign\s*in)\s*$", re.I)
@@ -18,8 +18,16 @@ LOGOUT_BUTTON = re.compile(r"(log\s*out|sign\s*out)", re.I)
 RETRY_BUTTON = re.compile(r"(retry|try again)", re.I)
 API_REACHABLE = re.compile(r"API reachable", re.I)
 API_UNREACHABLE = re.compile(r"(unreachable|unavailable)", re.I)
-RATE_LIMITED = re.compile(r"(rate.?limit|too many requests)", re.I)
-LOADING = re.compile(r"loading", re.I)
+RATE_LIMITED = re.compile(r"(rate.?limit|too many)", re.I)
+LOADING = re.compile(r"(loading|checking)", re.I)
+# data-testid hooks present in the build (state components, status page, logout button).
+TID_LOADING = "state-loading"
+TID_ERROR = "state-error"
+TID_UNAVAILABLE = "state-unavailable"
+TID_EMPTY = "state-empty"
+TID_STATUS_OK = "status-ok"
+TID_SESSION_USER = "session-user"
+TID_FORM_ERROR = "form-error"
 NOT_FOUND = re.compile(r"(not found|404)", re.I)
 
 # Fake JWT-shaped strings for fully mocked flows (never valid on the server).

@@ -51,26 +51,48 @@ No
 
 ## Status
 
-TODO
+READY_FOR_REVIEW
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created from sprint-01 technical plan
 - 2026-09-27 | team-lead | TODO → TODO | re-scoped: verification on the server (REQ-009/ADR-018), username login, `/api/status/`, docs access; depends on TASK-014; TASK-006/011 removed from the gate
+- 2026-09-28 | qa | TODO → IN_PROGRESS | started; release 20260927-205803 (f85848b) deployed
+- 2026-09-28 | qa | IN_PROGRESS → READY_FOR_REVIEW | FEAT-001 verification done: verdict FAIL on BUG-001 (Low) only; all ACs evidenced (.ai/reports/qa/FEAT-001-qa-report.md); re-test on fix
 
 ## Implementation Plan
 (not required)
 
 ## Completion Report
-(assignee, when moving to READY_FOR_REVIEW)
-- Files changed:
-- Tests added:
-- Validation commands run + results:
-- Contract/OpenAPI changes:
-- Known limitations / remaining problems:
+- **Verdict: FAIL.** One Low contract deviation: BUG-001, `/api/health/*` 401 without `Cache-Control: no-store`, TASK-004 → QA_FAILED. All 10 acceptance criteria have executed evidence and every P1 case passed. TASK-001/002/003/005/016 have QA verdict PASS ticked. The verdict turns to PASS on the BUG-001 re-test, or if the TL/PM accept it as a known Low deviation. Report: `.ai/reports/qa/FEAT-001-qa-report.md`.
+- **Files changed (`qa/`):**
+  - `api/test_health.py`: exact `HEALTH_TOKEN_INVALID` code, plus TC-001-HLT-10 (no-store).
+  - `api/test_envelope.py`: `PARSE_ERROR`.
+  - `api/test_users_me.py`: dropped the unsendable `"Bearer "` case.
+  - `api/test_openapi_docs.py`: browser `Accept` for the docs UIs.
+  - `api/test_cors_security.py`: nosniff parsed per the Fetch spec.
+  - `harness/http.py` and `conftest.py`: `AuthPacer` persisted on the server.
+  - `smoke/test_server_runtime.py`: TC-004-RUN-13, release Python 3.13.
+  - `plans/FEAT-001-test-plan.md` and `plans/test-strategy.md`: TL decisions (`qa_inactive`, AC5-anon traced to the backend suite, health codes).
+- **Bugs filed:**
+  - `.ai/reports/qa/bugs/BUG-001-health-401-missing-no-store.md` (Low, Backend)
+  - `.ai/reports/qa/bugs/BUG-002-api-duplicate-nosniff-header.md` (Low, Infrastructure, tracked for FEAT-004)
+- **Validation commands run + results** (all on the server; results in `qa/.results/<run>/`):
+  - Collection: `make qa-remote ARGS='--collect-only -q'`, run 20260927-210402-33053 → 137/142, exit 0.
+  - Smoke: `-m smoke`, run 20260927-210423-33520 → 52 passed / 1 failed (BUG-001) / 1 skipped.
+  - Final API regression: `-m 'regression and not e2e'`, run 20260927-225552-109762 → 104 passed / 1 failed (BUG-001) / 1 skipped.
+  - Rate limits: `make throttle-reset` → `-m ratelimit` → `make throttle-reset`, run 20260927-225436-108557 → 4 passed / 1 skipped (anon, TL decision).
+  - Runtime: `smoke/test_server_runtime.py`, run 20260927-225943-112312 → 13 passed.
+  - Backend audit: `make test-backend-remote REF=f85848b`, run 20260927-225853-111545 → ruff, format, check and makemigrations PASS; 246 passed; coverage 98.43%.
+- **Contract/OpenAPI changes:** none.
+- **Known limitations / remaining problems:**
+  - TC-001-JWT-16b (genuinely expired token after 30 min) was not run. It is a P2 gap for a later regression.
+  - TC-001-DOC-09 (full field-by-field schema diff) was only partly done (P2).
+  - Readiness 503 is covered by the backend suite only.
 
 ## Review Log
 
 ## QA Log
+- 2026-09-28 | qa | FAIL (Low only) | BUG-001 open (TASK-004 QA_FAILED); BUG-002 for FEAT-004; see FEAT-001-qa-report.md
 
 ## Sign-off
 - TL final review: ☐

@@ -20,15 +20,15 @@ Sources: backlog FEAT-003 AC1–AC6; TASK-007 acceptance criteria; `api-contract
 
 **Interception:** refresh/expiry/429 client behaviour is verified with Playwright `page.route` and contract-shaped envelopes (a live trigger is impractical). The service worker is blocked in those tests so interception is reliable. The report states this.
 
-**Selectors:** accessible names from TASK-007's wording (`harness/pwa.py`). They are confirmed against the built PWA at the start of TASK-010. Only selectors may change, never expected behaviour.
+**Selectors:** confirmed on 2026-09-28 against the built PWA source (`frontend/src/i18n/en.ts`, the views and the `data-testid` hooks of the state components), in `harness/pwa.py`.
 
 ## 1. Traceability
 
 | AC | Criterion (short) | Test cases |
 |---|---|---|
 | AC1 | Builds, installs and runs on mobile and desktop widths | TC-003-WEB-01, -03, -04; TC-003-E2E-01, -02, -18; TC-003-MAN-01 |
-| AC2 | One API client: envelope, 401 (refresh once, then logout), 403, 404, 429 | TC-003-E2E-04, -14..17; TC-003-MAN-02 |
-| AC3 | Loading, empty, error and unavailable state components | TC-003-E2E-12, -13; TC-003-MAN-03 |
+| AC2 | One API client: envelope, 401 (refresh once, then logout), 403, 404, 429 | TC-003-E2E-04, -14..17, -19; TC-003-MAN-02 |
+| AC3 | Loading, empty, error and unavailable state components | TC-003-E2E-12, -13, -17 (unavailable), -20 (empty); TC-003-MAN-03 |
 | AC4 | Role-area routing skeleton | TC-003-E2E-03, -06, -07 |
 | AC5 | Lint, type-check, unit tests and build pass | TC-003-MAN-04 (evidence review) |
 | AC6 | HTTPS at the web domain; API base from config; deep links load the app | TC-003-WEB-02, -05; TC-003-E2E-08, -09, -10; TC-001-SEC-01 (CORS); TC-004-TLS-* |
@@ -69,6 +69,8 @@ Priority: P1 gate, P2 important, P3 hygiene.
 | TC-003-E2E-15 | fully mocked | `/me` 401 and refresh 401 | Exactly 1 refresh (no loop). Redirect to `/login`. Refresh token removed from localStorage | E2E | P1 |
 | TC-003-E2E-16 | mocked | Login returns 429 `THROTTLED`, `Retry-After: 42` | A rate-limit message (not a generic error) | E2E | P1 |
 | TC-003-E2E-17 | mocked | `/api/status/` returns 429 | Status page shows *rate-limited* | E2E | P2 |
+| TC-003-E2E-19 | fully mocked; `flash.refreshToken` stored | Load `/customer`; refresh returns 503 | The user is sent to `/login`, but the refresh token is **kept** (contract client rules 2026-09-27: refresh not answered → session kept) | E2E | P1 |
+| TC-003-E2E-20 | anonymous | Open `/status` | The session card shows the empty-state component | E2E | P2 |
 | TC-003-E2E-18 ×6 | — | `/login`, `/status`, unknown route at 360 and 1280 | No horizontal overflow. Login inputs have accessible labels | E2E | P2 |
 
 ### 2.3 Manual / evidence review (TASK-010)

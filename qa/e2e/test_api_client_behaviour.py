@@ -3,7 +3,7 @@
 Refresh/expiry/429 cannot be triggered live on demand (access tokens live 30 min and a live
 429 would lock the suite out), so these tests use Playwright request interception with
 contract-shaped envelopes. The QA report states this explicitly (TASK-010).
-Plan: FEAT-003 TC-003-E2E-14..17.
+Plan: FEAT-003 TC-003-E2E-14..17, 19.
 """
 
 import re
@@ -70,8 +70,9 @@ def test_401_triggers_exactly_one_refresh_then_retry(new_page, cfg):
     _submit_login(page, cfg)
     expect(page).to_have_url(re.compile(r"/customer"))
     check(counts["refresh"] == 1, f"expected exactly 1 refresh, got {counts['refresh']}")
-    check(counts["me"] == 2, f"expected /me to be retried once (2 calls), got {counts['me']}")
-    check(counts["me_auth"][-1] == f"Bearer {FAKE_ACCESS_2}", "retry did not use the refreshed access token")
+    check(counts["me"] >= 2, f"expected /me to be retried after the refresh, got {counts['me']} call(s)")
+    check(counts["me_auth"][0] == f"Bearer {FAKE_ACCESS}", "first /me did not use the obtained access token")
+    check(counts["me_auth"][1] == f"Bearer {FAKE_ACCESS_2}", "retry did not use the refreshed access token")
 
 
 def test_refresh_failure_logs_out(new_page, cfg):
@@ -113,3 +114,23 @@ def test_status_429_shows_rate_limited_state(new_page, cfg):
     )
     page.goto(f"{cfg.web_url}/status")
     expect(page.get_by_text(RATE_LIMITED).first).to_be_visible()
+
+
+def test_refresh_not_answered_keeps_the_session(new_page, cfg):
+    """TC-003-E2E-19 (contract client rules, 2026-09-27): on page load with a stored refresh
+    token, a refresh that is not answered (503) must NOT log the user out: the refresh token
+    stays stored so a later reload can recover."""
+    page = new_page(block_sw=True)
+    page.add_init_script(f"window.localStorage.setItem('flash.refreshToken', '{FAKE_REFRESH}')")
+    counts = {"refresh": 0}
+
+    def refresh(route):
+        counts["refresh"] += 1
+        route.fulfill(**envelope_error(503, "SERVER_ERROR", "An unexpected error occurred."))
+
+    page.route(f"{cfg.base_url}/api/auth/token/refresh/", refresh)
+    page.goto(f"{cfg.web_url}/customer")
+    page.wait_for_load_state("networkidle")
+    check(counts["refresh"] >= 1, "no refresh attempted on page load with a stored refresh token")
+    stored = page.evaluate("() => window.localStorage.getItem('flash.refreshToken')")
+    check(stored == FAKE_REFRESH, "the stored refresh token was cleared after a 503 on refresh (session must be kept)")

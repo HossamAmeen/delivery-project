@@ -53,7 +53,7 @@ No — contract fixed in api-contracts.md § Foundation and ADR-019
 
 ## Status
 
-QA_IN_PROGRESS
+QA_FAILED
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created from sprint-01 technical plan
@@ -63,6 +63,7 @@ QA_IN_PROGRESS
 - 2026-09-27 | team-lead | READY_FOR_REVIEW → REVIEW | code inspection done, decisions recorded; verdict pending the TL's own server validation run (denied by the session permission policy)
 - 2026-09-27 | team-lead | REVIEW → READY_FOR_QA | code review APPROVED; TL server run 20260927-204315-12107 at 0a5f845: ruff/format/check/makemigrations PASS, 238 passed, coverage 98.42%
 - 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | FEAT-001 verification on the server started (TASK-009)
+- 2026-09-28 | qa | QA_IN_PROGRESS → QA_FAILED | BUG-001 (Low): /api/health/* 401 lacks Cache-Control: no-store (TC-001-HLT-10); all other TASK-004 checks passed — .ai/reports/qa/FEAT-001-qa-report.md
 
 ## Implementation Plan
 (not required)
@@ -124,6 +125,7 @@ coverage        TOTAL 771 stmts, 7 miss, 98.42% (gate 80%: reached)
 The local wrapper then exited 1 with `deploy/scripts/remote-test.sh: line 1: tmp: unbound variable`. That is a runner defect in the `--ref` path (EXIT trap references a `local` variable; TASK-012 sent back), **not** a test failure: every step reported PASS and the remote exit code was 0.
 
 ## QA Log
+- 2026-09-28 | qa | FAIL | BUG-001 (Low): /api/health/* 401 lacks Cache-Control: no-store (TC-001-HLT-10); all other TASK-004 checks passed — .ai/reports/qa/FEAT-001-qa-report.md
 
 ## Sign-off
 - TL final review: ☐

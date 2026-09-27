@@ -49,26 +49,41 @@ No
 
 ## Status
 
-TODO
+READY_FOR_REVIEW
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → BACKLOG | created from sprint-01 technical plan
 - 2026-09-27 | team-lead | BACKLOG → TODO | BLK-002 RESOLVED; verify on the deployed web domain via `make qa-remote` (REQ-009/ADR-018); depends on TASK-014
+- 2026-09-28 | qa | TODO → IN_PROGRESS | started; E2E selectors confirmed against the built PWA
+- 2026-09-28 | qa | IN_PROGRESS → READY_FOR_REVIEW | FEAT-003 verification done: verdict PASS (.ai/reports/qa/FEAT-003-qa-report.md)
 
 ## Implementation Plan
 (not required)
 
 ## Completion Report
-(assignee, when moving to READY_FOR_REVIEW)
-- Files changed:
-- Tests added:
-- Validation commands run + results:
-- Contract/OpenAPI changes:
-- Known limitations / remaining problems:
+- **Verdict: PASS.** FEAT-003 AC1–AC6 have executed evidence on `https://delivery.hossam-ameen.online` and every P1 case passed. TASK-007 has QA verdict PASS ticked. Report: `.ai/reports/qa/FEAT-003-qa-report.md`.
+- **Files changed (`qa/`):**
+  - `harness/pwa.py`: selectors confirmed against the built PWA; `data-testid` constants; 429 text.
+  - `e2e/test_status_page.py`: testid-based state checks, browser API-call evidence, TC-003-E2E-20 (empty state).
+  - `e2e/test_api_client_behaviour.py`: retry assertion refined, TC-003-E2E-19 (refresh not answered keeps the session).
+  - `harness/http.py`: `AuthPacer` persisted on the server.
+  - `plans/FEAT-003-test-plan.md`.
+- **Tests added:** TC-003-E2E-19, TC-003-E2E-20. The E2E suite now has 30 tests.
+- **Validation commands run + results** (on the server):
+  - First run: `make qa-remote ARGS="-m e2e"`, run 20260927-224953-99845 → 27 passed / 3 failed. All 3 were harness auth-throttle carry-over between sessions; fixed.
+  - Second run: 20260927-225129-104522 → 29 passed / 1 failed. Same cause, fixed.
+  - Final run: 20260927-225312-107600 → **30 passed**.
+  - Web serving and TLS checks passed in run 20260927-225552-109762.
+  - AC5 is an evidence review of the TASK-007 Completion Report: lint, type-check, 67 unit tests and build all green. QA did not run them locally.
+- **Contract/OpenAPI changes:** none.
+- **Known limitations / remaining problems:**
+  - Interception was used for the refresh, 429, network-failure and 5xx client behaviour (TC-003-E2E-12..17, -19), as the report states.
+  - Three P2 manual items are gaps: reference screenshots (MAN-01), 403/404 UI mapping (MAN-02, covered by unit tests), and a network capture for MAN-05 (verified by code inspection instead).
 
 ## Review Log
 
 ## QA Log
+- 2026-09-28 | qa | PASS | FEAT-003-qa-report.md; E2E run 20260927-225312-107600
 
 ## Sign-off
 - TL final review: ☐

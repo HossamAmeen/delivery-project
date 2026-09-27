@@ -20,7 +20,7 @@ No domain data is created.
 | AC2 | Config from env only; `.env.example` documents every variable | TC-001-MAN-02, TC-001-MAN-03 |
 | AC3 | Every API error in the standard envelope | TC-001-ENV-01..08, TC-001-HLT-02..05/08/09, TC-001-JWT-04..16, TC-001-ME-02/03, TC-001-DOC-02..04, TC-001-RL-01..05 (429) |
 | AC4 | Health with valid token; rejected without/wrong; token never exposed | TC-001-HLT-01..09, TC-001-STAT-01..03, TC-003-WEB-05 (bundle), TC-004-RUN-10/11 (logs) |
-| AC5 | anon / user / auth / health rate-limited, env-configurable, 429 envelope | TC-001-RL-01..05 |
+| AC5 | anon / user / auth / health rate-limited, env-configurable, 429 envelope | Live: TC-001-RL-01, -03, -04, -06 (auth, user, health). **Anon** (TL decision, TASK-008 review): no public anon-scoped endpoint exists in sprint-01, so it is proven by the backend suite on the server (`test_anonymous_user_uses_anonymous_throttle`, `test_api_rejects_requests_after_rate_limit`) cited from the JUnit of `make test-backend-remote` → TC-001-MAN-05. TC-001-RL-05 stays skip-with-reason until a feature adds a public anonymous endpoint |
 | AC6 | JWT access/refresh with username + password for the four roles; wrong username or password indistinguishable | TC-001-JWT-01..16, TC-001-ME-01..04 |
 | AC7 | OpenAPI schema/docs available and document 429 | TC-001-DOC-01..08, TC-001-ADM-04 |
 | AC8 | Django Admin (Jazzmin) staff-only | TC-001-ADM-01..03 |
@@ -44,22 +44,23 @@ Priority: **P1** = must pass for sign-off; **P2** = important, a failure is a bu
 | ID | Preconditions | Steps | Expected | Level | Priority |
 |---|---|---|---|---|---|
 | TC-001-HLT-01 | `QA_HEALTH_TOKEN` | `GET /api/health/` with header `X-Health-Check-Token: <token>` | 200. `data == {"status":"healthy"}` | API | P1 |
-| TC-001-HLT-02 | — | `GET /api/health/` with no token | 401 envelope. Message `Invalid health check password.` `errors.code` present | API | P1 |
+| TC-001-HLT-02 | — | `GET /api/health/` with no token | 401 envelope. Message `Invalid health check password.` `errors.code = HEALTH_TOKEN_INVALID` | API | P1 |
 | TC-001-HLT-03 | — | Header with a wrong token | 401, same as HLT-02 | API | P1 |
 | TC-001-HLT-04 | — | `GET /api/health/?password=<wrong>` (the only use of the query variant) | 401, same as HLT-02. The wrong value is not echoed | API | P1 |
 | TC-001-HLT-05 | — | Header present but empty | 401 | API | P2 |
 | TC-001-HLT-06 | token | Valid and invalid calls to `/health/`, `/health/ready/`, `/status/` | The token appears in no response body or header | API | P1 |
 | TC-001-HLT-07 | token | `GET /api/health/ready/` with the header token | 200. `data == {"status":"ready","checks":{"database":"ok","cache":"ok","celery":"skipped"}}` | API | P1 |
 | TC-001-HLT-08 | — | `/ready/` without a token | 401 | API | P1 |
-| TC-001-HLT-09 | — | `/ready/` with a wrong token | 401 | API | P1 |
+| TC-001-HLT-09 | — | `/ready/` with a wrong token | 401 `HEALTH_TOKEN_INVALID` | API | P1 |
+| TC-001-HLT-10 | token | `/health/` and `/ready/`, with and without the token | `Cache-Control: no-store` | API | P2 |
 
-Not automated: the readiness 503 shape. A DB or cache failure cannot be caused safely on the shared server. The developer-suite audit (TC-001-MAN-04) must show TASK-004's `DB failure → 503` test passing.
+Not automated: the readiness 503 shape (`SERVICE_NOT_READY` with `errors.checks`). A DB or cache failure cannot be caused safely on the shared server. The developer-suite audit (TC-001-MAN-04) must show TASK-004's `DB failure → 503` test passing.
 
 ### 2.3 Error envelope — `qa/api/test_envelope.py`
 | ID | Preconditions | Steps | Expected | Level | Priority |
 |---|---|---|---|---|---|
 | TC-001-ENV-01 | — | `POST /api/auth/token/` with `{}` | 400. `success:false`. `errors.username` and `errors.password` are non-empty lists | API | P1 |
-| TC-001-ENV-02 | — | POST a truncated JSON body | 400 envelope with an `errors.code`. Not a 500 | API | P1 |
+| TC-001-ENV-02 | — | POST a truncated JSON body | 400 envelope, `errors.code = PARSE_ERROR`. Not a 500 | API | P1 |
 | TC-001-ENV-03 | — | `GET /api/users/me/` anonymous | 401. `errors.code = NOT_AUTHENTICATED`, message `Authentication credentials were not provided.` | API | P1 |
 | TC-001-ENV-04 | customer token | `GET /api/schema/` as customer | 403. `errors.code = PERMISSION_DENIED` | API | P1 |
 | TC-001-ENV-05 | — | `GET /api/qa-does-not-exist-404/` | 404 envelope. `errors.code = NOT_FOUND` (JSON, not an HTML page) | API | P1 |
@@ -78,7 +79,7 @@ Not automated: the readiness 503 shape. A DB or cache failure cannot be caused s
 | TC-001-JWT-04 | — | Valid username, wrong password | 401. `INVALID_CREDENTIALS`, `Invalid username or password.` | API | P1 |
 | TC-001-JWT-05 | — | Unknown username vs wrong password | Identical status **and** identical JSON body | API | P1 |
 | TC-001-JWT-06 | — | Username with swapped case, correct password | 401 `INVALID_CREDENTIALS` (case-sensitive login) | API | P2 |
-| TC-001-JWT-07 | **inactive QA user (not seeded yet, strategy §12.1)** | Log in as the inactive user | 401. Body identical to a wrong password. **Skipped with reason until seeded** | API | P1 |
+| TC-001-JWT-07 | `qa_inactive` seeded (TASK-016 `create_role_user --inactive`, TASK-013/014 `make seed-qa-users`; `QA_INACTIVE_USERNAME/PASSWORD`) | Log in as the inactive user | 401 `INVALID_CREDENTIALS`. Body identical to a wrong password | API | P1 |
 | TC-001-JWT-08 | refresh token | `POST /api/auth/token/refresh/` | 200. `data` keys = `{access}` only (no rotation). Access-type token | API | P1 |
 | TC-001-JWT-09 | — | Refresh with a tampered signature | 401 `TOKEN_INVALID`, `Token is invalid or expired.` | API | P1 |
 | TC-001-JWT-10 | — | Refresh using an **access** token | 401 `TOKEN_INVALID` | API | P1 |
@@ -126,7 +127,7 @@ Not automated: the readiness 503 shape. A DB or cache failure cannot be caused s
 | TC-001-RL-02 | — | Compare the configured rates | auth rate < user rate (stricter) | API | P3 |
 | TC-001-RL-03 | customer token | `RATELIMIT_USER` (300) `GET /me`, then one more | 1..300 are 200. 301 is 429 envelope | API | P1 |
 | TC-001-RL-04 | health token | `RATELIMIT_HEALTH` (120) `GET /api/status/`, then one more, then `/api/health/` with a valid token | 1..120 are 200. 121 is 429. `/api/health/` is 429 too (shared scope) | API | P1 |
-| TC-001-RL-05 | **anon-scoped public endpoint (strategy §12.2)** | `RATELIMIT_ANON` (60) requests, then one more | 429 envelope. **Skipped with reason until the TL names an endpoint** | API | P1 |
+| TC-001-RL-05 | anon-scoped public endpoint (none in sprint-01) | `RATELIMIT_ANON` (60) requests, then one more | 429 envelope. **Skip-with-reason by TL decision**; AC5-anon is traced to TC-001-MAN-05 | API | P3 |
 | TC-001-RL-06 | — | Cross-worker consistency | Implied by RL-01/03/04: the 429 arrives at exactly limit+1 through 2 gunicorn workers (FileBasedCache). A later 429 (≈2× the limit) = bug (ADR-017) | API | P1 |
 
 ### 2.9 Transport / CORS — `qa/api/test_cors_security.py`
@@ -142,6 +143,7 @@ Not automated: the readiness 503 shape. A DB or cache failure cannot be caused s
 | TC-001-MAN-01 | deployed | On the server: `/srv/flash/current/venv/bin/python --version`; `systemctl show flash-backend -p ExecStart --value`; read `deploy/README.md`'s start command | Python 3.13.x. gunicorn started by the unit. One documented command (AC1) | MAN | P1 |
 | TC-001-MAN-02 | repo | Compare every `env(...)` read in `backend/config/settings/*` with `backend/.env.example` (read-only review) | Every variable is documented. No hardcoded secret default in production settings (`HEALTH_CHECK_PASSWORD` and `SECRET_KEY` have no production default) | MAN | P1 |
 | TC-001-MAN-03 | repo | `git ls-files` shows no `.env`; grep the repo for secret-looking values (`SECRET_KEY=`, `PASSWORD=` with values, private keys) | None found (AC2, FEAT-004 AC11) | MAN | P1 |
+| TC-001-MAN-05 | the JUnit of the `make test-backend-remote` run of MAN-04 | Find `test_anonymous_user_uses_anonymous_throttle` and `test_api_rejects_requests_after_rate_limit` | Both passed on the server (AC5 anon part) | MAN | P1 |
 | TC-001-MAN-04 | deployed sha | `make test-backend-remote REF=<deployed sha>` | `ruff`, `check`, `makemigrations --check --dry-run` green. `pytest --cov` ≥ 80%. JUnit shows TASK-002/003/004 tests (envelope incl. 500, readiness 503, throttles) passing. Gaps listed | MAN | P1 |
 
 ## 3. Execution order (TASK-009)

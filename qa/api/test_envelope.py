@@ -20,9 +20,9 @@ def test_400_field_errors_on_token_obtain(auth_api):
 
 
 def test_400_malformed_json_is_enveloped_not_500(auth_api):
-    """TC-001-ENV-02: a body that is not JSON -> 400 in the envelope with an errors.code."""
+    """TC-001-ENV-02: a body that is not JSON -> 400 PARSE_ERROR in the envelope, not a 500."""
     resp = auth_api.obtain_raw(content=b'{"username": "x", ', headers={"Content-Type": "application/json"})
-    assert_error(resp, 400, require_code=True)
+    assert_error(resp, 400, "PARSE_ERROR")
 
 
 def test_401_not_authenticated(api):

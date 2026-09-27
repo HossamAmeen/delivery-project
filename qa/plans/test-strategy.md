@@ -182,6 +182,13 @@ Scenarios 1–14 have no API yet. They are planned when their features are desig
 
 ## 12. Open items (tracked in reports; raised to the TL/Infrastructure by the orchestrator)
 
+**TL decisions (TASK-008 review, 2026-09-27):**
+- item 1 accepted: `qa_inactive` is seeded through TASK-016/013/014
+- item 2: the anon scope is proven by the backend suite on the server (FEAT-001 plan TC-001-MAN-05), and TC-001-RL-05 stays skip-with-reason
+- item 5: the codes are `HEALTH_TOKEN_INVALID` and `SERVICE_NOT_READY`, and they are now asserted exactly
+
+The items below are kept for history.
+
 1. **No inactive QA user.** The contract requires an inactive user to get the same 401 as a wrong password. `make seed-qa-users` creates only active users. **Request:** add `qa_inactive` (active=False) and export `QA_INACTIVE_USERNAME/PASSWORD` into `credentials.env` (TASK-013 scope). Until then TC-001-JWT-07 is skipped, and it is an explicit gap in the FEAT-001 report.
 2. **No endpoint exercises the `anon` throttle scope.**
    - `/api/status/` and `/api/health/` use `health`

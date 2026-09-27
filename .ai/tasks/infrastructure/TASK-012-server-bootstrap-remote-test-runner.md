@@ -62,7 +62,7 @@ Yes — production server (shared) and infrastructure architecture. **Pre-approv
 
 ## Status
 
-READY_FOR_QA
+QA_IN_PROGRESS
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created for FEAT-004 (ADR-015/016/018); first in the Infrastructure queue; plan pre-approved
@@ -75,6 +75,8 @@ READY_FOR_QA
 - 2026-09-27 | infrastructure | IN_PROGRESS → READY_FOR_REVIEW | EXIT-trap fix in `remote-test.sh` (global `REMOTE_TEST_TMP`, `${REMOTE_TEST_TMP:-}`); `make test-backend-remote REF=0a5f845` exit 0, no /tmp leftover; failing probes exit 1 / 4 (Completion Report § Fix)
 - 2026-09-27 | team-lead | READY_FOR_REVIEW → REVIEW | re-review of the EXIT-trap fix
 - 2026-09-27 | team-lead | REVIEW → READY_FOR_QA | re-review APPROVED: `make test-backend-remote REF=0a5f845` exits 0, no /tmp leftovers, failing probe propagates; QA via TASK-015
+- 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | FEAT-004 verification on the server started (TASK-015)
+- 2026-09-28 | qa | QA_IN_PROGRESS → QA_IN_PROGRESS | QA verdict PASS ticked; status left for TL final review (.ai/reports/qa/FEAT-004-qa-report.md; runners used in 15 qa-remote runs + backend audit 20260927-225853-111545)
 
 ## Implementation Plan
 1. Read-only server audit (ssh as hossam; sudo only for `nginx -T`, `certbot certificates`, `ss -ltnp`) → `.ai/reports/infrastructure/server-audit-2026-09-27.md`.
@@ -207,8 +209,9 @@ remote-test.sh backend --ref 0a5f845 --steps pytest -- -k tl_probe_no_such_test
 ```
 
 ## QA Log
+- 2026-09-28 | qa | PASS | .ai/reports/qa/FEAT-004-qa-report.md; runners used in 15 qa-remote runs + backend audit 20260927-225853-111545
 
 ## Sign-off
 - TL final review: ☐
-- QA verdict: ☐
+- QA verdict: ☑ PASS (.ai/reports/qa/FEAT-004-qa-report.md; runners used in 15 qa-remote runs + backend audit 20260927-225853-111545)
 - PM acceptance: ☐

@@ -98,11 +98,36 @@ class AuthPacer:
     :meth:`used_in_window` to know how much of the window this session already consumed.
     """
 
-    def __init__(self, rate: str, margin: int = 1) -> None:
+    def __init__(self, rate: str, margin: int = 1, state_file: str | None = None) -> None:
         self.limit, self.window = parse_rate(rate)
         self.margin = margin
         self._calls: collections.deque[float] = collections.deque()
         self._lock = threading.Lock()
+        # The server's window outlives a pytest session: back-to-back `make qa-remote` runs
+        # share it. Wall-clock timestamps are persisted on the server so the next session
+        # starts with the real count (found 2026-09-28: e2e run right after the API run hit 429).
+        self._state_file = state_file
+        self._load()
+
+    def _load(self) -> None:
+        if not self._state_file:
+            return
+        try:
+            with open(self._state_file) as fh:
+                stamps = json.load(fh)
+        except (OSError, ValueError):
+            return
+        now = time.time()
+        self._calls.extend(sorted(t for t in stamps if isinstance(t, (int, float)) and now - t < self.window))
+
+    def _save(self) -> None:
+        if not self._state_file:
+            return
+        try:
+            with open(self._state_file, "w") as fh:
+                json.dump(list(self._calls), fh)
+        except OSError:
+            pass
 
     def _prune(self, now: float) -> None:
         while self._calls and now - self._calls[0] >= self.window:
@@ -110,17 +135,18 @@ class AuthPacer:
 
     def used_in_window(self) -> int:
         with self._lock:
-            self._prune(time.monotonic())
+            self._prune(time.time())
             return len(self._calls)
 
     def acquire(self, reserve: bool = True) -> None:
         allowed = self.limit - (self.margin if reserve else 0)
         while True:
             with self._lock:
-                now = time.monotonic()
+                now = time.time()
                 self._prune(now)
                 if len(self._calls) < allowed:
                     self._calls.append(now)
+                    self._save()
                     return
                 wait = self.window - (now - self._calls[0]) + 1.0
             log.info("auth pacer: waiting %.0fs to stay under the auth throttle", wait)
@@ -129,7 +155,8 @@ class AuthPacer:
     def record(self) -> None:
         """Record an auth call made without waiting (rate-limit tests)."""
         with self._lock:
-            self._calls.append(time.monotonic())
+            self._calls.append(time.time())
+            self._save()
 
 
 class AuthApi:
