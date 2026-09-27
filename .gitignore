@@ -1,0 +1,23 @@
+# Secrets / local env
+.env
+.env.*
+!.env.example
+backend/.env
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+*.sqlite3
+# Node / frontend
+node_modules/
+dist/
+# Misc
+.DS_Store
+*.log
+# Duplicate archive of flash_business_logic/
+flash_business_logic_complete.zip
