@@ -54,7 +54,7 @@ Backend. Suggested fix: set the header for every response of the health views, f
 
 ## Status
 
-ASSIGNED
+VERIFIED
 
 ## Routing (TL, 2026-09-28)
 
@@ -66,3 +66,4 @@ Confirmed: Backend, TASK-004 (`backend/apps/health/**`). Fix constraints:
 - 2026-09-28 | qa | — → OPEN | filed from TASK-009 (TC-001-HLT-10)
 - 2026-09-28 | team-lead | OPEN → ASSIGNED | routed to Backend (TASK-004 → IN_PROGRESS); fix constraints in § Routing
 - 2026-09-28 | team-lead | ASSIGNED → ASSIGNED | fix reviewed and APPROVED by the TL; ships with TASK-015's roll-forward `make deploy`; awaiting QA re-test (VERIFIED/REOPENED)
+- 2026-09-28 | qa | ASSIGNED → VERIFIED | re-test on release 20260927-232246 (d6669b6): TC-001-HLT-10 PASSED in runs 20260927-233545-139616 (full regression, 110 passed) and 20260927-234058-143079

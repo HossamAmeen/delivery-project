@@ -58,12 +58,18 @@ READY_FOR_REVIEW
 - 2026-09-27 | team-lead | TODO → TODO | re-scoped: verification on the server (REQ-009/ADR-018), username login, `/api/status/`, docs access; depends on TASK-014; TASK-006/011 removed from the gate
 - 2026-09-28 | qa | TODO → IN_PROGRESS | started; release 20260927-205803 (f85848b) deployed
 - 2026-09-28 | qa | IN_PROGRESS → READY_FOR_REVIEW | FEAT-001 verification done: verdict FAIL on BUG-001 (Low) only; all ACs evidenced (.ai/reports/qa/FEAT-001-qa-report.md); re-test on fix
+- 2026-09-28 | qa | READY_FOR_REVIEW → READY_FOR_REVIEW | final verdict PASS after the BUG-001 re-test on 20260927-232246 (d6669b6)
 
 ## Implementation Plan
 (not required)
 
 ## Completion Report
-- **Verdict: FAIL.** One Low contract deviation: BUG-001, `/api/health/*` 401 without `Cache-Control: no-store`, TASK-004 → QA_FAILED. All 10 acceptance criteria have executed evidence and every P1 case passed. TASK-001/002/003/005/016 have QA verdict PASS ticked. The verdict turns to PASS on the BUG-001 re-test, or if the TL/PM accept it as a known Low deviation. Report: `.ai/reports/qa/FEAT-001-qa-report.md`.
+- **Final verdict: PASS** (re-test 2026-09-28 on release `20260927-232246` / `d6669b6`). BUG-001 is VERIFIED and TASK-004 has QA verdict PASS ticked.
+  - Full regression run `20260927-233545-139616`: 110 passed, 0 failed.
+  - Rate limits run `20260927-233920-141829`: 4 passed, 1 skipped (anon, TL decision).
+  - Backend suite `make test-backend-remote REF=d6669b6`: 257 passed, 98.45%.
+  - Report: `.ai/reports/qa/FEAT-001-qa-report.md` (see its Re-test section).
+- *First run (release `20260927-205803`):* FAIL on BUG-001 (Low) only.
 - **Files changed (`qa/`):**
   - `api/test_health.py`: exact `HEALTH_TOKEN_INVALID` code, plus TC-001-HLT-10 (no-store).
   - `api/test_envelope.py`: `PARSE_ERROR`.
@@ -93,6 +99,7 @@ READY_FOR_REVIEW
 
 ## QA Log
 - 2026-09-28 | qa | FAIL (Low only) | BUG-001 open (TASK-004 QA_FAILED); BUG-002 for FEAT-004; see FEAT-001-qa-report.md
+- 2026-09-28 | qa | PASS (final) | BUG-001 VERIFIED; full regression 20260927-233545-139616 green; backend 257 passed 98.45%
 
 ## Sign-off
 - TL final review: ☐

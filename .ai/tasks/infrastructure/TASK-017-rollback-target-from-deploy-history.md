@@ -59,6 +59,7 @@ QA_IN_PROGRESS
 - 2026-09-28 | team-lead | READY_FOR_REVIEW → REVIEW | code review started
 - 2026-09-28 | team-lead | REVIEW → READY_FOR_QA | APPROVED; `make rollback DRY_RUN=1` targets 20260927-205208 from PREVIOUS; unblocks TASK-015's rollback step
 - 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | FEAT-004 verification on the server started (TASK-015)
+- 2026-09-28 | qa | QA_IN_PROGRESS → QA_IN_PROGRESS | QA verdict PASS ticked; status left for TL final review (.ai/reports/qa/FEAT-004-qa-report.md; release 20260927-232246 (d6669b6); runs 20260927-233545-139616, -233803-141021, -233920-141829, -233518-139162)
 
 ## Implementation Plan
 (not required)
@@ -132,8 +133,9 @@ ssh (read-only): current → releases/20260927-205803; MainPID 41268; releases/2
 
 ## QA Log
 - 2026-09-28 | qa | IN PROGRESS | PREVIOUS file, make status line, rollback dry-run target 20260927-205208 + DB decision, /tmp cleanup: PASS; live bare rollback + roll-forward pending (permission)
+- 2026-09-28 | qa | PASS | .ai/reports/qa/FEAT-004-qa-report.md; release 20260927-232246 (d6669b6); runs 20260927-233545-139616, -233803-141021, -233920-141829, -233518-139162
 
 ## Sign-off
 - TL final review: ☐
-- QA verdict: ☐
+- QA verdict: ☑ PASS (.ai/reports/qa/FEAT-004-qa-report.md; release 20260927-232246 (d6669b6); runs 20260927-233545-139616, -233803-141021, -233920-141829, -233518-139162)
 - PM acceptance: ☐

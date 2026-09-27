@@ -2,18 +2,14 @@
 
 QA task: TASK-009 · Tasks verified: TASK-001, TASK-002, TASK-003, TASK-004, TASK-005, TASK-016 · Plan: `qa/plans/FEAT-001-test-plan.md` · Date: 2026-09-28 (runs are timestamped in UTC on 2026-09-27)
 
-## Verdict: **FAIL**, one Low contract deviation (BUG-001)
+## Verdict: **PASS** (final, after re-test on 2026-09-28)
 
-The only failing case is TC-001-HLT-10 (P2): the 401 responses of the health endpoints lack `Cache-Control: no-store`, which the contract requires for every response (BUG-001, Low, Backend, TASK-004). Everything else passed:
-- all 10 FEAT-001 acceptance criteria have executed evidence
-- every P1 case passed
-- the developer suite passed on the server with 98.43% coverage
+The first run, on release `20260927-205803` / `f85848b` and described below, ended **FAIL** on one Low deviation (BUG-001). The fix shipped in release `20260927-232246` (`d6669b6`). On that release:
+- the BUG-001 re-test passed, and BUG-001 is **VERIFIED**
+- the full regression passed with no failures
+- the backend suite passed
 
-Under `qa.md` §6 there is no PASS while a case fails. The verdict turns to PASS when either:
-- BUG-001 is fixed and re-tested, or
-- the TL and PM accept it as a known Low deviation (DoD: no open Critical/High bugs)
-
-BUG-002 (Low, Infrastructure) is a hygiene finding on the nginx API site. It does not affect FEAT-001's criteria and is tracked for FEAT-004.
+All 10 acceptance criteria have evidence and there are no open bugs. See **Re-test (final)** at the end.
 
 ## Scope and environment
 
@@ -92,8 +88,8 @@ api/test_ratelimit.py::test_anon_scope_is_throttled SKIPPED (no anon-scope endpo
 
 | ID | Severity | Area | Summary | Status |
 |---|---|---|---|---|
-| [BUG-001](bugs/BUG-001-health-401-missing-no-store.md) | Low | Backend (TASK-004) | `/api/health/*` 401 (and by code, 503) responses lack `Cache-Control: no-store` | OPEN |
-| [BUG-002](bugs/BUG-002-api-duplicate-nosniff-header.md) | Low | Infrastructure (TASK-013) | `X-Content-Type-Options: nosniff, nosniff` on proxied API responses | OPEN |
+| [BUG-001](bugs/BUG-001-health-401-missing-no-store.md) | Low | Backend (TASK-004) | `/api/health/*` 401 (and by code, 503) responses lack `Cache-Control: no-store` | **VERIFIED** (d6669b6) |
+| [BUG-002](bugs/BUG-002-api-duplicate-nosniff-header.md) | Low | Infrastructure (TASK-013) | `X-Content-Type-Options: nosniff, nosniff` on proxied API responses | **VERIFIED** (d6669b6) |
 
 ## Task outcomes
 
@@ -107,3 +103,17 @@ api/test_ratelimit.py::test_anon_scope_is_throttled SKIPPED (no anon-scope endpo
 | TASK-016 (`create_role_user --inactive`) | QA PASS (`qa_inactive` seeded; TC-001-JWT-07 passed) |
 
 Re-test after the fix: `make qa-remote ARGS="api/test_health.py"`, then the full regression (`-m 'regression and not e2e'`).
+
+## Re-test (final): release `20260927-232246`, sha `d6669b6`
+
+| # | Command | Run ID | Result |
+|---|---|---|---|
+| R1 | `make qa-remote ARGS="-m 'regression and not e2e' --dental-expect=…"` | 20260927-233545-139616 | **110 passed, 0 failed, 0 skipped**, including TC-001-HLT-10 (BUG-001) and TC-001-JWT-07 (`qa_inactive`) |
+| R2 | `make throttle-reset` → `make qa-remote ARGS="-m ratelimit -v"` → `make throttle-reset` | 20260927-233920-141829 | 4 passed, 1 skipped (RL-05 anon, TL decision). Resets removed 10 and 3 files |
+| R3 | `make qa-remote ARGS="api/test_cors_security.py api/test_health.py -k 'security_headers or not_cacheable'"` | 20260927-234058-143079 | 2 passed. TC-001-HLT-10 passed, and TC-001-SEC-03 now requires exactly one `X-Content-Type-Options` value |
+| R4 | `make test-backend-remote REF=d6669b6` | `backend/.remote-results/20260927-234034-142654/` | ruff, format, check, makemigrations PASS; **257 passed**; coverage **98.45%** |
+| R5 | `make health` | terminal | ALL CHECKS PASSED |
+
+- BUG-001 → **VERIFIED**. TASK-004 now has QA verdict PASS ticked.
+- BUG-002 (Infrastructure, FEAT-004) → **VERIFIED**.
+- TASK-001, 002, 003, 005 and 016 keep their PASS. The re-run on the new release is green.

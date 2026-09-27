@@ -82,6 +82,7 @@ Level: **HTTP** = `qa/smoke/` httpx/ssl; **RUN** = `qa/smoke/test_server_runtime
 | TC-004-RUN-11 | logs readable | The Flash nginx access logs, count-only | 0 occurrences. **Skip → TC-004-MAN-06** if not readable | RUN | P1 |
 | TC-004-RUN-13 | — | `current/venv/bin/python --version`; ExecStart | Python 3.13.x; gunicorn from `current/venv` | RUN | P1 |
 | TC-004-RUN-14 | — | `PREVIOUS` in the current release; `/tmp/flash-nginx-backup-*` | `PREVIOUS` exists, 0644, names an existing release; no leftovers (TASK-017) | RUN | P1 |
+| TC-004-RUN-15 | after rollback/deploy | Record REVISION/PREVIOUS/MIGRATION_STATE of every release and the mode/mtime of `shared/.env`, the DB and media → `.results/release-evidence.json` | DB present, `.env` 0600 and untouched; the history matches the rollback target and the ADR-017 DB decision | RUN | P1 |
 | TC-004-RUN-12 | — | Config sanity | Deploy path not under `/srv/dental-clinic`. Port ≠ 8000 | RUN | P3 |
 
 ### 2.5 Manual / observed operations (TASK-015)

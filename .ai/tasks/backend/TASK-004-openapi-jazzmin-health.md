@@ -53,7 +53,7 @@ No — contract fixed in api-contracts.md § Foundation and ADR-019
 
 ## Status
 
-READY_FOR_QA
+QA_IN_PROGRESS
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created from sprint-01 technical plan
@@ -68,6 +68,8 @@ READY_FOR_QA
 - 2026-09-28 | backend | IN_PROGRESS → READY_FOR_REVIEW | BUG-001 fixed: `Cache-Control: no-store` on every /api/health/ and /api/health/ready/ response (200/401/503/429) via `_HealthBaseView`; server run 20260927-230909-120452 green (257 passed, coverage 98.45%)
 - 2026-09-28 | team-lead | READY_FOR_REVIEW → REVIEW | BUG-001 fix review
 - 2026-09-28 | team-lead | REVIEW → READY_FOR_QA | BUG-001 fix APPROVED (TL run 20260927-231223-122519: 257 passed, 98.45%); ships with TASK-015's roll-forward deploy; QA re-test TC-001-HLT-10
+- 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | BUG-001 re-test on release 20260927-232246
+- 2026-09-28 | qa | QA_IN_PROGRESS → QA_IN_PROGRESS | QA verdict PASS ticked; status left for TL final review (.ai/reports/qa/FEAT-001-qa-report.md (re-test section); BUG-001 VERIFIED; runs 20260927-233545-139616, 20260927-234058-143079)
 
 ## Implementation Plan
 (not required)
@@ -163,8 +165,9 @@ BUG-001 (Low) confirmed and ASSIGNED to **Backend**. Scope: `backend/apps/health
 
 ## QA Log
 - 2026-09-28 | qa | FAIL | BUG-001 (Low): /api/health/* 401 lacks Cache-Control: no-store (TC-001-HLT-10); all other TASK-004 checks passed — .ai/reports/qa/FEAT-001-qa-report.md
+- 2026-09-28 | qa | PASS | .ai/reports/qa/FEAT-001-qa-report.md (re-test section); BUG-001 VERIFIED; runs 20260927-233545-139616, 20260927-234058-143079
 
 ## Sign-off
 - TL final review: ☐
-- QA verdict: ☐
+- QA verdict: ☑ PASS (.ai/reports/qa/FEAT-001-qa-report.md (re-test section); BUG-001 VERIFIED; runs 20260927-233545-139616, 20260927-234058-143079)
 - PM acceptance: ☐

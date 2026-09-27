@@ -26,3 +26,6 @@ qa/.results/
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# Local account notes (contains passwords)
+account.txt

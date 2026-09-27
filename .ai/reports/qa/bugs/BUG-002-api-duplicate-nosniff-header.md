@@ -50,7 +50,7 @@ Infrastructure. Suggested fix: remove `add_header X-Content-Type-Options` from t
 
 ## Status
 
-ASSIGNED
+VERIFIED
 
 ## Routing (TL, 2026-09-28)
 
@@ -62,3 +62,4 @@ Confirmed: Infrastructure, TASK-013 (`deploy/nginx/api.conf.template`). Decision
 - 2026-09-28 | qa | — → OPEN | filed from TASK-009 (TC-001-SEC-03)
 - 2026-09-28 | team-lead | OPEN → ASSIGNED | routed to Infrastructure (TASK-013 → IN_PROGRESS); fix constraints in § Routing
 - 2026-09-28 | team-lead | ASSIGNED → ASSIGNED | fix reviewed and APPROVED by the TL; ships with TASK-015's roll-forward `make deploy`; awaiting QA re-test (VERIFIED/REOPENED)
+- 2026-09-28 | qa | ASSIGNED → VERIFIED | re-test on release 20260927-232246 (d6669b6): TC-001-SEC-03 tightened to exactly one header value (["nosniff"]) PASSED in run 20260927-234058-143079; full regression 20260927-233545-139616 green

@@ -197,3 +197,46 @@ def test_previous_pointer_and_no_leftover_backups(cfg):
     check(os.path.isdir(os.path.join(cfg.deploy_path, "releases", prev)), f"PREVIOUS names a missing release {prev!r}")
     leftovers = glob.glob("/tmp/flash-nginx-backup-*")
     check(not leftovers, f"leftover nginx backup dirs in /tmp: {leftovers}")
+
+
+def test_release_history_evidence(cfg, results_dir):
+    """TC-004-RUN-15 (AC8, TASK-017): record, read-only, the release history the rollback and
+    roll-forward left behind: REVISION sha/built_at, PREVIOUS and MIGRATION_STATE of every
+    release, plus the mode/mtime (never the content) of shared/.env, the DB and media.
+    Written to .results/release-evidence.json for the FEAT-004 report."""
+    import json
+
+    base = cfg.deploy_path
+    rel_dir = os.path.join(base, "releases")
+    releases = {}
+    for rid in sorted(os.listdir(rel_dir)):
+        entry = {}
+        for name in ("REVISION", "PREVIOUS", "MIGRATION_STATE"):
+            path = os.path.join(rel_dir, rid, name)
+            if os.path.isfile(path):
+                with open(path) as fh:
+                    lines = [ln.strip() for ln in fh if ln.strip()]
+                if name == "REVISION":
+                    lines = [ln for ln in lines if ln.split("=", 1)[0] in {"sha", "built_at", "dirty"}]
+                entry[name] = lines
+        releases[rid] = entry
+
+    def meta(path):
+        try:
+            st = os.stat(path)
+        except OSError:
+            return None
+        return {"mode": oct(stat.S_IMODE(st.st_mode)), "mtime_utc": __import__("datetime").datetime.fromtimestamp(st.st_mtime, __import__("datetime").timezone.utc).isoformat(), "size": st.st_size}
+
+    media = os.path.join(base, "shared", "media")
+    evidence = {
+        "current": os.path.basename(os.path.realpath(os.path.join(base, "current"))),
+        "releases": releases,
+        "shared_env": meta(os.path.join(base, "shared", ".env")),
+        "db": meta(os.path.join(base, "shared", "db", "flash.sqlite3")),
+        "media_files": sum(len(f) for _, _, f in os.walk(media)) if os.path.isdir(media) else None,
+        "backups": sorted(os.listdir(os.path.join(base, "shared", "backups"))),
+    }
+    (results_dir / "release-evidence.json").write_text(json.dumps(evidence, indent=2))
+    check(evidence["db"] is not None, "SQLite DB missing from shared/db")
+    check(evidence["shared_env"] is not None and evidence["shared_env"]["mode"] == "0o600", "shared/.env missing or not 0600")

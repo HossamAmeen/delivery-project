@@ -69,7 +69,7 @@ Yes — production deployment, nginx, systemd, TLS on a shared server. **Pre-app
 
 ## Status
 
-READY_FOR_QA
+QA_IN_PROGRESS
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created for FEAT-004 (ADR-015/016/017); runs in parallel with backend/frontend; plan pre-approved
@@ -84,6 +84,8 @@ READY_FOR_QA
 - 2026-09-28 | team-lead | QA_IN_PROGRESS → IN_PROGRESS | BUG-002 (Low) routed to Infrastructure: `proxy_hide_header X-Content-Type-Options` in the proxied API location; constraints in BUG-002 § Routing; QA of the rest continues in TASK-015
 - 2026-09-28 | team-lead | READY_FOR_REVIEW → REVIEW | BUG-002 fix review
 - 2026-09-28 | team-lead | REVIEW → READY_FOR_QA | BUG-002 fix APPROVED incl. the http-variant deviation; ships with TASK-015's roll-forward deploy; QA re-test TC-001-SEC-03 + TASK-015
+- 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | BUG-002 re-test and deploy/rollback evidence on release 20260927-232246
+- 2026-09-28 | qa | QA_IN_PROGRESS → QA_IN_PROGRESS | QA verdict PASS ticked; status left for TL final review (.ai/reports/qa/FEAT-004-qa-report.md; release 20260927-232246 (d6669b6); runs 20260927-233545-139616, -233803-141021, -233920-141829, -233518-139162)
 
 ## Implementation Plan
 1. Design note `.ai/reports/infrastructure/FEAT-004-infra-design.md` (script map, variables, safe-apply / deploy / rollback flows).
@@ -231,8 +233,9 @@ server, /tmp/flash-tl-nginxtest2 only (temp self-signed cert, logs in /tmp, -e):
 
 ## QA Log
 - 2026-09-28 | qa | IN PROGRESS | BUG-002 (Low) filed: duplicate X-Content-Type-Options on the API site; live deploy/restart/rollback observation pending (permission)
+- 2026-09-28 | qa | PASS | .ai/reports/qa/FEAT-004-qa-report.md; release 20260927-232246 (d6669b6); runs 20260927-233545-139616, -233803-141021, -233920-141829, -233518-139162
 
 ## Sign-off
 - TL final review: ☐
-- QA verdict: ☐
+- QA verdict: ☑ PASS (.ai/reports/qa/FEAT-004-qa-report.md; release 20260927-232246 (d6669b6); runs 20260927-233545-139616, -233803-141021, -233920-141829, -233518-139162)
 - PM acceptance: ☐

@@ -50,28 +50,47 @@ No
 
 ## Status
 
-IN_PROGRESS
+READY_FOR_REVIEW
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created: QA on-server verification of FEAT-004 (REQ-009, ADR-018)
 - 2026-09-28 | team-lead | TODO → TODO | dependency added: rollback step waits for TASK-017 (rollback target from deploy history)
 - 2026-09-28 | qa | TODO → IN_PROGRESS | read-only half done (interim report); restart/migrate/rollback/deploy denied by the session permission policy — pending user permission; live release unchanged
+- 2026-09-28 | qa | IN_PROGRESS → READY_FOR_REVIEW | verification complete: verdict PASS (.ai/reports/qa/FEAT-004-qa-report.md); live rollback/deploy run by the operator, verified from server records
 
 ## Implementation Plan
 (not required)
 
 ## Completion Report
-(assignee, when moving to READY_FOR_REVIEW)
-- Files changed:
-- Tests added:
-- Validation commands run + results:
-- Contract/OpenAPI changes:
-- Known limitations / remaining problems:
+- **Verdict: PASS.** Report: `.ai/reports/qa/FEAT-004-qa-report.md`. All 13 criteria have QA-produced evidence. TASK-013, 014 and 017 have QA verdict PASS ticked; TASK-012 was ticked earlier. BUG-002 is VERIFIED.
+- **Disclosure:** the live bare `make rollback` (205803 → 205208) and the roll-forward `make deploy` (`d6669b6` → `20260927-232246`) were run by the **user/operator**. The session's permission policy denied QA those commands and `make restart`/`make migrate`, and QA did not observe the run live. QA verified the outcome from `make status`, the journal (`make logs`) and the release metadata (TC-004-RUN-15 `release-evidence.json`), and then ran the full regression on the final release.
+- **Files changed (`qa/`):**
+  - `smoke/test_dental_non_interference.py`: TC-004-DEN-03, the dental nginx hash snapshot.
+  - `smoke/test_server_runtime.py`: TC-004-RUN-13 (Python 3.13), -14 (`PREVIOUS` / `/tmp` cleanup), -15 (release history evidence).
+  - `api/test_cors_security.py`: exactly one nosniff header.
+  - `plans/FEAT-004-test-plan.md`.
+- **Validation commands run + results** (results in `qa/.results/<run>/`):
+  - Dental baseline: run 20260927-230318-114725.
+  - Pre-exercise smoke/deploy: run 20260927-230332-114972.
+  - `make health`: green.
+  - `make deploy DRY_RUN=1`: ADR-015 order, no secrets, nothing changed.
+  - Docker mode: refused with exit 2.
+  - `make rollback DRY_RUN=1`: target 205208, no DB restore.
+  - After the exercise: `make status`, `make logs` and run 20260927-233518-139162.
+  - Full regression, run 20260927-233545-139616: **110 passed / 0 failed / 0 skipped**, including the dental comparison, which was IDENTICAL to the baseline.
+  - E2E, run 20260927-233803-141021: **30 passed**.
+  - Rate limits, wrapped in `make throttle-reset`: run 20260927-233920-141829, 4 passed / 1 skipped (anon, TL decision).
+  - `make test-backend-remote REF=d6669b6`: 257 passed, 98.45%.
+  - Bug re-test: run 20260927-234058-143079, 2 passed.
+  - Final `make health`: green.
+- **Contract/OpenAPI changes:** none.
+- **Known limitations:** QA did not run the standalone `make restart TARGET=all`, `make migrate` or `certbot renew --dry-run`; their code paths ran in the operator's rollback and deploy. There was no QA uptime poll during the switch; the journal shows about 1 s from stop to start.
 
 ## Review Log
 
 ## QA Log
 - 2026-09-28 | qa | IN PROGRESS | interim: .ai/reports/qa/FEAT-004-qa-report.md — verdict not issued; state-changing steps pending permission
+- 2026-09-28 | qa | PASS | FEAT-004-qa-report.md; release 20260927-232246 (d6669b6); BUG-002 VERIFIED; dental IDENTICAL to baseline
 
 ## Sign-off
 - TL final review: ☐
