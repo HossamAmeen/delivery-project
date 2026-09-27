@@ -49,13 +49,14 @@ No
 
 ## Status
 
-READY_FOR_REVIEW
+READY_FOR_RELEASE
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → BACKLOG | created from sprint-01 technical plan
 - 2026-09-27 | team-lead | BACKLOG → TODO | BLK-002 RESOLVED; verify on the deployed web domain via `make qa-remote` (REQ-009/ADR-018); depends on TASK-014
 - 2026-09-28 | qa | TODO → IN_PROGRESS | started; E2E selectors confirmed against the built PWA
 - 2026-09-28 | qa | IN_PROGRESS → READY_FOR_REVIEW | FEAT-003 verification done: verdict PASS (.ai/reports/qa/FEAT-003-qa-report.md)
+- 2026-09-28 | team-lead | READY_FOR_REVIEW → READY_FOR_RELEASE | TL final review signed off (FEAT-003 PASS)
 
 ## Implementation Plan
 (not required)
@@ -82,10 +83,16 @@ READY_FOR_REVIEW
 
 ## Review Log
 
+### Review — 2026-09-28 — team-lead — final
+
+**Verdict:** APPROVED — TL final sign-off.
+- `.ai/reports/qa/FEAT-003-qa-report.md`: PASS, AC1–AC6 with executed evidence, E2E 30/30 at 360 and 1280 px, installability (covers decision (e) of the TASK-007 review).
+- Live state checked read-only by the TL: `make status` → current `20260927-232246` (`d6669b6`, dirty=false), previous `20260927-205208` (from PREVIOUS), flash-backend active, NRestarts 0; `make health` ALL CHECKS PASSED; dental-clinic-backend active, MainPID 18284, NRestarts 0.
+
 ## QA Log
 - 2026-09-28 | qa | PASS | FEAT-003-qa-report.md; E2E run 20260927-225312-107600
 
 ## Sign-off
-- TL final review: ☐
-- QA verdict: ☐
+- TL final review: ☑ (team-lead, 2026-09-28)
+- QA verdict: n/a (QA's own task; its verdict is the report)
 - PM acceptance: ☐

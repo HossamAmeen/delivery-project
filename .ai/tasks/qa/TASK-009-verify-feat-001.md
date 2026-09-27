@@ -51,7 +51,7 @@ No
 
 ## Status
 
-READY_FOR_REVIEW
+READY_FOR_RELEASE
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created from sprint-01 technical plan
@@ -59,6 +59,7 @@ READY_FOR_REVIEW
 - 2026-09-28 | qa | TODO → IN_PROGRESS | started; release 20260927-205803 (f85848b) deployed
 - 2026-09-28 | qa | IN_PROGRESS → READY_FOR_REVIEW | FEAT-001 verification done: verdict FAIL on BUG-001 (Low) only; all ACs evidenced (.ai/reports/qa/FEAT-001-qa-report.md); re-test on fix
 - 2026-09-28 | qa | READY_FOR_REVIEW → READY_FOR_REVIEW | final verdict PASS after the BUG-001 re-test on 20260927-232246 (d6669b6)
+- 2026-09-28 | team-lead | READY_FOR_REVIEW → READY_FOR_RELEASE | TL final review signed off (FEAT-001 PASS)
 
 ## Implementation Plan
 (not required)
@@ -97,11 +98,17 @@ READY_FOR_REVIEW
 
 ## Review Log
 
+### Review — 2026-09-28 — team-lead — final
+
+**Verdict:** APPROVED — TL final sign-off.
+- `.ai/reports/qa/FEAT-001-qa-report.md`: final PASS after the BUG-001 re-test; all 10 AC with executed evidence; the AC5 anonymous part is traced to the backend suite evidence as decided in TASK-008's review; P2 gap TC-001-DOC-09 (full schema field diff) recorded, non-blocking.
+- Live state checked read-only by the TL: `make status` → current `20260927-232246` (`d6669b6`, dirty=false), previous `20260927-205208` (from PREVIOUS), flash-backend active, NRestarts 0; `make health` ALL CHECKS PASSED; dental-clinic-backend active, MainPID 18284, NRestarts 0.
+
 ## QA Log
 - 2026-09-28 | qa | FAIL (Low only) | BUG-001 open (TASK-004 QA_FAILED); BUG-002 for FEAT-004; see FEAT-001-qa-report.md
 - 2026-09-28 | qa | PASS (final) | BUG-001 VERIFIED; full regression 20260927-233545-139616 green; backend 257 passed 98.45%
 
 ## Sign-off
-- TL final review: ☐
-- QA verdict: ☐
+- TL final review: ☑ (team-lead, 2026-09-28)
+- QA verdict: n/a (QA's own task; its verdict is the report)
 - PM acceptance: ☐

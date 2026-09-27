@@ -69,7 +69,7 @@ Yes — production deployment, nginx, systemd, TLS on a shared server. **Pre-app
 
 ## Status
 
-QA_IN_PROGRESS
+READY_FOR_RELEASE
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created for FEAT-004 (ADR-015/016/017); runs in parallel with backend/frontend; plan pre-approved
@@ -86,6 +86,7 @@ QA_IN_PROGRESS
 - 2026-09-28 | team-lead | REVIEW → READY_FOR_QA | BUG-002 fix APPROVED incl. the http-variant deviation; ships with TASK-015's roll-forward deploy; QA re-test TC-001-SEC-03 + TASK-015
 - 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | BUG-002 re-test and deploy/rollback evidence on release 20260927-232246
 - 2026-09-28 | qa | QA_IN_PROGRESS → QA_IN_PROGRESS | QA verdict PASS ticked; status left for TL final review (.ai/reports/qa/FEAT-004-qa-report.md; release 20260927-232246 (d6669b6); runs 20260927-233545-139616, -233803-141021, -233920-141829, -233518-139162)
+- 2026-09-28 | team-lead | QA_IN_PROGRESS → READY_FOR_RELEASE | TL final review signed off (QA PASS in FEAT-004-qa-report.md; BUG-002 VERIFIED)
 
 ## Implementation Plan
 1. Design note `.ai/reports/infrastructure/FEAT-004-infra-design.md` (script map, variables, safe-apply / deploy / rollback flows).
@@ -231,11 +232,19 @@ server, /tmp/flash-tl-nginxtest2 only (temp self-signed cert, logs in /tmp, -e):
 ```
 **After the roll-forward deploy (TASK-015):** the rendered API file differs, so `make deploy` safe-applies it (`nginx -t` → reload). Evidence for QA: one `x-content-type-options: nosniff` on `/api/status/`, a `/static/` file and a 404, and `Cache-Control: no-store` on `/api/health/` 401 (BUG-001).
 
+### Review — 2026-09-28 — team-lead — final
+
+**Verdict:** APPROVED — TL final sign-off.
+- QA evidence: `.ai/reports/qa/FEAT-004-qa-report.md` (PASS, 13/13 AC), BUG-002 re-test run 20260927-234058-143079; live check: exactly one `X-Content-Type-Options` on `/api/status/`.
+- No unreviewed changes: the BUG-002 fix reviewed, committed as `d6669b6`; `git diff d6669b6 HEAD -- deploy Makefile .env.example` empty.
+- Docs: `deploy/README.md` complete (FEAT-004 AC12, QA followed it for health/rollback).
+- Live state checked read-only by the TL: `make status` → current `20260927-232246` (`d6669b6`, dirty=false), previous `20260927-205208` (from PREVIOUS), flash-backend active, NRestarts 0; `make health` ALL CHECKS PASSED; dental-clinic-backend active, MainPID 18284, NRestarts 0.
+
 ## QA Log
 - 2026-09-28 | qa | IN PROGRESS | BUG-002 (Low) filed: duplicate X-Content-Type-Options on the API site; live deploy/restart/rollback observation pending (permission)
 - 2026-09-28 | qa | PASS | .ai/reports/qa/FEAT-004-qa-report.md; release 20260927-232246 (d6669b6); runs 20260927-233545-139616, -233803-141021, -233920-141829, -233518-139162
 
 ## Sign-off
-- TL final review: ☐
+- TL final review: ☑ (team-lead, 2026-09-28)
 - QA verdict: ☑ PASS (.ai/reports/qa/FEAT-004-qa-report.md; release 20260927-232246 (d6669b6); runs 20260927-233545-139616, -233803-141021, -233920-141829, -233518-139162)
 - PM acceptance: ☐

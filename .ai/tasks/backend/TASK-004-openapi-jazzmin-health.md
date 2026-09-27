@@ -53,7 +53,7 @@ No — contract fixed in api-contracts.md § Foundation and ADR-019
 
 ## Status
 
-QA_IN_PROGRESS
+READY_FOR_RELEASE
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created from sprint-01 technical plan
@@ -70,6 +70,7 @@ QA_IN_PROGRESS
 - 2026-09-28 | team-lead | REVIEW → READY_FOR_QA | BUG-001 fix APPROVED (TL run 20260927-231223-122519: 257 passed, 98.45%); ships with TASK-015's roll-forward deploy; QA re-test TC-001-HLT-10
 - 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | BUG-001 re-test on release 20260927-232246
 - 2026-09-28 | qa | QA_IN_PROGRESS → QA_IN_PROGRESS | QA verdict PASS ticked; status left for TL final review (.ai/reports/qa/FEAT-001-qa-report.md (re-test section); BUG-001 VERIFIED; runs 20260927-233545-139616, 20260927-234058-143079)
+- 2026-09-28 | team-lead | QA_IN_PROGRESS → READY_FOR_RELEASE | TL final review signed off (QA PASS in FEAT-001-qa-report.md; BUG-001 VERIFIED)
 
 ## Implementation Plan
 (not required)
@@ -163,11 +164,19 @@ BUG-001 (Low) confirmed and ASSIGNED to **Backend**. Scope: `backend/apps/health
 
 **Commands run:** `make test-backend-remote WORKTREE=1` → run `20260927-231223-122519` (worktree on `81e197a`), Python 3.13.15: ruff-check, ruff-format, check, makemigrations PASS; pytest **257 passed**; coverage TOTAL 784 stmts, 7 miss → **98.45 %**; remote exit 0; make EXIT 0.
 
+### Review — 2026-09-28 — team-lead — final
+
+**Verdict:** APPROVED — TL final sign-off.
+- QA evidence: `.ai/reports/qa/FEAT-001-qa-report.md` (final PASS), BUG-001 re-test run 20260927-234058-143079; live check: `/api/health/` 401 carries `Cache-Control: no-store`.
+- No unreviewed changes: the BUG-001 fix reviewed on the worktree and committed as `d6669b6`; `git diff d6669b6 HEAD -- backend` empty. Deployed release = `d6669b6`.
+- Contracts: api-contracts § Foundation moved to **ACTIVE**; OpenAPI validated in the server suite (`spectacular --validate`), QA TC-001-DOC-01..08.
+- Live state checked read-only by the TL: `make status` → current `20260927-232246` (`d6669b6`, dirty=false), previous `20260927-205208` (from PREVIOUS), flash-backend active, NRestarts 0; `make health` ALL CHECKS PASSED; dental-clinic-backend active, MainPID 18284, NRestarts 0.
+
 ## QA Log
 - 2026-09-28 | qa | FAIL | BUG-001 (Low): /api/health/* 401 lacks Cache-Control: no-store (TC-001-HLT-10); all other TASK-004 checks passed — .ai/reports/qa/FEAT-001-qa-report.md
 - 2026-09-28 | qa | PASS | .ai/reports/qa/FEAT-001-qa-report.md (re-test section); BUG-001 VERIFIED; runs 20260927-233545-139616, 20260927-234058-143079
 
 ## Sign-off
-- TL final review: ☐
+- TL final review: ☑ (team-lead, 2026-09-28)
 - QA verdict: ☑ PASS (.ai/reports/qa/FEAT-001-qa-report.md (re-test section); BUG-001 VERIFIED; runs 20260927-233545-139616, 20260927-234058-143079)
 - PM acceptance: ☐

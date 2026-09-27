@@ -61,7 +61,7 @@ Scopes are `anon`, `user`, `auth`, `sensitive` and `health`, all configured from
 
 ## 2. Contract registry
 
-### Foundation (FEAT-001), status: APPROVED — moves to ACTIVE after the BUG-001 re-test (revised 2026-09-27: ADR-015, ADR-019; error codes and health bodies fixed in the TASK-002/004 review)
+### Foundation (FEAT-001), status: ACTIVE (2026-09-28: implemented, QA PASS incl. the BUG-001 re-test, matches OpenAPI; history: revised 2026-09-27: ADR-015, ADR-019; error codes and health bodies fixed in the TASK-002/004 review)
 Base URL on the server: `https://api.delivery.hossam-ameen.online` (ADR-015). All JSON responses below are enveloped (§1.2) unless marked "raw".
 
 | Method | Path | Auth | Throttle | Request | Response `data` | Errors |

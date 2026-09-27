@@ -62,7 +62,7 @@ Yes — production deployment on a shared server. **Pre-approved** by the TL on 
 
 ## Status
 
-QA_IN_PROGRESS
+READY_FOR_RELEASE
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created for FEAT-004; starts after TASK-013 + backend chain + TASK-007 reach READY_FOR_QA; plan pre-approved
@@ -76,6 +76,7 @@ QA_IN_PROGRESS
 - 2026-09-28 | team-lead | REVIEW → READY_FOR_QA | APPROVED; finding 1 routed to TASK-017 (before TASK-015's rollback step); QA via TASK-015
 - 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | FEAT-004 verification on the server started (TASK-015)
 - 2026-09-28 | qa | QA_IN_PROGRESS → QA_IN_PROGRESS | QA verdict PASS ticked; status left for TL final review (.ai/reports/qa/FEAT-004-qa-report.md; release 20260927-232246 (d6669b6); runs 20260927-233545-139616, -233803-141021, -233920-141829, -233518-139162)
+- 2026-09-28 | team-lead | QA_IN_PROGRESS → READY_FOR_RELEASE | TL final review signed off (QA PASS in FEAT-004-qa-report.md)
 
 ## Implementation Plan
 Phase 1 (done, no live apply): `lib/templates.sh` refuses `NGINX_HTTP2=on` (exit 2, BLK-013); the `deploy.sh` dirty-tree check covers `backend/ frontend/ deploy/ Makefile` and records `dirty`, `dirty_paths` and `dirty_checked` in `REVISION`; the TASK-012 EXIT-trap fix is in `remote-test.sh`.
@@ -168,11 +169,18 @@ ssh (read-only): ss :8010 → 127.0.0.1 only; stat modes as above; is-enabled fl
 secret counts on the server (reports tar-streamed to a /tmp dir and removed): token 0 / journald 0 / flash nginx logs 0; QA passwords in reports 0
 ```
 
+### Review — 2026-09-28 — team-lead — final
+
+**Verdict:** APPROVED — TL final sign-off.
+- QA evidence: `.ai/reports/qa/FEAT-004-qa-report.md` (PASS). The deployment report `.ai/reports/infrastructure/FEAT-004-deployment-report.md` stands; the final release is now `20260927-232246` from the roll-forward.
+- No repo changes after the TL review of phase 1 other than the reviewed BUG-002/TASK-017 changes.
+- Live state checked read-only by the TL: `make status` → current `20260927-232246` (`d6669b6`, dirty=false), previous `20260927-205208` (from PREVIOUS), flash-backend active, NRestarts 0; `make health` ALL CHECKS PASSED; dental-clinic-backend active, MainPID 18284, NRestarts 0.
+
 ## QA Log
 - 2026-09-28 | qa | IN PROGRESS | live checks PASS (smoke/deploy run 20260927-230332-114972, make health); rollback exercise pending (permission)
 - 2026-09-28 | qa | PASS | .ai/reports/qa/FEAT-004-qa-report.md; release 20260927-232246 (d6669b6); runs 20260927-233545-139616, -233803-141021, -233920-141829, -233518-139162
 
 ## Sign-off
-- TL final review: ☐
+- TL final review: ☑ (team-lead, 2026-09-28)
 - QA verdict: ☑ PASS (.ai/reports/qa/FEAT-004-qa-report.md; release 20260927-232246 (d6669b6); runs 20260927-233545-139616, -233803-141021, -233920-141829, -233518-139162)
 - PM acceptance: ☐

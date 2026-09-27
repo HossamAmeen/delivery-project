@@ -50,7 +50,7 @@ No
 
 ## Status
 
-READY_FOR_QA
+READY_FOR_RELEASE
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created from sprint-01 technical plan
@@ -59,6 +59,7 @@ READY_FOR_QA
 - 2026-09-27 | qa | IN_PROGRESS → READY_FOR_REVIEW | strategy, 3 plans, harness (139 tests: 67 api + 5 ratelimit, 39 smoke/deploy, 28 e2e) delivered; on-server `--collect-only` by QA was denied by the session's permission policy — see Completion Report (open item 1)
 - 2026-09-27 | team-lead | READY_FOR_REVIEW → REVIEW | inspection done, QA's three questions decided; verdict pending the on-server `make qa-remote ARGS='--collect-only -q'` (waiting for the user's permission decision)
 - 2026-09-27 | team-lead | REVIEW → READY_FOR_QA | code review APPROVED; AC6 on-server collection by the TL: 134/139 collected (5 deselected), exit 0 (run 20260927-204352-12423)
+- 2026-09-28 | team-lead | READY_FOR_QA → READY_FOR_RELEASE | TL final review signed off (harness used for every QA run of the sprint)
 
 ## Implementation Plan
 (not required)
@@ -145,9 +146,15 @@ AC6 is now met (run by the TL, with the user's permission): the harness installs
 ```
 Only collection ran; no test was executed and no request reached the Flash or dental sites.
 
+### Review — 2026-09-28 — team-lead — final
+
+**Verdict:** APPROVED — TL final sign-off.
+- Harness, strategy and plans delivered and reviewed (TL code review APPROVED 2026-09-27, AC6 collection 134/139). Since then the harness was exercised in all QA runs (FEAT-001/003/004); harness changes made during verification are listed and justified in the three QA reports (no expected result weakened).
+- Live state checked read-only by the TL: `make status` → current `20260927-232246` (`d6669b6`, dirty=false), previous `20260927-205208` (from PREVIOUS), flash-backend active, NRestarts 0; `make health` ALL CHECKS PASSED; dental-clinic-backend active, MainPID 18284, NRestarts 0.
+
 ## QA Log
 
 ## Sign-off
-- TL final review: ☐
-- QA verdict: ☐
+- TL final review: ☑ (team-lead, 2026-09-28)
+- QA verdict: n/a (QA's own task; its verdict is the report)
 - PM acceptance: ☐
