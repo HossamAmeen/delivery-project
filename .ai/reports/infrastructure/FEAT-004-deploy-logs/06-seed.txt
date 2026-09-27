@@ -1,0 +1,15 @@
+seeded: qa_customer (role CUSTOMER)
+seeded: qa_driver (role DRIVER)
+seeded: qa_store (role STORE)
+seeded: qa_admin (role ADMIN, --staff --superuser)
+seeded: qa_inactive (role CUSTOMER, --inactive)
+credentials written to /srv/flash/qa/credentials.env (0600; passwords never printed)
+hossam:hossam 600 /srv/flash/qa/credentials.env
+keys: QA_CUSTOMER_USERNAME QA_CUSTOMER_PASSWORD QA_DRIVER_USERNAME QA_DRIVER_PASSWORD QA_STORE_USERNAME QA_STORE_PASSWORD QA_ADMIN_USERNAME QA_ADMIN_PASSWORD QA_INACTIVE_USERNAME QA_INACTIVE_PASSWORD 
+6 objects imported automatically (use -v 2 for details).
+
+qa_admin ADMIN active staff superuser
+qa_customer CUSTOMER active - -
+qa_driver DRIVER active - -
+qa_inactive CUSTOMER INACTIVE - -
+qa_store STORE active - -

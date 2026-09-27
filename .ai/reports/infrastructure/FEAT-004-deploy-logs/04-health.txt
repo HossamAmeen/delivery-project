@@ -1,0 +1,9 @@
+PASS  systemctl is-active flash-backend
+PASS  local  /api/health/ (200)
+PASS  local  /api/health/ready/ (200)
+PASS  public /api/health/ (200)
+PASS  public /api/health/ready/ (200)
+PASS  public /api/status/ (200)
+PASS  web    https://delivery.hossam-ameen.online/ (200)
+PASS  nginx -t
+2026-09-27T20:54:24Z [health-check] INFO  health: ALL CHECKS PASSED (attempt 1)

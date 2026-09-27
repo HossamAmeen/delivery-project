@@ -5,6 +5,9 @@
 #   being rolled back applied migrations), overridden by --restore-db / --no-restore-db / --restore-mode <m>.
 #   Restoring stops the unit, saves the current DB as shared/backups/pre-rollback-<ts>.sqlite3, copies the
 #   release's pre-migrate backup back, starts the unit. WRITES MADE AFTER THAT DEPLOY ARE LOST.
+#   Default target = releases/<current>/PREVIOUS (the release live before the last deploy switch, ADR-013).
+#   Without a valid PREVIOUS a bare rollback REFUSES (exit 2) and lists the releases: use --to <id> (make rollback TO=<id>).
+#   A rollback does not rewrite the target's PREVIOUS, so a second bare rollback walks further back.
 #   Reverse migrations are never run.
 # Usage: rollback.sh [--to <release-id>] [--restore-db | --no-restore-db | --restore-mode auto|always|never] [--dry-run]
 FLASH_SCRIPT=rollback
@@ -23,7 +26,7 @@ while (($#)); do
     --restore-db) mode=always; shift ;;
     --no-restore-db) mode=never; shift ;;
     --restore-mode) [[ $# -ge 2 ]] || die "--restore-mode needs auto|always|never" 2; mode="$2"; shift 2 ;;
-    -h|--help) sed -n '2,11p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) sed -n '2,14p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) die "unknown argument: $1" 2 ;;
   esac
 done
@@ -35,13 +38,15 @@ ops_lock
 ops_guard_begin
 ops_remote ro _fs_release_info >&2
 if is_dry_run; then
-  ops_remote ro _fs_rollback "$to" "$mode" 1 >&2 || die "rollback is not possible (see above)" 1
+  ops_remote ro _fs_rollback "$to" "$mode" 1 >&2 && rc=0 || rc=$?
+  [[ $rc == 0 ]] || { ops_guard_end; die "rollback is not possible (see above)" "$([[ $rc == 2 ]] && echo 2 || echo 1)"; }
   run_script health-check.sh --timeout "$HEALTH_CHECK_TIMEOUT"
   ops_guard_end
   exit 0
 fi
 out="$(ops_remote rw _fs_rollback "$to" "$mode" 2>&1)" && rc=0 || rc=$?
 printf '%s\n' "$out" >&2
+if [[ $rc == 2 ]]; then ops_guard_end; die "rollback refused (nothing changed) — run: make rollback TO=<id>" 2; fi
 [[ $rc == 0 ]] || die "rollback FAILED (exit $rc) — see above; the site may need manual attention" 1
 info "$(grep '^ROLLBACK_RESULT' <<< "$out" || true)"
 if ! run_script health-check.sh --timeout "$HEALTH_CHECK_TIMEOUT"; then

@@ -150,6 +150,7 @@ Major changes need a new ADR, as defined in `agents/team-lead.md` §2. Major bus
   - **systemd mode:**
     - new release dir → venv install → frontend assets built (in CI or on the server) → migrate → switch the `current` symlink → `systemctl restart ${BACKEND_SYSTEMD_SERVICE}` → `nginx -s reload` → health check
     - rollback: point `current` at the previous release → restart → health check
+    - **"Previous release"** (clarified 2026-09-28, TASK-014 review) = the release that was `current` **before the last switch**, recorded at switch time in `releases/<id>/PREVIOUS` — never inferred from id/time order (which is wrong after a rollback + roll-forward). Without a recorded `PREVIOUS`, a bare rollback refuses and asks for an explicit target (TASK-017).
   - Gunicorn serves the backend in both modes. Celery worker/beat units or containers are started only when `CELERY_ENABLED` / `CELERY_BEAT_ENABLED`.
   - **Migrations are forward-only and must be backward-compatible with the previous release** (expand → deploy → contract). Rollback never runs reverse migrations. A migration that is not backward-compatible needs a TL-approved maintenance plan.
   - **Deploy fails** (non-zero exit, previous release kept) if the health check does not pass within `HEALTH_CHECK_TIMEOUT`. Automatic rollback on failure is controlled by `AUTO_ROLLBACK` (default `true` for staging and `false` for production, where it is reported for operator decision). *(Defaults to be confirmed with the PM.)*

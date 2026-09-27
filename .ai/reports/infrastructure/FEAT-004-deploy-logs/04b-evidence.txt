@@ -1,0 +1,37 @@
+## certificates
+  Certificate Name: dental.hossam-ameen.online
+    Domains: dental.hossam-ameen.online api.dental.hossam-ameen.online
+    Expiry Date: 2026-12-25 13:52:25+00:00 (VALID: 88 days)
+  Certificate Name: flash-delivery
+    Domains: api.delivery.hossam-ameen.online delivery.hossam-ameen.online
+    Expiry Date: 2026-12-26 19:54:41+00:00 (VALID: 89 days)
+## nginx -t (warnings?)
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+protocol-options-redefined count: 0
+## http2 in Flash files: /etc/nginx/sites-available/api.delivery.hossam-ameen.online:0 /etc/nginx/sites-available/delivery.hossam-ameen.online:0 
+## dental protocol (after)
+dental.hossam-ameen.online http_version=1.1 code=200
+api.dental.hossam-ameen.online http_version=1.1 code=302
+## flash protocol
+api.delivery.hossam-ameen.online http_version=1.1
+delivery.hossam-ameen.online http_version=1.1
+## http -> https
+http://api.delivery.hossam-ameen.online/api/status/ 301 -> https://api.delivery.hossam-ameen.online/api/status/
+http://delivery.hossam-ameen.online/driver 301 -> https://delivery.hossam-ameen.online/driver
+## web
+https://delivery.hossam-ameen.online/ 200 app-root=1 cache=no-cache
+https://delivery.hossam-ameen.online/driver 200 app-root=1 cache=no-cache
+https://delivery.hossam-ameen.online/customer/orders 200 app-root=1 cache=no-cache
+https://delivery.hossam-ameen.online/manifest.webmanifest 200 app-root=0 cache=no-cache
+https://delivery.hossam-ameen.online/sw.js 200 app-root=0 cache=no-cache
+asset /assets/AdminAreaView-qwgnIyJA.js HTTP/1.1 200 OK Cache-Control: public, max-age=31536000, immutable 
+## hsts
+Strict-Transport-Security: max-age=31536000
+Strict-Transport-Security: max-age=31536000
+## static (www-data traversal)
+https://api.delivery.hossam-ameen.online/static/admin/css/nav_sidebar.css -> 200 text/css
+https://api.delivery.hossam-ameen.online/static/jazzmin/css/main.css -> 200
+## api
+status: {"success":true,"message":"Operation completed successfully.","data":{"status":"ok"}}
+health without token: {"success":false,"message":"Invalid health check password.","errors":{"code":"HEALTH_TOKEN_INVALID"}} [401]

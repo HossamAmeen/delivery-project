@@ -1,0 +1,12 @@
+dummy request: 401  (expected 401)
+token length: 64 (value never printed)
+token in local deploy/tls/health logs: 0
+token in /var/log/nginx/flash-*.log: 0
+token in journalctl -u flash-backend: 0
+dummy value in nginx flash logs: 0
+"password=" in nginx flash logs: 0
+dummy value in journald (gunicorn access log): 0
+"password=" in journald: 0
+health requests visible (path only) in journald: 7
+sample gunicorn access line: - [27/Sep/2026:20:54:48 +0000] "GET /api/health/ HTTP/1.1" 401 101 2254us "curl/8.5.0"
+sample nginx access line: 34.123.215.195 - [27/Sep/2026:20:54:48 +0000] "GET /api/health/ HTTP/1.1" 401 101 0.004 "curl/8.5.0"

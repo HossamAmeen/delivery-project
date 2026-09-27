@@ -64,7 +64,7 @@ Blocked: TASK-011 (BLK-012). Backlog: TASK-006.
 ### Agent → task queue
 | Agent | Tasks, in order | Parallel with |
 |---|---|---|
-| Infrastructure | TASK-012 → TASK-013 → (wait) → TASK-014 | everything in waves 0–1 |
+| Infrastructure | TASK-012 → TASK-013 → (wait) → TASK-014 → TASK-017 (rollback target from deploy history; before TASK-015's rollback step) | everything in waves 0–1 |
 | Backend | TASK-001 → TASK-002 → TASK-005 → TASK-004 → TASK-003 (strictly sequential) → TASK-016 (`create_role_user --inactive`, added 2026-09-27 from TASK-008) | Infra, Frontend, QA |
 | Frontend | TASK-007 | Backend, Infra, QA |
 | QA | TASK-008 (wave 0) → TASK-015, TASK-009, TASK-010 (wave 3) | wave 0–1 with all |

@@ -1,0 +1,67 @@
+2026-09-27T20:51:50Z [setup-server] INFO  setup-server mode=systemd host=34.123.215.195 user=hossam path=/srv/flash bootstrap_only=0 with_e2e=0 dry_run=0
+2026-09-27T20:51:50Z [setup-server] ----- 1/8 dental guard: preflight + before snapshot
+2026-09-27T20:51:50Z [setup-server] INFO  dental preflight OK (port 8010: free)
+2026-09-27T20:51:51Z [setup-server] INFO  dental snapshot: /tmp/flash-dental-guard/20260927-205150-17828-before.txt (33 entries; service-active dental-clinic-backend active;https-status dental.hossam-ameen.online 200;https-status api.dental.hossam-ameen.online 302;)
+2026-09-27T20:51:51Z [setup-server] ----- 2/8 directory layout + permission modes under /srv/flash
+ok       /srv/flash (hossam:hossam:755)
+ok       /srv/flash/releases (hossam:hossam:755)
+ok       /srv/flash/shared (hossam:hossam:751)
+ok       /srv/flash/shared/static (hossam:hossam:755)
+ok       /srv/flash/shared/media (hossam:hossam:755)
+ok       /srv/flash/shared/db (hossam:hossam:700)
+ok       /srv/flash/shared/backups (hossam:hossam:700)
+ok       /srv/flash/shared/cache (hossam:hossam:700)
+ok       /srv/flash/shared/logs (hossam:hossam:750)
+ok       /srv/flash/sandbox (hossam:hossam:750)
+ok       /srv/flash/qa (hossam:hossam:750)
+2026-09-27T20:51:52Z [setup-server] ----- 3/8 uv 0.12.19 for hossam
+ok       uv 0.12.19 at /home/hossam/.local/bin/uv
+2026-09-27T20:51:52Z [setup-server] ----- 4/8 python 3.13 via uv
+ok       python 3.13.15 at /home/hossam/.local/share/uv/python/cpython-3.13-linux-x86_64-gnu/bin/python3.13
+2026-09-27T20:51:54Z [setup-server] ----- 5/8 plan: shared/.env, systemd unit, nginx (http variant)
+would-create  /srv/flash/shared/.env (0600; SECRET_KEY + HEALTH_CHECK_PASSWORD generated on the server)
+would-create  systemd unit (/etc/systemd/system/flash-backend.service)
+would-create  nginx site (http) (/etc/nginx/sites-available/api.delivery.hossam-ameen.online)
+would-create  nginx site (http) (/etc/nginx/sites-available/delivery.hossam-ameen.online)
+2026-09-27T20:51:55Z [setup-server] ----- 6/8 apply: shared/.env → unit → nginx safe-apply
+created: /srv/flash/shared/.env (0600; generated on the server: SECRET_KEY HEALTH_CHECK_PASSWORD )
+[remote] systemd-analyze verify (a missing ExecStart binary is expected before the first release):
+  flash-backend.service: Command /srv/flash/current/venv/bin/gunicorn is not executable: No such file or directory
+installed: /etc/systemd/system/flash-backend.service
+Created symlink /etc/systemd/system/multi-user.target.wants/flash-backend.service → /etc/systemd/system/flash-backend.service.
+enabled: flash-backend
+not started: no current release yet (first 'make deploy' starts it)
+nginx: backup of the previous Flash files in /tmp/flash-nginx-backup-1E2Y0T
+nginx: wrote /etc/nginx/sites-available/api.delivery.hossam-ameen.online (+ sites-enabled link)
+nginx: wrote /etc/nginx/sites-available/delivery.hossam-ameen.online (+ sites-enabled link)
+  [nginx -t] nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+  [nginx -t] nginx: configuration file /etc/nginx/nginx.conf test is successful
+nginx: reloaded (active)
+2026-09-27T20:51:59Z [setup-server] ----- 7/8 Playwright: skipped (use --with-e2e)
+2026-09-27T20:51:59Z [setup-server] ----- 8/8 verify permissions + versions
+ok    hossam:hossam:755 /srv/flash
+ok    hossam:hossam:755 /srv/flash/releases
+ok    hossam:hossam:751 /srv/flash/shared
+ok    hossam:hossam:755 /srv/flash/shared/static
+ok    hossam:hossam:755 /srv/flash/shared/media
+ok    hossam:hossam:700 /srv/flash/shared/db
+ok    hossam:hossam:700 /srv/flash/shared/backups
+ok    hossam:hossam:700 /srv/flash/shared/cache
+ok    hossam:hossam:750 /srv/flash/shared/logs
+ok    hossam:hossam:750 /srv/flash/sandbox
+ok    hossam:hossam:750 /srv/flash/qa
+ok    hossam:hossam:600 /srv/flash/shared/.env
+ok    www-data test -r shared/static/.: ok
+ok    www-data test -r shared/media/.: ok
+ok    www-data ls shared: denied
+ok    www-data test -r shared/db/.: denied
+ok    www-data test -r shared/backups/.: denied
+ok    www-data cat shared/.env: denied
+uv:      uv 0.12.19 (x86_64-unknown-linux-gnu)
+python:  /home/hossam/.local/share/uv/python/cpython-3.13-linux-x86_64-gnu/bin/python3.13 Python 3.13.15
+disk:    12G 37% free/used on /srv
+layout:  /srv/flash /srv/flash/qa /srv/flash/qa/results /srv/flash/qa/suite /srv/flash/qa/venv /srv/flash/releases /srv/flash/sandbox /srv/flash/sandbox/backend /srv/flash/sandbox/results /srv/flash/sandbox/venv /srv/flash/shared /srv/flash/shared/backups /srv/flash/shared/cache /srv/flash/shared/db /srv/flash/shared/logs /srv/flash/shared/media /srv/flash/shared/static 
+2026-09-27T20:52:00Z [setup-server] ----- dental guard: after snapshot + compare
+2026-09-27T20:52:01Z [setup-server] INFO  dental snapshot: /tmp/flash-dental-guard/20260927-205150-17828-after.txt (33 entries; service-active dental-clinic-backend active;https-status dental.hossam-ameen.online 200;https-status api.dental.hossam-ameen.online 302;)
+2026-09-27T20:52:01Z [setup-server] INFO  dental guard: before/after IDENTICAL (33 entries)
+2026-09-27T20:52:01Z [setup-server] INFO  setup-server finished

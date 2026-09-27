@@ -198,8 +198,9 @@ Each `%` is doubled for systemd; the parsed argv was verified. `Restart=always`,
 - **Phases:** until the certificate exists, `setup-server`/`deploy` install the `*.http.conf` variants (port 80 only).
   `make tls` issues the certificate and switches to the TLS variants.
 - **Safe-apply** (every nginx change): back up the Flash files to `/tmp/flash-nginx-backup-*` → write → `sudo nginx -t` →
-  on failure restore the previous files (or remove the new ones), run `nginx -t` again, exit 1 **without reloading** → on
-  success `sudo systemctl reload nginx`. It refuses any other file name, and an unchanged file means no reload.
+  on failure restore the previous files (or remove the new ones), run `nginx -t` again, exit 1 **without reloading**, and keep
+  the backup directory (path printed) → on success `sudo systemctl reload nginx` and delete the backup directory. It refuses
+  any other file name, and an unchanged file means no reload.
 - **TLS:** `sudo certbot certonly --nginx --cert-name flash-delivery -d api.delivery… -d delivery… --non-interactive
   --agree-tos [-m $LETSENCRYPT_EMAIL] --deploy-hook "nginx -t && systemctl reload nginx"`. With `LETSENCRYPT_EMAIL`
   empty, the registered production ACME account is reused (the script fails early if `certbot show_account` finds none).
@@ -242,8 +243,22 @@ http and **skip** the token endpoints. Every failing check is named (`FAIL  …`
 ## Rollback
 
 `make rollback [TO=<id>] [RESTORE_DB=auto|always|never]` (default `ROLLBACK_RESTORE_DB=auto`):
-1. Target = the release before `current`, or `TO`. It fails clearly when there is none.
-2. DB decision (SQLite, ADR-017): `auto` restores only if the release being rolled back **applied migrations**
+1. **Target.** With `TO=<id>`, that release. Without it: the release recorded in `releases/<current>/PREVIOUS`, i.e. the
+   release that was `current` just before the last **deploy** switch (ADR-013). `deploy.sh` writes `PREVIOUS` (0644)
+   at every switch, except the first deploy. The target is **never** guessed from release-id or time order, which is
+   wrong after a rollback + roll-forward. If `PREVIOUS` is missing or names a release that no longer exists, a bare
+   rollback **refuses with exit 2** and nothing changes:
+   ```
+   [remote] ERROR: no recorded previous release for <id> (release <id> has no PREVIOUS file).
+   [remote] Refusing to guess by release-id order. Choose the target explicitly: make rollback TO=<id>
+   [remote] Available releases:
+     20260927-205208  sha=f85848b9bbdb  built=2026-09-27T20:52:31Z
+     …                                                   <- current
+   ```
+   A rollback does **not** rewrite the target's `PREVIOUS`, so a second bare rollback walks further back in the deploy
+   history. `make status` shows `previous: <id> (from PREVIOUS)` or `previous: unknown (no PREVIOUS)`, plus every release with
+   its sha and build time. The auto-rollback inside `make deploy` always passes the explicit id that was live before it.
+2. **DB decision** (SQLite, ADR-017): `auto` restores only if the release being rolled back **applied migrations**
    (`MIGRATION_STATE` `applied=yes`); `always` restores its pre-migrate backup; `never` doesn't. If no backup exists
    (first deploy), the DB is not restored and a warning says so.
 3. `current` → target. With a restore: stop the unit → save the live DB as `shared/backups/pre-rollback-<ts>.sqlite3` →
@@ -251,12 +266,13 @@ http and **skip** the token endpoints. Every failing check is named (`FAIL  …`
    Without a restore: restart.
 4. Health (`HEALTH_CHECK_TIMEOUT`) → dental compare.
 
-Reverse migrations are never run. `DRY_RUN=1` prints the exact decision without changing anything.
+Reverse migrations are never run. `DRY_RUN=1` prints the exact target and DB decision without changing anything.
+Prune always keeps `current` and the release named in its `PREVIOUS` (plus the newest `RELEASES_TO_KEEP`).
 
 ## Resource limits and retention
 
 - gunicorn 2 workers × 2 threads, `MemoryMax=700M`, `TasksMax=128`; no builds on the server; one pytest worker in the runners.
-- `RELEASES_TO_KEEP=5` (the current release and its previous are always kept). `DB_BACKUPS_TO_KEEP=5` per kind
+- `RELEASES_TO_KEEP=5` (the current release and the one in its `PREVIOUS` are always kept). `DB_BACKUPS_TO_KEEP=5` per kind
   (`flash-*`, `pre-rollback-*`), and the current release's rollback backup is always kept.
 - Deploy refuses to start below `MIN_FREE_DISK_MB`. Each release is ~20 MB thanks to hardlinks (`--link-dest` + the uv cache).
 - Remote-test results: the last 10 runs (server and local).

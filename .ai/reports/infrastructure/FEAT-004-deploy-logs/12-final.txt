@@ -1,0 +1,38 @@
+throttle-reset: removed 3 file(s) from /srv/flash/shared/cache
+## resources
+               total        used        free      shared  buff/cache   available
+Mem:            3908         817        1613           1        1768        3090
+Swap:              0           0           0
+/dev/root        19G  7.4G   11G  41% /
+MemoryCurrent=95887360
+TasksCurrent=6
+MemoryMax=734003200
+TasksMax=128
+releases: 3 (20260927-205208 20260927-205632 20260927-205803 ) current=releases/20260927-205803
+backups: 3
+75M	/srv/flash/releases/20260927-205208
+22M	/srv/flash/releases/20260927-205632
+22M	/srv/flash/releases/20260927-205803
+16M	/srv/flash/shared
+815M	/srv/flash/qa
+67M	/srv/flash/sandbox
+## listeners
+127.0.0.1:8010
+127.0.0.1:8000
+## dental final
+dental-clinic-backend: active MainPID=18284 NRestarts=0 
+dental.hossam-ameen.online http_version=1.1 code=200
+api.dental.hossam-ameen.online http_version=1.1 code=302
+nginx -t protocol-options-redefined: 0
+## flash nginx/systemd files
+total 12
+drwxr-xr-x 2 root root 4096 Sep 27 20:53 .
+drwxr-xr-x 9 root root 4096 Sep 27 20:54 ..
+lrwxrwxrwx 1 root root   59 Sep 27 20:53 api.delivery.hossam-ameen.online -> /etc/nginx/sites-available/api.delivery.hossam-ameen.online
+lrwxrwxrwx 1 root root   62 Sep 26 22:52 api.dental.hossam-ameen.online.conf -> /etc/nginx/sites-available/api.dental.hossam-ameen.online.conf
+lrwxrwxrwx 1 root root   34 Sep 26 14:45 default -> /etc/nginx/sites-available/default
+lrwxrwxrwx 1 root root   55 Sep 27 20:53 delivery.hossam-ameen.online -> /etc/nginx/sites-available/delivery.hossam-ameen.online
+lrwxrwxrwx 1 root root   58 Sep 26 22:52 dental.hossam-ameen.online.conf -> /etc/nginx/sites-available/dental.hossam-ameen.online.conf
+-rw-r--r-- 1 root root 1524 Sep 27 20:51 /etc/systemd/system/flash-backend.service
+/tmp/flash-nginx-backup-1E2Y0T /tmp/flash-nginx-backup-wBxjru 
+2026-09-27T20:59:30Z [task014-snapshot] INFO  dental guard: before/after IDENTICAL (33 entries)

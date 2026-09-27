@@ -1,0 +1,46 @@
+Created user 'zz_rollback_marker' with role CUSTOMER.
+users: 6 | marker present: True | qa_ users: 5
+### rollback plan RESTORE_DB=auto (dry-run)
+[remote] rollback: 20260927-205632 -> 20260927-205208 (mode=auto, 20260927-205632 applied migrations: no, restore DB: no)
+[remote] plan only: nothing changed
+### rollback plan RESTORE_DB=always (dry-run)
+[remote] rollback: 20260927-205632 -> 20260927-205208 (mode=always, 20260927-205632 applied migrations: no, restore DB: yes, from /srv/flash/shared/backups/flash-20260927-205632-20260927-205706.sqlite3)
+[remote] plan only: nothing changed
+2026-09-27T20:57:47Z [rollback] INFO  dental preflight OK (port 8010: held-by-flash-backend)
+2026-09-27T20:57:47Z [rollback] INFO  dental snapshot: /tmp/flash-dental-guard/20260927-205746-26285-before.txt (33 entries; service-active dental-clinic-backend active;https-status dental.hossam-ameen.online 200;https-status api.dental.hossam-ameen.online 302;)
+current:  20260927-205632
+releases: 20260927-205208 20260927-205632 
+disk:     11208 MB free on /srv/flash (min 1500)
+[remote] rollback: 20260927-205632 -> 20260927-205208 (mode=always, 20260927-205632 applied migrations: no, restore DB: yes, from /srv/flash/shared/backups/flash-20260927-205632-20260927-205706.sqlite3)
+current: 20260927-205632 -> 20260927-205208
+[remote] WARNING: restoring /srv/flash/shared/backups/flash-20260927-205632-20260927-205706.sqlite3 — every write made after 20260927-205632 was deployed is LOST (a copy of the current DB is kept)
+[remote] saved current DB as /srv/flash/shared/backups/pre-rollback-20260927-205749.sqlite3
+[remote] database restored from /srv/flash/shared/backups/flash-20260927-205632-20260927-205706.sqlite3; flash-backend started
+ROLLBACK_RESULT from=20260927-205632 to=20260927-205208 db_restored=1
+2026-09-27T20:57:50Z [rollback] INFO  ROLLBACK_RESULT from=20260927-205632 to=20260927-205208 db_restored=1
+PASS  systemctl is-active flash-backend
+PASS  local  /api/health/ (200)
+PASS  local  /api/health/ready/ (200)
+PASS  public /api/health/ (200)
+PASS  public /api/health/ready/ (200)
+PASS  public /api/status/ (200)
+PASS  web    https://delivery.hossam-ameen.online/ (200)
+PASS  nginx -t
+2026-09-27T20:57:51Z [health-check] INFO  health: ALL CHECKS PASSED (attempt 1)
+2026-09-27T20:57:52Z [rollback] INFO  dental snapshot: /tmp/flash-dental-guard/20260927-205746-26285-after.txt (33 entries; service-active dental-clinic-backend active;https-status dental.hossam-ameen.online 200;https-status api.dental.hossam-ameen.online 302;)
+2026-09-27T20:57:52Z [rollback] INFO  dental guard: before/after IDENTICAL (33 entries)
+2026-09-27T20:57:52Z [rollback] INFO  rollback complete
+releases/20260927-205208
+/srv/flash/shared/backups:
+drwx------ 2 hossam hossam   4096 Sep 27 20:57 .
+drwxr-x--x 8 hossam hossam   4096 Sep 27 20:51 ..
+-rw------- 1 hossam hossam 135168 Sep 27 20:57 flash-20260927-205632-20260927-205706.sqlite3
+-rw------- 1 hossam hossam 135168 Sep 27 20:57 pre-rollback-20260927-205749.sqlite3
+
+/srv/flash/shared/db:
+drwx------ 2 hossam hossam   4096 Sep 27 20:57 .
+drwxr-x--x 8 hossam hossam   4096 Sep 27 20:51 ..
+-rw------- 1 hossam hossam 135168 Sep 27 20:57 flash.sqlite3
+users: 5 | marker present: False | qa_ users: 5
+NRestarts=0
+ActiveEnterTimestamp=Sun 2026-09-27 20:57:49 UTC

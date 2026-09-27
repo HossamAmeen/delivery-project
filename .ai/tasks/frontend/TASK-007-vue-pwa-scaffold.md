@@ -57,7 +57,7 @@ Yes — first frontend architecture. **Pre-approved** against ADR-008/011/019 an
 
 ## Status
 
-READY_FOR_QA
+QA_IN_PROGRESS
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created from sprint-01 technical plan
@@ -67,6 +67,7 @@ READY_FOR_QA
 - 2026-09-27 | frontend | IN_PROGRESS → READY_FOR_REVIEW | scaffold done; npm ci/lint/type-check/test:unit (67 passed)/build green locally; see Completion Report
 - 2026-09-27 | team-lead | READY_FOR_REVIEW → REVIEW | code review started
 - 2026-09-27 | team-lead | REVIEW → READY_FOR_QA | code review APPROVED (Review Log); build gates re-run green; browser/installability checks → QA TASK-010
+- 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | FEAT-003 verification on the deployed web domain started (TASK-010)
 
 ## Implementation Plan
 (frontend, 2026-09-27 — written under the TL's conditional pre-approval; no deviation from ADR-008/011/019)

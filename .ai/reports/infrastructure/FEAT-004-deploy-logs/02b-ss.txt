@@ -1,0 +1,10 @@
+LISTEN 0      2048       127.0.0.1:8010      0.0.0.0:*    pid=37098
+LISTEN 0      2048       127.0.0.1:8000      0.0.0.0:*    pid=18284
+release=20260927-205208
+sha=f85848b9bbdbb3ab7cf098ca0a69c88d9ebb5c9f
+dirty=false
+dirty_paths=none
+dirty_checked=backend frontend deploy Makefile
+built_at=2026-09-27T20:52:31Z
+built_by=hossam@7ossam-lap
+vite_api_base_url=https://api.delivery.hossam-ameen.online

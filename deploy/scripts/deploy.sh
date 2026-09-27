@@ -112,7 +112,7 @@ run_script migrate.sh --release "$release" || deploy_fail "migrate"
 
 # ------------------------------------------------------------------ switch + restart
 step "switch current → $release"
-ops_remote rw _fs_switch_current "$release" || deploy_fail "switch current"
+ops_remote rw _fs_switch_current "$release" 1 || deploy_fail "switch current"   # 1 = record PREVIOUS
 SWITCHED=1
 run_script restart-backend.sh || deploy_fail "restart backend"
 

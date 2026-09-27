@@ -62,14 +62,18 @@ Yes — production deployment on a shared server. **Pre-approved** by the TL on 
 
 ## Status
 
-IN_PROGRESS
+READY_FOR_QA
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created for FEAT-004; starts after TASK-013 + backend chain + TASK-007 reach READY_FOR_QA; plan pre-approved
 - 2026-09-27 | team-lead | TODO → TODO | amended from the TASK-012 review: permission evidence, `/static/` 200 check, `LETSENCRYPT_EMAIL` optional
 - 2026-09-27 | team-lead | TODO → TODO | amended from the backend/QA reviews: journald token check + query-string log check, `qa_inactive` seeding
 - 2026-09-27 | infrastructure | TODO → IN_PROGRESS | phase 1 (pre-live fixes, no live apply): NGINX_HTTP2=on refused (exit 2), dirty-tree check extended to deploy/ + Makefile (recorded in REVISION); waiting for the orchestrator's commit + go for the live phase
+- 2026-09-27 | infrastructure | IN_PROGRESS → IN_PROGRESS | GO received (f85848b, clean tree); live phase: setup-server, deploy 205208, tls, health, seed-qa-users, --with-e2e, deploy 205632, rollback with DB restore, roll-forward 205803, crash test; every dental guard IDENTICAL
+- 2026-09-28 | infrastructure | IN_PROGRESS → READY_FOR_REVIEW | live deployment done; report .ai/reports/infrastructure/FEAT-004-deployment-report.md (+ FEAT-004-deploy-logs/)
 - 2026-09-27 | team-lead | IN_PROGRESS → IN_PROGRESS | phase 1 (pre-live fixes) reviewed and APPROVED; live phase may start after the orchestrator's commit
+- 2026-09-28 | team-lead | READY_FOR_REVIEW → REVIEW | review of the live execution evidence
+- 2026-09-28 | team-lead | REVIEW → READY_FOR_QA | APPROVED; finding 1 routed to TASK-017 (before TASK-015's rollback step); QA via TASK-015
 
 ## Implementation Plan
 Phase 1 (done, no live apply): `lib/templates.sh` refuses `NGINX_HTTP2=on` (exit 2, BLK-013); the `deploy.sh` dirty-tree check covers `backend/ frontend/ deploy/ Makefile` and records `dirty`, `dirty_paths` and `dirty_checked` in `REVISION`; the TASK-012 EXIT-trap fix is in `remote-test.sh`.
@@ -84,12 +88,28 @@ Phase 2 (live, after the orchestrator's commit + go). Every step is dental-guard
 8. Resource evidence, final dental check + dental http2 protocol comparison, `make throttle-reset`, `FEAT-004-deployment-report.md`.
 
 ## Completion Report
-(assignee, when moving to READY_FOR_REVIEW)
-- Files changed:
-- Tests added:
-- Validation commands run + results:
-- Contract/OpenAPI changes:
-- Known limitations / remaining problems:
+- **Report:** `.ai/reports/infrastructure/FEAT-004-deployment-report.md`. Raw logs (token-free, verified on the server) are in `.ai/reports/infrastructure/FEAT-004-deploy-logs/`.
+- **Live:** https://delivery.hossam-ameen.online/ (PWA) and https://api.delivery.hossam-ameen.online/ (`/api/status/`, `/api/health/` + `/ready/` with the header token, `/admin/`, `/static/`). Release of record **20260927-205803**, sha `f85848b`, `dirty=false`.
+- **Files changed (phase 1, reviewed):** `deploy/scripts/lib/templates.sh` (`NGINX_HTTP2=on` → exit 2), `deploy/scripts/deploy.sh` (dirty check covers `backend frontend deploy Makefile`; `REVISION` records `dirty`, `dirty_paths`, `dirty_checked`), `deploy/scripts/remote-test.sh` (the TASK-012 EXIT-trap fix), `deploy/README.md`, `.env.example`. Phase 2 changed no repo files except the reports.
+- **Validation / acceptance evidence** (details in the report):
+  - `setup-server`: `shared/.env` 0600 with server-generated secrets; unit installed and enabled; http bootstrap sites via safe-apply; `stat` modes shared 751 / db, backups, cache 700 / static, media 755; www-data checks ok and denied as expected.
+  - First deploy from a clean commit: Python 3.13.15 venv, DB created by migrate, `current` switched, listener only on `127.0.0.1:8010`, HTTP health green.
+  - `make tls`: one certificate `flash-delivery` for exactly the two names (no `-m`, the registered account was reused); TLS templates applied; 301 http→https on both; `renew --dry-run --cert-name flash-delivery` succeeded; the dental certificate and every dental file unchanged (guard IDENTICAL around certbot).
+  - `make health` 8/8: https token health and ready, `/api/status/` 200, web 200, `/driver` 200, `/static/admin/css/nav_sidebar.css` **200** (not 403), HSTS without includeSubDomains/preload.
+  - Secrets (counts on the server): token in the deploy logs 0, in the nginx flash logs 0, in journald 0. After a wrong-dummy `?password=` request: dummy value 0 and `password=` 0 in both the nginx logs and journald (path-only access logs).
+  - BLK-013: 0 `http2` in the Flash files; `nginx -t` shows 0 `protocol options redefined`; dental negotiates HTTP/1.1 before and after (200 / 302).
+  - `seed-qa-users`: qa_customer, qa_driver, qa_store, qa_admin (staff + superuser) and **qa_inactive (inactive)**; `credentials.env` 0600; passwords never printed.
+  - `--with-e2e`: `install-deps` found all dependencies present, so apt made 0 upgrades and 0 new installs (dpkg 694 → 694); Chromium 1243 in `qa/browsers` (658 MB); disk 6.8 → 7.4 GB used.
+  - **Rollback exercise:** deploy #2 (205632), then a marker user written after its pre-migrate backup, then `make rollback RESTORE_DB=always`. Result: `current` 205632 → 205208; unit stopped; live DB saved as `pre-rollback-*` (0600); backup restored; unit started; health 8/8. The marker was gone and the 5 QA users were intact, so the restore happened. The `auto` plan correctly said "no restore" (no migrations applied). Roll-forward: `make deploy` → 205803, health green.
+  - Crash recovery: SIGKILL → back active and serving 200 in 5.8 s, NRestarts 1, enabled. No reboot.
+  - Resources: flash-backend 91 MB / 700 MiB, Tasks 6/128, RAM available 3090 MB, disk 11 GB free; 3 releases (75 + 22 + 22 MB), 3 backups.
+  - Dental: **every** guard compare was IDENTICAL; the final compare against the pre-deploy baseline is IDENTICAL; `dental-clinic-backend` active, MainPID 18284 unchanged, NRestarts 0; dental 200 / api.dental 302. `make throttle-reset` done at the end.
+- **Contract/OpenAPI changes:** none.
+- **Known limitations / remaining problems:**
+  1. **The default manual rollback target is the previous release *id*, not deploy history.** After rollback + roll-forward, a bare `make rollback` would pick 205632 (the release rolled back from). `deploy.sh`'s auto-rollback passes the true previous release, so it is correct. Workaround: `make rollback TO=<id>`. Proposed fix (TL decision): record `PREVIOUS` at switch time and use it as the default target.
+  2. The DB-restore path was exercised with `RESTORE_DB=always`, since no migration has been applied since the first release; the `auto` decision logic was shown in the plan.
+  3. Local build machine: `npm ci` warns `EBADENGINE` (abbrev@5 / nopt@10 want node ≥ 24.15; local 24.3.0). The build is fine; upgrading the local Node is recommended.
+  4. Two `/tmp/flash-nginx-backup-*` recovery copies are left on the server (the pre-setup and pre-TLS Flash files); they are harmless and can be removed.
 
 ## Review Log
 - 2026-09-27 | team-lead | PLAN PRE-APPROVED (conditional) | valid within the TASK-013 constraints and ADR-015/017
@@ -114,6 +134,37 @@ make deploy DRY_RUN=1 (with the uncommitted review changes present)   → "uncom
 ```
 
 **Before the live phase:** the orchestrator commits the reviewed changes (TASK-016, the TASK-012 fix, phase 1 and the `.ai` updates), so `make deploy` runs from a clean tree without `--allow-dirty`. The remaining TASK-014 notes (http2 evidence against dental, https health after `make tls`, the dental guard around certbot) still apply.
+
+### Review — 2026-09-28 — team-lead — execution evidence
+
+**Verdict:** APPROVED
+
+**Checked (report + raw logs + TL read-only checks; no deploy/rollback/restart by the TL — QA TASK-009/010 running):**
+- [x] Every AC has evidence in `.ai/reports/infrastructure/FEAT-004-deployment-report.md` and `FEAT-004-deploy-logs/00…12`
+- [x] Release of record `20260927-205803` from `f85848b`, `dirty=false`, `dirty_checked=backend frontend deploy Makefile` (REVISION read via `make status`)
+- [x] Listener only on `127.0.0.1:8010`; unit enabled; permissions per ADR-015 (shared 751; db/backups/cache 700; static/media 755; `.env` and `qa/credentials.env` 600)
+- [x] TLS: cert `flash-delivery` = exactly the two Flash names, valid to 2026-12-26; both sites on the TLS variant; HSTS `max-age=31536000` only
+- [x] BLK-013: 0 `http2` in the Flash files, 0 `protocol options redefined` in `nginx -t`; Flash, dental and api.dental all answer on HTTP/1.1 (curl `--http2` offered): dental 200, api.dental 302, unchanged
+- [x] Secrets: TL server-side counts (value never printed): health token in the committed-to-be reports/logs 0, in journald 0, in the Flash nginx logs 0; `QA_CUSTOMER_PASSWORD`/`QA_ADMIN_PASSWORD` in the reports 0
+- [x] Dental: `dental-clinic-backend` active, MainPID 18284, NRestarts 0 (unchanged since the audit); every guard compare IDENTICAL per the logs
+- [x] Rollback + DB restore (ADR-017) and crash recovery exercised; sudo use within the ADR-015 list
+
+**Decisions on Infrastructure's findings:**
+1. **Bare `make rollback` targets the previous id, not deploy history — a real defect; fix BEFORE QA's TASK-015 rollback step.** TASK-015 AC "`make rollback` → previous release serves" would otherwise exercise the wrong target on the live site (current 205803 → by-id 205632 instead of the actually-previous 205208). Created **TASK-017** (Infrastructure): record `PREVIOUS` at every switch; a bare rollback uses it and refuses (exit 2, asks for `TO=`) when it is missing; prune keeps current + recorded previous; one-time backfill `releases/20260927-205803/PREVIOUS = 20260927-205208` (confirmed from `09b-rollback-live.txt`/`10-deploy3.txt`). ADR-013 clarified. TASK-015 now depends on TASK-017 for its rollback step only; until then everyone uses `make rollback TO=<id>`. Not blocking for TASK-014: the deploy auto-rollback passes the explicit id and was correct.
+2. **DB restore exercised with `always`, not `auto` — ACCEPTED.** The restore mechanics (stop → pre-rollback copy → restore → start → health, marker gone, QA users intact) are proven; `auto` correctly chose "no restore" because no migration was applied. The `auto` + applied-migration path gets live evidence at the first deploy whose release applies a migration (Infrastructure records it in that deploy's report; QA covers it in the next FEAT-004 regression).
+3. **Local Node 24.3 `EBADENGINE` warnings — ACCEPTED, non-blocking.** They come from dev-only transitive deps (abbrev/nopt via js-beautify); the project's `engines.node` is satisfied and the build is green. Recommendation to the operator: move the build machine to Node 24 ≥ 24.15 (or 22 LTS). No task.
+4. **Two `/tmp/flash-nginx-backup-*` on the server — ACCEPTED as harmless** (outside `/etc/nginx`, Flash files only). Removal plus "delete the backup after a successful safe-apply" is part of TASK-017.
+
+**Commands run (TL, read-only):**
+```
+make health   → 8/8 PASS (unit, local health + ready, public health + ready with header token, /api/status/, web root, nginx -t)  EXIT 0
+make status   → current 20260927-205803; releases 205208 205632 205803; REVISION sha f85848b… dirty=false; 3 backups;
+                both Flash sites variant=tls; cert flash-delivery covers both names, expiry 2026-12-26; flash-backend 96.7 MB, NRestarts 1 (the crash test)
+ssh (read-only): ss :8010 → 127.0.0.1 only; stat modes as above; is-enabled flash-backend = enabled; dental active MainPID 18284 NRestarts 0;
+                nginx -t "protocol options redefined" count 0; http2 in Flash site files 0/0; /tmp/flash-nginx-backup-* ×2 present;
+                curl --http2: dental 200 1.1, api.dental 302 1.1, flash /driver 200 1.1, /static/admin/css/nav_sidebar.css 200; api HSTS max-age=31536000
+secret counts on the server (reports tar-streamed to a /tmp dir and removed): token 0 / journald 0 / flash nginx logs 0; QA passwords in reports 0
+```
 
 ## QA Log
 

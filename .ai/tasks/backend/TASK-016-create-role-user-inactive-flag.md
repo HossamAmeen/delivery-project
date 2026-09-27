@@ -47,7 +47,7 @@ No — small, fully specified change to an existing command
 
 ## Status
 
-READY_FOR_QA
+QA_IN_PROGRESS
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created from QA TASK-008 request (qa_inactive for TC-001-JWT-07); small follow-up to TASK-003
@@ -55,6 +55,7 @@ READY_FOR_QA
 - 2026-09-27 | backend | IN_PROGRESS → READY_FOR_REVIEW | `--inactive` added + 8 tests; server run 20260927-204538-13225 green (246 passed, coverage 98.43%)
 - 2026-09-27 | team-lead | READY_FOR_REVIEW → REVIEW | code review started
 - 2026-09-27 | team-lead | REVIEW → READY_FOR_QA | code review APPROVED; TL server run 20260927-204950-16782 (worktree): 246 passed, coverage 98.43%
+- 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | FEAT-001 verification on the server started (TASK-009)
 
 ## Implementation Plan
 (not required)

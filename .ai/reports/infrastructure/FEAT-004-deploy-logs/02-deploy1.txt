@@ -1,0 +1,191 @@
+2026-09-27T20:52:08Z [deploy] ----- preflight
+2026-09-27T20:52:08Z [deploy] INFO  release 20260927-205208 from f85848b9bbdb (dirty=false) → hossam@34.123.215.195:/srv/flash
+current:  none
+releases: 
+disk:     11925 MB free on /srv/flash (min 1500)
+2026-09-27T20:52:11Z [deploy] INFO  dental preflight OK (port 8010: free)
+2026-09-27T20:52:12Z [deploy] INFO  dental snapshot: /tmp/flash-dental-guard/20260927-205211-18812-before.txt (33 entries; service-active dental-clinic-backend active;https-status dental.hossam-ameen.online 200;https-status api.dental.hossam-ameen.online 302;)
+2026-09-27T20:52:12Z [deploy] ----- build frontend (local) and stage release
+2026-09-27T20:52:12Z [deploy-frontend] INFO  frontend build in /media/hossam/Software5/delivery_project/frontend (node v24.3.0, VITE_API_BASE_URL=https://api.delivery.hossam-ameen.online)
+2026-09-27T20:52:12Z [deploy-frontend] + npm ci --no-audit --no-fund
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'abbrev@5.0.0',
+npm warn EBADENGINE   required: { node: '^22.22.2 || ^24.15.0 || >=26.0.0' },
+npm warn EBADENGINE   current: { node: 'v24.3.0', npm: '11.4.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'nopt@10.0.1',
+npm warn EBADENGINE   required: { node: '^22.22.2 || ^24.15.0 || >=26.0.0' },
+npm warn EBADENGINE   current: { node: 'v24.3.0', npm: '11.4.2' }
+npm warn EBADENGINE }
+npm warn deprecated glob@11.1.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+
+added 633 packages in 8s
+2026-09-27T20:52:20Z [deploy-frontend] + npm run build
+
+> flash-pwa@0.1.0 build
+> npm run type-check && vite build
+
+
+> flash-pwa@0.1.0 type-check
+> vue-tsc --build
+
+vite v8.3.1 building client environment for production...
+transforming...
+✓ 73 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/registerSW.js                                   0.13 kB
+dist/manifest.webmanifest                            0.47 kB
+dist/index.html                                      0.82 kB │ gzip:  0.43 kB
+dist/assets/flash-logo-DCvIyvOD.png                 83.33 kB
+dist/assets/AppLogo-BYClYZbF.css                     0.05 kB │ gzip:  0.07 kB
+dist/assets/NotFoundView-CybC9PTT.css                0.08 kB │ gzip:  0.09 kB
+dist/assets/RoleAreaShell-irUhhexb.css               0.34 kB │ gzip:  0.21 kB
+dist/assets/LoginView-UMKo_U0Q.css                   1.51 kB │ gzip:  0.51 kB
+dist/assets/StatusView-C5lwaed3.css                  2.02 kB │ gzip:  0.63 kB
+dist/assets/index-CI5X4R8o.css                       2.88 kB │ gzip:  1.17 kB
+dist/assets/_plugin-vue_export-helper-BDNMzG2s.js    0.08 kB │ gzip:  0.09 kB
+dist/assets/AdminAreaView-qwgnIyJA.js                0.25 kB │ gzip:  0.21 kB
+dist/assets/StoreAreaView-CDadnARI.js                0.25 kB │ gzip:  0.21 kB
+dist/assets/DriverAreaView--zHnmy-M.js               0.25 kB │ gzip:  0.21 kB
+dist/assets/CustomerAreaView-CeNAaSIG.js             0.25 kB │ gzip:  0.21 kB
+dist/assets/AppLogo-DHGcpmf3.js                      0.49 kB │ gzip:  0.37 kB
+dist/assets/NotFoundView-C5QPSFD-.js                 0.58 kB │ gzip:  0.39 kB
+dist/assets/RoleAreaShell-BdXmE6Ve.js                1.07 kB │ gzip:  0.63 kB
+dist/assets/LoginView-C3vuIa33.js                    3.44 kB │ gzip:  1.48 kB
+dist/assets/StatusView-Ckp7YT2X.js                   5.41 kB │ gzip:  1.83 kB
+dist/assets/index-NuSvfDtJ.js                      104.73 kB │ gzip: 40.85 kB
+
+✓ built in 480ms
+
+PWA v1.3.0
+mode      generateSW
+precache  32 entries (373.19 KiB)
+files generated
+  dist/sw.js
+  dist/workbox-9c191d2f.js
+2026-09-27T20:52:31Z [deploy-frontend] INFO  frontend dist staged: 28 files, 476K
+  REVISION release=20260927-205208
+  REVISION sha=f85848b9bbdbb3ab7cf098ca0a69c88d9ebb5c9f
+  REVISION dirty=false
+  REVISION dirty_paths=none
+  REVISION dirty_checked=backend frontend deploy Makefile
+  REVISION built_at=2026-09-27T20:52:31Z
+  REVISION built_by=hossam@7ossam-lap
+  REVISION vite_api_base_url=https://api.delivery.hossam-ameen.online
+2026-09-27T20:52:31Z [deploy] INFO  staged: backend 79 files, frontend/dist 28 files
+2026-09-27T20:52:31Z [deploy] ----- upload to releases/20260927-205208
+2026-09-27T20:52:32Z [deploy] + rsync -a --delete --chmod=Du=rwx\,Dgo=rx\,Fu=rw\,Fgo=r -e ssh\ -i\ /home/hossam/.ssh/id_ed25519\ -p\ 22\ -o\ BatchMode=yes\ -o\ ConnectTimeout=15\ -o\ ServerAliveInterval=30\ -o\ ServerAliveCountMax=6\ -o\ LogLevel=ERROR\ -o\ ControlMaster=auto\ -o\ ControlPath=/tmp/flash-ssh-%C\ -o\ ControlPersist=60 /tmp/flash-release-LUndPF/ hossam@34.123.215.195:/srv/flash/releases/20260927-205208/
+2026-09-27T20:52:35Z [deploy] ----- server: venv, check --deploy, collectstatic
+[remote] uv venv (3.13) + pip install -r requirements/production.txt
+[remote] venv ready: Python 3.13.15
+[remote] manage.py check --deploy (warnings are logged, errors fail)
+System check identified some issues:
+
+WARNINGS:
+?: (security.W004) You have not set a value for the SECURE_HSTS_SECONDS setting. If your entire site is served only over SSL, you may want to consider setting a value and enabling HTTP Strict Transport Security. Be sure to read the documentation first; enabling HSTS carelessly can cause serious, irreversible problems.
+?: (security.W008) Your SECURE_SSL_REDIRECT setting is not set to True. Unless your site should be available over both SSL and non-SSL connections, you may want to either set this setting True or configure a load balancer or reverse-proxy server to redirect all connections to HTTPS.
+
+System check identified 2 issues (0 silenced).
+[remote] manage.py collectstatic --noinput → /srv/flash/shared/static
+Found another file with the destination path 'admin/js/popup_response.js'. It will be ignored since only the first encountered file is collected. If this is not what you want, make sure every static file has a unique path.
+
+244 static files copied to '/srv/flash/shared/static'.
+2026-09-27T20:52:39Z [deploy] ----- server: migrations (backup first)
+2026-09-27T20:52:39Z [migrate] INFO  migrate: release 20260927-205208
+[remote] migrate --plan (20260927-205208):
+  Planned operations:
+  contenttypes.0001_initial
+      Create model ContentType
+      Alter unique_together for contenttype (1 constraint(s))
+  contenttypes.0002_remove_content_type_name
+      Change Meta options on contenttype
+      Alter field name on contenttype
+      Raw Python operation
+      Remove field name from contenttype
+  auth.0001_initial
+      Create model Permission
+      Create model Group
+      Create model User
+  auth.0002_alter_permission_name_max_length
+      Alter field name on permission
+  auth.0003_alter_user_email_max_length
+      Alter field email on user
+  auth.0004_alter_user_username_opts
+      Alter field username on user
+  auth.0005_alter_user_last_login_null
+      Alter field last_login on user
+  auth.0006_require_contenttypes_0002
+  auth.0007_alter_validators_add_error_messages
+      Alter field username on user
+  auth.0008_alter_user_username_max_length
+      Alter field username on user
+  auth.0009_alter_user_last_name_max_length
+      Alter field last_name on user
+  auth.0010_alter_group_name_max_length
+      Alter field name on group
+  auth.0011_update_proxy_permissions
+      Raw Python operation -> Update the content_type of proxy mo…
+  auth.0012_alter_user_first_name_max_length
+      Alter field first_name on user
+  users.0001_initial
+      Create model User
+  admin.0001_initial
+      Create model LogEntry
+  admin.0002_logentry_remove_auto_add
+      Alter field action_time on logentry
+  admin.0003_logentry_add_action_flag_choices
+      Alter field action_flag on logentry
+  sessions.0001_initial
+      Create model Session
+[remote] no database yet (first deploy): no backup
+  Operations to perform:
+    Apply all migrations: admin, auth, contenttypes, sessions, users
+  Running migrations:
+    Applying contenttypes.0001_initial... OK
+    Applying contenttypes.0002_remove_content_type_name... OK
+    Applying auth.0001_initial... OK
+    Applying auth.0002_alter_permission_name_max_length... OK
+    Applying auth.0003_alter_user_email_max_length... OK
+    Applying auth.0004_alter_user_username_opts... OK
+    Applying auth.0005_alter_user_last_login_null... OK
+    Applying auth.0006_require_contenttypes_0002... OK
+    Applying auth.0007_alter_validators_add_error_messages... OK
+    Applying auth.0008_alter_user_username_max_length... OK
+    Applying auth.0009_alter_user_last_name_max_length... OK
+    Applying auth.0010_alter_group_name_max_length... OK
+    Applying auth.0011_update_proxy_permissions... OK
+    Applying auth.0012_alter_user_first_name_max_length... OK
+    Applying users.0001_initial... OK
+    Applying admin.0001_initial... OK
+    Applying admin.0002_logentry_remove_auto_add... OK
+    Applying admin.0003_logentry_add_action_flag_choices... OK
+    Applying sessions.0001_initial... OK
+[remote] MIGRATION_STATE: backup=none applied=yes
+2026-09-27T20:52:41Z [deploy] ----- switch current → 20260927-205208
+current: none -> 20260927-205208
+2026-09-27T20:52:42Z [restart-backend] INFO  dental guard: handled by the calling script
+flash-backend: active
+NOTE  certificate flash-delivery not issued yet: public checks use http:// (run 'make tls')
+PASS  systemctl is-active flash-backend
+PASS  local  /api/health/ (200)
+PASS  local  /api/health/ready/ (200)
+2026-09-27T20:52:43Z [health-check] INFO  health: ALL CHECKS PASSED (attempt 1)
+2026-09-27T20:52:43Z [deploy] ----- nginx (safe-apply only if the rendered files changed)
+nginx: Flash site files unchanged (api.delivery.hossam-ameen.online delivery.hossam-ameen.online) — no reload
+2026-09-27T20:52:45Z [deploy] ----- health
+NOTE  certificate flash-delivery not issued yet: public checks use http:// (run 'make tls')
+PASS  systemctl is-active flash-backend
+PASS  local  /api/health/ (200)
+PASS  local  /api/health/ready/ (200)
+SKIP  public token checks (never send the health token over plain http)
+PASS  public /api/status/ (200)
+PASS  web    http://delivery.hossam-ameen.online/ (200)
+PASS  nginx -t
+2026-09-27T20:52:46Z [health-check] INFO  health: ALL CHECKS PASSED (attempt 1)
+2026-09-27T20:52:47Z [deploy] INFO  dental snapshot: /tmp/flash-dental-guard/20260927-205211-18812-after.txt (33 entries; service-active dental-clinic-backend active;https-status dental.hossam-ameen.online 200;https-status api.dental.hossam-ameen.online 302;)
+2026-09-27T20:52:47Z [deploy] INFO  dental guard: before/after IDENTICAL (33 entries)
+2026-09-27T20:52:47Z [deploy] ----- prune
+releases kept: 20260927-205208 (current=20260927-205208 previous=none)
+2026-09-27T20:52:47Z [deploy] INFO  DEPLOY OK: release=20260927-205208 sha=f85848b9bbdb dirty=false previous=none duration=39s health=PASS

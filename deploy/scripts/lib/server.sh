@@ -182,9 +182,11 @@ _fs_nginx_safe_apply() {
     done
     out="$(sudo -n "${ntest[@]}" 2>&1)" && rc=0 || rc=$?
     printf '%s\n' "$out" | sed 's/^/  [nginx -t after restore] /'
+    echo "[remote] previous Flash files kept for inspection in $backup" >&2
     return 1
   fi
   _fs_nginx_reload
+  rm -rf -- "$backup"; echo "nginx: backup $backup removed (apply succeeded)"
 }
 _fs_nginx_reload() { # only ever called right after a passing nginx -t
   if [[ -n "${FLASH_NGINX_ROOT:-}" ]]; then echo "nginx: TEST MODE — reload skipped"; return 0; fi
@@ -198,11 +200,34 @@ _fs_current_id() {
   basename "$t"
 }
 _fs_releases() { find "$DEPLOY_PATH/releases" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | grep -E '^[0-9]{8}-[0-9]{6}$' | sort; }
-_fs_previous_of() { # <id> → the release just before it (by id / UTC time)
-  _fs_releases | awk -v c="$1" '$0 < c {p=$0} END {if (p != "") print p}'
+# "Previous release" (ADR-013, clarified 2026-09-28) = the release that was `current` before the last deploy
+# switch, recorded at switch time in releases/<id>/PREVIOUS. Never inferred from id/time order.
+# _fs_recorded_previous <id> → prints the recorded id; returns 1 (reason on stderr) if missing/invalid/gone.
+_fs_recorded_previous() {
+  local f="$DEPLOY_PATH/releases/$1/PREVIOUS" p
+  [[ -f "$f" ]] || { echo "release $1 has no PREVIOUS file" >&2; return 1; }
+  p="$(head -1 "$f" | tr -d '[:space:]')"
+  _fs_valid_release_id "$p" || { echo "releases/$1/PREVIOUS does not contain a release id" >&2; return 1; }
+  [[ -d "$DEPLOY_PATH/releases/$p" ]] || { echo "releases/$1/PREVIOUS names $p, which no longer exists" >&2; return 1; }
+  printf '%s' "$p"
 }
-_fs_release_info() { # ro: current, releases, disk
-  echo "current:  $(_fs_current_id || echo none)"
+_fs_releases_table() { # ro: every release with its REVISION sha/time, current and recorded previous marked
+  local id cur prev sha at mark
+  cur="$(_fs_current_id || true)"; prev=""
+  [[ -n "$cur" ]] && prev="$(_fs_recorded_previous "$cur" 2>/dev/null || true)"
+  while IFS= read -r id; do
+    sha="$(grep -m1 '^sha=' "$DEPLOY_PATH/releases/$id/REVISION" 2>/dev/null | cut -d= -f2 | cut -c1-12 || true)"
+    at="$(grep -m1 '^built_at=' "$DEPLOY_PATH/releases/$id/REVISION" 2>/dev/null | cut -d= -f2 || true)"
+    mark=""; [[ "$id" == "$cur" ]] && mark=" <- current"; [[ -n "$prev" && "$id" == "$prev" ]] && mark=" <- previous (PREVIOUS)"
+    printf '  %s  sha=%s  built=%s%s\n' "$id" "${sha:-?}" "${at:-?}" "$mark"
+  done < <(_fs_releases)
+}
+_fs_release_info() { # ro: current, previous, releases, disk
+  local cur prev
+  cur="$(_fs_current_id || true)"
+  echo "current:  ${cur:-none}"
+  if [[ -n "$cur" ]] && prev="$(_fs_recorded_previous "$cur" 2>/dev/null)"; then echo "previous: $prev (from PREVIOUS)"
+  else echo "previous: unknown (no PREVIOUS)"; fi
   echo "releases: $(_fs_releases | tr '\n' ' ')"
   echo "disk:     $(_fs_disk_free_mb) MB free on $DEPLOY_PATH (min ${MIN_FREE_DISK_MB})"
 }
@@ -241,11 +266,17 @@ _fs_collectstatic() { # <id>  (rw)
   return "${PIPESTATUS[0]}"
 }
 
-_fs_switch_current() { # <id>  (rw) atomic: ln -sfn tmp && mv -T
-  local rel="$DEPLOY_PATH/releases/$1" prev
+_fs_switch_current() { # <id> [record_previous 0|1]  (rw) atomic: ln -sfn tmp && mv -T
+  # record_previous=1 (deploy.sh): write releases/<id>/PREVIOUS = the current id before the switch (atomic, 0644).
+  # Rollbacks pass 0: the target keeps its own PREVIOUS, so a second bare rollback walks further back.
+  local rel="$DEPLOY_PATH/releases/$1" record="${2:-0}" prev
   _fs_valid_release_id "$1" || return 2
   [[ -d "$rel/backend" && -x "$rel/venv/bin/python" ]] || _fs_fail "release $1 is incomplete" || return 2
   prev="$(_fs_current_id || echo none)"
+  if [[ "$record" == 1 && "$prev" != none && "$prev" != "$1" ]]; then
+    ( umask 022; printf '%s\n' "$prev" > "$rel/PREVIOUS.tmp" ) && mv -f "$rel/PREVIOUS.tmp" "$rel/PREVIOUS"
+    echo "recorded: releases/$1/PREVIOUS = $prev"
+  fi
   ln -sfn "releases/$1" "$DEPLOY_PATH/current.tmp"
   mv -Tf "$DEPLOY_PATH/current.tmp" "$DEPLOY_PATH/current"
   echo "current: $prev -> $1"
@@ -312,8 +343,18 @@ _fs_migrate() { # <id>  (rw) plan → backup (if DB exists) → migrate → MIGR
 _fs_rollback() { # <target id or ""> <auto|always|never> [plan 0|1]   (rw; plan=1 is read-only, used by --dry-run)
   local target="$1" mode="$2" plan="${3:-0}" cur state applied=no backup="" restore=0 db ts
   cur="$(_fs_current_id)" || _fs_fail "no current release — nothing to roll back" || return 2
-  [[ -n "$target" ]] || target="$(_fs_previous_of "$cur")"
-  [[ -n "$target" ]] || _fs_fail "no previous release before $cur — cannot roll back" || return 2
+  if [[ -z "$target" ]]; then
+    local why
+    if ! target="$(_fs_recorded_previous "$cur" 2>&1)"; then
+      why="$target"; target=""
+      echo "[remote] ERROR: no recorded previous release for $cur ($why)." >&2
+      echo "[remote] Refusing to guess by release-id order. Choose the target explicitly: make rollback TO=<id>" >&2
+      echo "[remote] Available releases:" >&2
+      _fs_releases_table >&2
+      return 2
+    fi
+    echo "[remote] target from releases/$cur/PREVIOUS: $target"
+  fi
   _fs_valid_release_id "$target" || _fs_fail "invalid release id '$target'" || return 2
   [[ "$target" != "$cur" ]] || _fs_fail "$target is already current" || return 2
   [[ -d "$DEPLOY_PATH/releases/$target/backend" && -x "$DEPLOY_PATH/releases/$target/venv/bin/python" ]] \
@@ -354,15 +395,15 @@ _fs_rollback() { # <target id or ""> <auto|always|never> [plan 0|1]   (rw; plan=
   echo "ROLLBACK_RESULT from=$cur to=$target db_restored=$restore"
 }
 
-_fs_prune_releases() { # (rw) keep RELEASES_TO_KEEP newest + always current and its previous
+_fs_prune_releases() { # (rw) keep RELEASES_TO_KEEP newest + always current and its recorded PREVIOUS
   local keep="${RELEASES_TO_KEEP:-5}" cur prev id
   cur="$(_fs_current_id || true)"; prev=""
-  [[ -n "$cur" ]] && prev="$(_fs_previous_of "$cur")"
+  [[ -n "$cur" ]] && prev="$(_fs_recorded_previous "$cur" 2>/dev/null || true)"
   while IFS= read -r id; do
     [[ -n "$id" && "$id" != "$cur" && "$id" != "$prev" ]] || continue
     rm -rf -- "${DEPLOY_PATH:?}/releases/$id"; echo "pruned release $id"
   done < <(_fs_releases | sort -r | tail -n +"$((keep + 1))")
-  echo "releases kept: $(_fs_releases | tr '\n' ' ')(current=$cur previous=${prev:-none})"
+  echo "releases kept: $(_fs_releases | tr '\n' ' ')(current=$cur previous=${prev:-unknown, no PREVIOUS})"
 }
 
 # ------------------------------------------------------------------ health (ADR-015)
@@ -472,7 +513,7 @@ _fs_status() {
   local svc="$BACKEND_SYSTEMD_SERVICE" d
   echo "== unit $svc: active=$(systemctl is-active "$svc" 2>/dev/null || true) enabled=$(systemctl is-enabled "$svc" 2>/dev/null || true)"
   systemctl show -p MainPID -p ActiveEnterTimestamp -p NRestarts -p MemoryCurrent "$svc" 2>/dev/null | sed 's/^/   /'
-  echo "== releases"; _fs_release_info | sed 's/^/   /'
+  echo "== releases"; _fs_release_info | sed 's/^/   /'; _fs_releases_table | sed 's/^/ /'
   if [[ -n "$(_fs_current_id || true)" && -f "$DEPLOY_PATH/current/REVISION" ]]; then sed 's/^/   REVISION /' "$DEPLOY_PATH/current/REVISION"; fi
   echo "== backups"; find "$DEPLOY_PATH/shared/backups" -maxdepth 1 -type f -printf '   %TY-%Tm-%Td %TH:%TM  %s bytes  %f\n' 2>/dev/null | sort | tail -10
   echo "== nginx Flash sites"

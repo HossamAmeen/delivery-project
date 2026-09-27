@@ -1,0 +1,9 @@
+before: MainPID=40907 NRestarts=0 
+sent SIGKILL at 20:59:03
+active + /api/status/ 200 after 5.82s
+after: MainPID=41268 NRestarts=1  enabled=enabled
+2026-09-27T20:59:03+00:00 dental-clinic.us-central1-a.c.hossam-project-503909.internal systemd[1]: flash-backend.service: Main process exited, code=killed, status=9/KILL
+2026-09-27T20:59:08+00:00 dental-clinic.us-central1-a.c.hossam-project-503909.internal systemd[1]: flash-backend.service: Scheduled restart job, restart counter is at 1.
+2026-09-27T20:59:08+00:00 dental-clinic.us-central1-a.c.hossam-project-503909.internal systemd[1]: Started flash-backend.service - Flash backend (gunicorn, flash) on 127.0.0.1:8010.
+2026-09-27T20:59:08+00:00 dental-clinic.us-central1-a.c.hossam-project-503909.internal flash-backend[41268]: [2026-09-27 20:59:08 +0000] [41268] [INFO] Listening at: http://127.0.0.1:8010 (41268)
+2026-09-27T20:59:10Z [health-check] INFO  health: ALL CHECKS PASSED (attempt 1)

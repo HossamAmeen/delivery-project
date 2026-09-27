@@ -1,0 +1,30 @@
+dental.hossam-ameen.online http_version=1.1 code=200
+api.dental.hossam-ameen.online http_version=1.1 code=302
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+Mem:            3908         696        2357           1        1145        3211
+/dev/root        19G  6.7G   12G  37% /
+total 24
+drwxr-xr-x 6 hossam hossam 4096 Sep 27 15:47 .
+drwxr-xr-x 4 root   root   4096 Sep 27 15:47 ..
+drwxr-x--- 5 hossam hossam 4096 Sep 27 20:43 qa
+drwxr-xr-x 2 hossam hossam 4096 Sep 27 15:47 releases
+drwxr-x--- 5 hossam hossam 4096 Sep 27 20:50 sandbox
+drwxr-x--x 8 hossam hossam 4096 Sep 27 15:52 shared
+  Certificate Name: dental.hossam-ameen.online
+    Domains: dental.hossam-ameen.online api.dental.hossam-ameen.online
+    Expiry Date: 2026-12-25 13:52:25+00:00 (VALID: 88 days)
+== unit flash-backend: active=inactive enabled=not-found
+   MainPID=0
+   NRestarts=0
+   MemoryCurrent=[not set]
+   ActiveEnterTimestamp=
+== releases
+   current:  none
+   releases: 
+   disk:     11925 MB free on /srv/flash (min 1500)
+== backups
+== nginx Flash sites
+   api.delivery.hossam-ameen.online: available=no enabled=no variant=http
+   delivery.hossam-ameen.online: available=no enabled=no variant=http
+== certificate flash-delivery: missing

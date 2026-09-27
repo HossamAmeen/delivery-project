@@ -55,7 +55,7 @@ No — standard work fully specified by DRF_SKILL.md and ADR-015/017
 
 ## Status
 
-READY_FOR_QA
+QA_IN_PROGRESS
 
 ## Activity Log
 - 2026-09-27 | team-lead | — → TODO | created from sprint-01 technical plan
@@ -64,6 +64,7 @@ READY_FOR_QA
 - 2026-09-27 | backend | IN_PROGRESS → READY_FOR_REVIEW | implementation + tests done; full server run `make test-backend-remote WORKTREE=1` green (run 20260927-175239-1501198: ruff, format, check, makemigrations, 238 passed, coverage 98.42%)
 - 2026-09-27 | team-lead | READY_FOR_REVIEW → REVIEW | code inspection done, decisions recorded; verdict pending the TL's own server validation run (denied by the session permission policy)
 - 2026-09-27 | team-lead | REVIEW → READY_FOR_QA | code review APPROVED; TL server run 20260927-204315-12107 at 0a5f845: ruff/format/check/makemigrations PASS, 238 passed, coverage 98.42%
+- 2026-09-28 | qa | READY_FOR_QA → QA_IN_PROGRESS | FEAT-001 verification on the server started (TASK-009)
 
 ## Implementation Plan
 (not required)
