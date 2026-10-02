@@ -21,10 +21,10 @@ The planned product surfaces are: a Customer app, a Driver app, a Store app and 
 ## 2. Technology Stack
 | Layer | Status | Source |
 |---|---|---|
-| Backend | **Defined, not built.** Python 3.13+, Django, DRF, simplejwt, drf-spectacular, Jazzmin, django-environ, dj-database-url, pytest(+cov), ruff. Optional Celery + Redis | `DRF_SKILL.md` |
-| Database | SQLite (local), PostgreSQL (staging/production) | `DRF_SKILL.md` §2 |
-| Frontend | **Named, not specified.** "Vue PWA" and "Flutter" | `flash_business_logic/README.md` |
-| Infrastructure | Docker/Compose per environment, Nginx, systemd templates | `DRF_SKILL.md` §41–52 |
+| Backend | **Defined, not built.** Python 3.13+, Django, DRF, simplejwt, drf-spectacular, Jazzmin, django-environ, dj-database-url, pytest(+cov), ruff. Optional Celery + Redis | `docs/standards/DRF_SKILL.md` |
+| Database | SQLite (local), PostgreSQL (staging/production) | `docs/standards/DRF_SKILL.md` §2 |
+| Frontend | **Named, not specified.** "Vue PWA" and "Flutter" | `docs/business/README.md` |
+| Infrastructure | Docker/Compose per environment, Nginx, systemd templates | `docs/standards/DRF_SKILL.md` §41–52 |
 | Push notifications | Firebase (future) | `00_core/08` |
 
 Machine toolchain found:
@@ -37,14 +37,14 @@ Machine toolchain found:
 ## 3. Repository Structure (as found)
 ```
 delivery_project/
-├── DRF_SKILL.md                       # backend engineering standard (1,758 lines)
-├── flash_business_logic/              # 26 business-rule docs + brand
+├── docs/standards/DRF_SKILL.md                       # backend engineering standard (1,758 lines)
+├── docs/business/              # 26 business-rule docs + brand
 │   ├── 00_core/ (10 files)            # domain, roles, lifecycle, assignment, pricing, ledger, catalog, notifications, audit, terms
 │   ├── 01_customer_app/ 02_driver_app/ 03_store_app/ 04_admin_dashboard/
 │   ├── 05_cross_app_flows/ (6 files)  # order, assignment, money, cancellation, notification, QA contract
 │   └── 06_brand/                      # initial logo
 ├── flash_business_logic_complete.zip  # byte-identical copy of the folder (verified)
-└── 06_brand/                          # duplicate of flash_business_logic/06_brand (logo identical)
+└── 06_brand/                          # duplicate of docs/business/06_brand (logo identical)
 ```
 Created by this setup: `.ai/`, `.claude/agents/`, `CLAUDE.md`.
 
@@ -56,7 +56,7 @@ Created by this setup: `.ai/`, `.claude/agents/`, `CLAUDE.md`.
 ## 5. Architecture
 Nothing is implemented yet. The target architecture is in `.ai/architecture/architecture.md`, with the decisions in ADR-001 to ADR-011:
 - a monorepo
-- a DRF backend per `DRF_SKILL.md`, with domain apps `users`, `stores`, `orders`, `assignments`, `payments`, `notifications`, `audit` and the shared `common/` package
+- a DRF backend per `docs/standards/DRF_SKILL.md`, with domain apps `users`, `stores`, `orders`, `assignments`, `payments`, `notifications`, `audit` and the shared `common/` package
 - a service-layer order state machine with row locks, history and idempotency
 - an append-only ledger
 - a `NotificationService` abstraction
@@ -72,7 +72,7 @@ Nothing exists yet. The conceptual entities come from `00_core/01`:
 Key constraint: a **custom User model is needed before the first migration** (ADR-003).
 
 ## 7. APIs
-Nothing exists yet. Conventions come from `DRF_SKILL.md`: the standard envelope, JWT, OpenAPI at `/api/schema|docs|redoc/`, a token-protected `/api/health/`, and DRF throttling.
+Nothing exists yet. Conventions come from `docs/standards/DRF_SKILL.md`: the standard envelope, JWT, OpenAPI at `/api/schema|docs|redoc/`, a token-protected `/api/health/`, and DRF throttling.
 The contract registry has started in `.ai/architecture/api-contracts.md`. Only the foundation endpoints are APPROVED.
 
 ## 8. Frontend
@@ -129,7 +129,7 @@ Also noted:
 | R5 | Concurrency (assignment, completion, ledger) | Double assignment, duplicate money | ADR-006; DB constraints; concurrency tests required by QA |
 | R6 | Business rules could be duplicated in the clients | Inconsistent behavior across Vue, Flutter and Admin | `allowed_transitions` from the API; frontend rules; QA cross-client checks |
 | R7 | Admin scope creep ("not an ERP") | Schedule | MVP scope is fixed by `mvp_scope.md` |
-| R8 | Duplicated assets (zip, `06_brand`) | Drift | Keep `flash_business_logic/` as canonical; remove the duplicates only with the user's approval |
+| R8 | Duplicated assets (zip, `06_brand`) | Drift | Keep `docs/business/` as canonical; remove the duplicates only with the user's approval |
 | R9 | The health endpoint uses a query-string password | The secret leaks into access logs | Accept the `X-Health-Check-Token` header (preferred) as well as the query parameter; never log it |
 
 ## 14. Recommended Sprint 1
@@ -156,7 +156,7 @@ The agent specification added a seventh agent (Infrastructure/DevOps, §25–49)
 - **Git provider:** none. The directory is not a repository → **BLK-012** (the provider decides the CI format, secrets and registry).
 - **Target environment:** unknown → **BLK-011** has been extended. It now covers the default `DEPLOYMENT_MODE` per environment, SSH access, domains and TLS, managed vs self-hosted DB/Redis, and the `AUTO_DEPLOY` policy.
 - **Conflicts resolved by ADR:**
-  - **ADR-012:** `DRF_SKILL.md` puts `docker/` and `deploy/` inside `backend/`. The spec wants a repo-root `deploy/` that serves both backend and frontend. Deployment moves to the root and is owned by Infrastructure, and the skill's deployment requirements still apply.
+  - **ADR-012:** `docs/standards/DRF_SKILL.md` puts `docker/` and `deploy/` inside `backend/`. The spec wants a repo-root `deploy/` that serves both backend and frontend. Deployment moves to the root and is owned by Infrastructure, and the skill's deployment requirements still apply.
   - **Env split (ADR-012):** a root `.env.example` for deployment variables, and `backend/.env.example` for application variables. They are merged in `shared/.env` on servers.
   - **ADR-013:** the dual `DEPLOYMENT_MODE=docker|systemd` command set, versioned releases, and image/symlink rollback. **Migrations are forward-only and must stay backward-compatible with the previous release**, because rollback never reverses migrations.
   - **Frontend:** it is a static Vite build served by Nginx in both modes. A frontend systemd unit is created only if a server-side frontend process is ever added.

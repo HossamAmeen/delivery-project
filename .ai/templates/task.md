@@ -10,7 +10,7 @@ FEAT-NNN — Feature name
 What needs to be implemented.
 
 ## Business Requirement
-REQ-NNN / `flash_business_logic/<file>.md` § section / `.ai/business/business-logic.md` § section
+REQ-NNN / `docs/business/<file>.md` § section / `.ai/business/business-logic.md` § section
 
 ## Agent
 Backend / Frontend / Fullstack / QA / Infrastructure

@@ -10,10 +10,10 @@ Independent verification of FEAT-001
 FEAT-001 — Backend Platform Foundation
 
 ## Description
-Verify FEAT-001 **on the server** (REQ-009) against its acceptance criteria, DRF_SKILL.md health/rate-limit requirements and security expectations; audit the developer suite by running it on the server's Python 3.13; produce the QA report and bugs.
+Verify FEAT-001 **on the server** (REQ-009) against its acceptance criteria, docs/standards/DRF_SKILL.md health/rate-limit requirements and security expectations; audit the developer suite by running it on the server's Python 3.13; produce the QA report and bugs.
 
 ## Business Requirement
-FEAT-001 criteria 1–10; DRF_SKILL.md §23–27, §61–83; api-contracts.md § Foundation + § Identity; ADR-017, ADR-018, ADR-019
+FEAT-001 criteria 1–10; docs/standards/DRF_SKILL.md §23–27, §61–83; api-contracts.md § Foundation + § Identity; ADR-017, ADR-018, ADR-019
 
 ## Agent
 QA

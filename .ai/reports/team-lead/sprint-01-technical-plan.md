@@ -2,7 +2,7 @@
 
 - **Date:** 2026-09-27 (revision 2 — replaces the first plan after the PO decisions of 2026-09-27)
 - **Features:** FEAT-001 Backend Platform Foundation · FEAT-003 Frontend Foundation (Vue PWA, unconditional) · FEAT-004 Deployment & Environments (systemd, shared VPS)
-- **Inputs:** `DRF_SKILL.md` (CREATE mode), sprint-01 handoff, BLK-001/002/011 RESOLVED, BLK-012 partial, REQ-008, REQ-009
+- **Inputs:** `docs/standards/DRF_SKILL.md` (CREATE mode), sprint-01 handoff, BLK-001/002/011 RESOLVED, BLK-012 partial, REQ-008, REQ-009
 - **Decisions (this revision):** ADR-008 ACCEPTED, ADR-009 SUPERSEDED, ADR-011 ACCEPTED, ADR-012/013 amended, new ADR-015 (hosting/runtime), ADR-016 (Python 3.13 via uv), ADR-017 (SQLite + FileBasedCache, no Redis/Celery), ADR-018 (tests on the server), ADR-019 (`/api/status/`, staff-only docs in production)
 - **Contracts:** `api-contracts.md` § Foundation and § Identity are **APPROVED** (username + password, `/api/users/me/`, `/api/status/`, error codes). Frontend may start.
 
@@ -20,7 +20,7 @@
 ## 2. Design summary
 
 ### 2.1 Backend (FEAT-001 + FEAT-004 backend pieces)
-- Structure per `DRF_SKILL.md` §3: `config/` split settings, `common/`, `apps/users/`, `apps/health/`.
+- Structure per `docs/standards/DRF_SKILL.md` §3: `config/` split settings, `common/`, `apps/users/`, `apps/health/`.
 - Settings additions for the server (TASK-001): SQLite `OPTIONS` (WAL, IMMEDIATE, busy timeout), CORS for the web origin, CSRF trusted origins, proxy/HTTPS headers, static/media roots in `shared/`, `API_DOCS_PUBLIC`, gunicorn in production requirements, Django ≥ 5.1.
 - Envelope: default `EnvelopeJSONRenderer` + `custom_exception_handler`; stable `errors.code` table in `api-contracts.md` (TASK-002).
 - Cache from `RATELIMIT_CACHE_URL` (`locmem://` tests, `filecache:///srv/flash/shared/cache` server); production refuses LocMem; `NUM_PROXIES=1` behind nginx (TASK-005).
@@ -28,7 +28,7 @@
 - `users.User(AbstractUser)` + `role`, username login, JWT token/refresh with contract errors, `/api/users/me/`, role permissions, `create_role_user` (password via stdin/env) (TASK-003).
 
 ### 2.2 Frontend (FEAT-003)
-Vite + Vue 3 + TS PWA: API client (envelope, single refresh, error codes, 429), Pinia auth store, `/login`, `/status`, lazy role areas `/customer|driver|store|admin`, state components, PWA manifest/icons from `06_brand/flash_initial_logo.png`. Built locally with `VITE_API_BASE_URL=https://api.delivery.hossam-ameen.online`; `dist/` served by nginx (TASK-007).
+Vite + Vue 3 + TS PWA: API client (envelope, single refresh, error codes, 429), Pinia auth store, `/login`, `/status`, lazy role areas `/customer|driver|store|admin`, state components, PWA manifest/icons from `docs/design/flash_initial_logo.png`. Built locally with `VITE_API_BASE_URL=https://api.delivery.hossam-ameen.online`; `dist/` served by nginx (TASK-007).
 
 ### 2.3 Infrastructure (FEAT-004)
 `/srv/flash/{current,releases,shared,sandbox,qa}`; `flash-backend.service` (gunicorn 2 workers × 2 threads on `127.0.0.1:8010`, `MemoryMax=700M`); nginx site files named `api.delivery.hossam-ameen.online` and `delivery.hossam-ameen.online`; `certbot certonly --nginx --cert-name flash-delivery` for exactly those two names; safe-apply (`nginx -t` before every reload, restore on failure); SQLite backup before every migrate; rollback with optional DB restore; dental guard snapshot before/after every operation (ADR-015). Tooling in TASK-012 (bootstrap + remote test runners) and TASK-013 (full tooling), executed in TASK-014.

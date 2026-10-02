@@ -4,7 +4,7 @@
 
 **Checked:**
 - [ ] Scope limited to the task; no unrelated changes
-- [ ] Business rules match `business-logic.md` / `flash_business_logic/` (none invented)
+- [ ] Business rules match `business-logic.md` / `docs/business/` (none invented)
 - [ ] Authorization: authenticated → role → ownership → state transition → business constraints
 - [ ] State transitions go through a service, are locked, write history, are idempotent
 - [ ] Money: Decimal, explicit currency, snapshots, ledger with idempotency key
@@ -12,7 +12,7 @@
 - [ ] Tests are meaningful and cover happy, negative and edge cases; validation commands pass
 - [ ] Migrations present and `makemigrations --check` passes; no destructive migration
 - [ ] No hardcoded secrets, domains, ports, paths
-- [ ] Complies with `DRF_SKILL.md` (backend) / frontend ADRs (frontend) / ADR-012–014 and the infra DoD (infrastructure)
+- [ ] Complies with `docs/standards/DRF_SKILL.md` (backend) / frontend ADRs (frontend) / ADR-012–014 and the infra DoD (infrastructure)
 - [ ] Infra: no secrets in workflows/templates/scripts, `DEPLOYMENT_MODE` respected, both modes validated, rollback path intact
 
 **Findings:**

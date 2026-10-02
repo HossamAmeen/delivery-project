@@ -13,7 +13,7 @@ FEAT-004 — Deployment & Environments
 Build and validate the complete operator tooling for the systemd single-server deployment defined in ADR-013/015/016/017, on top of TASK-012's library. This task **creates and validates** the tooling (locally + read-only/temporary checks on the server); it does **not** change the live nginx/systemd/certbot state — that is TASK-014.
 
 ## Business Requirement
-REQ-008; BLK-011 (RESOLVED); DRF_SKILL.md §41–53, §70–74; ADR-012, ADR-013, ADR-015, ADR-016, ADR-017, ADR-019; FEAT-004 criteria 1–3, 5–8, 10–12
+REQ-008; BLK-011 (RESOLVED); docs/standards/DRF_SKILL.md §41–53, §70–74; ADR-012, ADR-013, ADR-015, ADR-016, ADR-017, ADR-019; FEAT-004 criteria 1–3, 5–8, 10–12
 
 ## Agent
 Infrastructure

@@ -57,7 +57,7 @@ Acceptance criteria → QA test cases are traceable in the per-AC tables of each
 - Minor: Node ≥ 24.15 / 22 LTS on the build machine; nginx template comment tidy
 
 ## Business documents
-BLK-001 and BLK-002 (PO-approved 2026-09-27) were mirrored into `flash_business_logic/00_core/02_roles_and_permissions.md` (§ Authentication) and `flash_business_logic/README.md` (MVP client platform). The digest sync line and the requirements Change Log were updated.
+BLK-001 and BLK-002 (PO-approved 2026-09-27) were mirrored into `docs/business/00_core/02_roles_and_permissions.md` (§ Authentication) and `docs/business/README.md` (MVP client platform). The digest sync line and the requirements Change Log were updated.
 
 ## Sprint-02 readiness
 See `.ai/planning/sprints/sprint-02.md` (DRAFT).

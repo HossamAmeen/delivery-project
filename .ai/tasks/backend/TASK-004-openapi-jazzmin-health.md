@@ -13,7 +13,7 @@ FEAT-001 — Backend Platform Foundation
 Configure drf-spectacular (schema/docs/redoc, envelope + 429 documented, staff-only in production per ADR-019), Jazzmin settings, and implement `/api/health/`, `/api/health/ready/` (env-configured token) and the public `/api/status/` (ADR-019).
 
 ## Business Requirement
-REQ-002, REQ-006; DRF_SKILL.md §21–27, §75–76; api-contracts.md § Foundation (revised 2026-09-27); ADR-019; FEAT-001 criteria 4, 7, 8; FEAT-003 status page needs `/api/status/`
+REQ-002, REQ-006; docs/standards/DRF_SKILL.md §21–27, §75–76; api-contracts.md § Foundation (revised 2026-09-27); ADR-019; FEAT-001 criteria 4, 7, 8; FEAT-003 status page needs `/api/status/`
 
 ## Agent
 Backend
@@ -133,7 +133,7 @@ DONE
 - [x] Scope limited to the task; no business rules invented; authorization order respected where applicable
 - [x] API contract matches `api-contracts.md` (Foundation/Identity rows and error codes updated in this review)
 - [x] Tests meaningful; validation commands pass on the server; `makemigrations --check` clean (only `users/0001_initial`, non-destructive)
-- [x] No hardcoded secrets/domains/ports/paths; complies with `DRF_SKILL.md` and ADR-015/017/019
+- [x] No hardcoded secrets/domains/ports/paths; complies with `docs/standards/DRF_SKILL.md` and ADR-015/017/019
 
 **Commands run:** `make test-backend-remote REF=0a5f845` (DRF_SKILL §57 on the server, ADR-018), run `20260927-204315-12107`, ref `0a5f845` (`0a5f845768c0`), Python 3.13.15, explicit test env (`shared/.env` not read); results in `backend/.remote-results/20260927-204315-12107/`:
 ```

@@ -10,10 +10,10 @@ Common infrastructure: base model, soft delete, errors, envelope, pagination, th
 FEAT-001 — Backend Platform Foundation
 
 ## Description
-Implement `backend/common/` per DRF_SKILL.md §10–13, §19–20, §40, §61–72 and wire it into DRF settings.
+Implement `backend/common/` per docs/standards/DRF_SKILL.md §10–13, §19–20, §40, §61–72 and wire it into DRF settings.
 
 ## Business Requirement
-REQ-002, REQ-006; DRF_SKILL.md §10–13, §19–20, §40, §62–72; FEAT-001 criteria 3, 5
+REQ-002, REQ-006; docs/standards/DRF_SKILL.md §10–13, §19–20, §40, §62–72; FEAT-001 criteria 3, 5
 
 ## Agent
 Backend
@@ -132,7 +132,7 @@ DONE
 - [x] Scope limited to the task; no business rules invented; authorization order respected where applicable
 - [x] API contract matches `api-contracts.md` (Foundation/Identity rows and error codes updated in this review)
 - [x] Tests meaningful; validation commands pass on the server; `makemigrations --check` clean (only `users/0001_initial`, non-destructive)
-- [x] No hardcoded secrets/domains/ports/paths; complies with `DRF_SKILL.md` and ADR-015/017/019
+- [x] No hardcoded secrets/domains/ports/paths; complies with `docs/standards/DRF_SKILL.md` and ADR-015/017/019
 
 **Commands run:** `make test-backend-remote REF=0a5f845` (DRF_SKILL §57 on the server, ADR-018), run `20260927-204315-12107`, ref `0a5f845` (`0a5f845768c0`), Python 3.13.15, explicit test env (`shared/.env` not read); results in `backend/.remote-results/20260927-204315-12107/`:
 ```

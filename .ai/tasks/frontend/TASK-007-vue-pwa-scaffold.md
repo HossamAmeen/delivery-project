@@ -13,13 +13,13 @@ FEAT-003 — Frontend Foundation (Vue PWA)
 Scaffold `frontend/` per ADR-008/ADR-011 (both ACCEPTED): Vite + Vue 3 + TypeScript project, PWA manifest and icons from the Flash logo, one API client (envelope / JWT refresh / error codes), a **username + password login screen** using `POST /api/auth/token/`, a **status page** that calls the public `GET /api/status/` (ADR-019), the role-area routing shell, and reusable loading/empty/error/unavailable components. Produces a static `dist/` built on the local machine and served by nginx at `https://delivery.hossam-ameen.online`.
 
 ## Business Requirement
-REQ-001, REQ-037, REQ-008; business-logic.md §2 (username + password, BLK-001); `01_customer_app/user_flow.md` (UI states); `06_brand/flash_initial_logo.png`; FEAT-003 criteria 1–6; api-contracts.md § Foundation + § Identity (APPROVED); ADR-008, ADR-011, ADR-019
+REQ-001, REQ-037, REQ-008; business-logic.md §2 (username + password, BLK-001); `01_customer_app/user_flow.md` (UI states); `docs/design/flash_initial_logo.png`; FEAT-003 criteria 1–6; api-contracts.md § Foundation + § Identity (APPROVED); ADR-008, ADR-011, ADR-019
 
 ## Agent
 Frontend
 
 ## Scope (allowed paths)
-- `frontend/**` (copy the logo into `frontend/public/` or `frontend/src/assets/`; do not modify `06_brand/`)
+- `frontend/**` (copy the logo into `frontend/public/` or `frontend/src/assets/`; do not modify `docs/design/`)
 
 ## Dependencies
 - ADR-008 ACCEPTED, ADR-011 ACCEPTED (BLK-002 RESOLVED)
@@ -30,7 +30,7 @@ Frontend
 
 - [ ] Project: Vite + Vue 3 + TS + Vue Router + Pinia + `vite-plugin-pwa` + Vitest + ESLint + Prettier + `vue-tsc`. `package.json` scripts with these exact names (Infrastructure calls them): `lint`, `type-check`, `test:unit` (Vitest, non-watch), `build` (type-check is allowed inside build). `package-lock.json` committed; `engines.node` set (≥ 20).
 - [ ] **Build contract (for TASK-013):** `npm ci && npm run build` in `frontend/` with `VITE_API_BASE_URL` (and optional `VITE_APP_NAME`, default `Flash`) in the environment produces `frontend/dist/` with `base: '/'`. A production build without `VITE_API_BASE_URL` fails with a clear message. `frontend/.env.example` documents the variables; `.env*` (except the example) git-ignored. No URL hardcoded anywhere.
-- [ ] PWA installable: manifest (`name`/`short_name` Flash, `start_url: /`, `display: standalone`, theme/background colors taken from the logo), service worker (`registerType: autoUpdate`; navigation fallback to `index.html`, API calls **not** cached), icons 192, 512 and a maskable 512 generated from `06_brand/flash_initial_logo.png`, plus favicon and apple-touch-icon.
+- [ ] PWA installable: manifest (`name`/`short_name` Flash, `start_url: /`, `display: standalone`, theme/background colors taken from the logo), service worker (`registerType: autoUpdate`; navigation fallback to `index.html`, API calls **not** cached), icons 192, 512 and a maskable 512 generated from `docs/design/flash_initial_logo.png`, plus favicon and apple-touch-icon.
 - [ ] API client (one module): base URL from `VITE_API_BASE_URL`; unwraps the envelope; `Authorization: Bearer` from the auth store; on 401 from a Bearer call → one refresh (`/api/auth/token/refresh/`) and retry, concurrent 401s share one refresh, refresh failure → logout + redirect to `/login`; maps 400/403/404/429/5xx/network errors to typed errors exposing `errors.code`, field errors and `Retry-After` for 429.
 - [ ] Auth store (Pinia): access token in memory, refresh token in `localStorage` (ADR-008), `login(username, password)`, `logout()`, `loadMe()` via `GET /api/users/me/`.
 - [ ] `/login`: username + password form, client-side required-field validation, submit disabled while loading, shows the API message for `INVALID_CREDENTIALS` and a rate-limit message for 429, never logs the password; on success loads `me` and routes to the role area.
@@ -87,7 +87,7 @@ DONE
 - `src/styles/` — CSS custom properties from the logo colours (orange `#FE8015` → amber `#FEAE17`, blue `#066EF9`/`#0044C4`, navy `#0C214F`), mobile-first.
 - Tests in `src/**/__tests__/` (Vitest, `fetch` mocked, no backend needed).
 
-**Icons:** `frontend/scripts/generate_icons.py` (Python 3 + Pillow, already on the build machine; no npm dependency) crops the F-mark from `06_brand/flash_initial_logo.png` and writes `public/icons/{icon-192,icon-512,maskable-512,apple-touch-icon-180}.png`, `public/favicon.ico` (16/32/48) and a 480 px `src/assets/flash-logo.png` (full lockup incl. tagline, for the login page). The generated PNGs are committed; the 1254 px original is not shipped.
+**Icons:** `frontend/scripts/generate_icons.py` (Python 3 + Pillow, already on the build machine; no npm dependency) crops the F-mark from `docs/design/flash_initial_logo.png` and writes `public/icons/{icon-192,icon-512,maskable-512,apple-touch-icon-180}.png`, `public/favicon.ico` (16/32/48) and a 480 px `src/assets/flash-logo.png` (full lockup incl. tagline, for the login page). The generated PNGs are committed; the 1254 px original is not shipped.
 
 **PWA:** vite-plugin-pwa `registerType: 'autoUpdate'`, generateSW, `navigateFallback: '/index.html'` with a denylist for `/api/`, no runtime caching (API never cached; API is another origin anyway), manifest `name/short_name` from `VITE_APP_NAME`, `start_url /`, `display standalone`, `theme_color #0C214F`, `background_color #FFFFFF`.
 
@@ -138,7 +138,7 @@ DONE
   3. Logout is client-side only (no logout/blacklist endpoint in the contract); the refresh token remains valid on the server until it expires. Refresh token in `localStorage` is the ADR-008 known limitation.
   4. i18n: one English catalog (`src/i18n/en.ts`), `lang="en" dir="ltr"`, CSS uses logical properties (`inset-inline-start`, `border-inline-start`) ready for RTL; languages/RTL wait for BLK-009. The Arabic tagline appears only inside the logo image.
   5. Responsive (360 px / 1280 px) and installability were **not** checked in a browser: no dev server or manual QA per the PO rule. QA verifies on the server (TASK-010), e.g. Lighthouse installability and viewport screenshots.
-  6. Brand colours are sampled from the preliminary logo (`06_brand/README.md`: "can be replaced after final brand approval"); re-run `python3 scripts/generate_icons.py` if the logo changes.
+  6. Brand colours are sampled from the preliminary logo (`docs/design/README.md`: "can be replaced after final brand approval"); re-run `python3 scripts/generate_icons.py` if the logo changes.
   7. Deep links rely on the nginx SPA fallback (`try_files … /index.html`, ADR-015) plus the service worker navigation fallback; unknown paths render the client-side NotFound view (HTTP 200 from nginx).
 
 ## Review Log
@@ -149,8 +149,8 @@ DONE
 **Verdict:** APPROVED
 
 **Checked:**
-- [x] Scope limited to the task; no unrelated changes (all files under `frontend/`; `06_brand/` untouched; generated icons only)
-- [x] Business rules match `business-logic.md` / `flash_business_logic/` (none invented; no business screens; role → area map is routing only)
+- [x] Scope limited to the task; no unrelated changes (all files under `frontend/`; `docs/design/` untouched; generated icons only)
+- [x] Business rules match `business-logic.md` / `docs/business/` (none invented; no business screens; role → area map is routing only)
 - [x] Authorization: the client never decides authorization; guard = anonymous → `/login`, wrong role → own area; backend stays authoritative
 - [x] State transitions — n/a (no order logic)
 - [x] Money — n/a
@@ -172,7 +172,7 @@ DONE
 **Findings:**
 1. [non-blocking] `src/stores/auth.ts` `ensureSession` — when the refresh endpoint is unreachable on page load the guard sends the user to `/login` while the refresh token is kept; a later navigation/reload recovers. Acceptable under decision (b); QA should see the login screen (not a crash) with the API down.
 2. [non-blocking] `vite.config.ts` — `orientation: 'portrait'` in the manifest locks installed-app rotation (admin/store on tablets). Fine for sprint-01; revisit when the admin/store screens are designed.
-3. [non-blocking] Brand colours come from the preliminary logo (`06_brand/README.md`); `scripts/generate_icons.py` regenerates icons when the final logo lands.
+3. [non-blocking] Brand colours come from the preliminary logo (`docs/design/README.md`); `scripts/generate_icons.py` regenerates icons when the final logo lands.
 
 **Commands run** (local build machine, Node v24.3.0; build gates only per ADR-018 — no dev server, no QA suites, no browser):
 ```

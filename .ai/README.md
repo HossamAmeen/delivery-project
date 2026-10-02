@@ -19,20 +19,31 @@ Chat history, memory and "I assumed…" are not handoff channels.
 
 | Topic | Canonical source | Owner |
 |---|---|---|
-| Business rules (detailed) | `flash_business_logic/` | PM / Product Owner |
+| Business rules (detailed) | `docs/business/` | PM / Product Owner |
 | Business rules (agent digest) | `.ai/business/business-logic.md` | PM |
 | Requirements, scope, priorities | `.ai/business/requirements.md`, `.ai/planning/` | PM |
-| Backend engineering standard | `DRF_SKILL.md` (deployment layout adapted by ADR-012) | Team Lead |
+| Brand and design assets | `docs/design/` | PM / Product Owner |
+| Backend engineering standard | `docs/standards/DRF_SKILL.md` (deployment layout adapted by ADR-012) | Team Lead |
+| Agent procedures (skills) | `.claude/skills/*/SKILL.md`, attached in `.claude/agents/*.md` | Team Lead (with user approval) |
 | Deployment & operations | `deploy/README.md`, ADR-012/013/014 | Infrastructure (TL approves) |
 | Architecture, decisions, API contracts | `.ai/architecture/` | Team Lead |
 | Work items | `.ai/tasks/` | Team Lead (creates), assignee (updates) |
 | Bugs | `.ai/reports/qa/bugs/` | QA |
 | Blockers | `.ai/planning/blockers/` | Whoever is blocked (creates), PM/TL (resolves) |
 
-If `business-logic.md` disagrees with `flash_business_logic/`, `flash_business_logic/` wins
+If `business-logic.md` disagrees with `docs/business/`, `docs/business/` wins
 and the conflict must be reported to the PM (see ADR-004).
 
-## Folder map
+## Repository map
+
+```
+docs/{business,design,standards}/   ← business rules, brand, engineering standards
+backend/ frontend/ qa/ deploy/       ← code, QA suite, infrastructure
+.ai/                                 ← this operating system (below)
+.claude/agents/ .claude/skills/      ← subagents and the skills they preload
+```
+
+## Folder map (`.ai/`)
 
 ```
 .ai/
@@ -110,7 +121,7 @@ The person changing a status appends a line to the task's `## Activity Log`:
 
 A feature is not DONE until:
 - [ ] Business requirements implemented (traceable to REQ / business-logic sections)
-- [ ] Backend implemented (and meets `DRF_SKILL.md` §58 Definition of Done)
+- [ ] Backend implemented (and meets `docs/standards/DRF_SKILL.md` §58 Definition of Done)
 - [ ] Frontend implemented, when required
 - [ ] API contracts in `architecture/api-contracts.md` match the implementation and OpenAPI
 - [ ] Tests written and passing (developer tests + QA tests)
@@ -131,14 +142,36 @@ A feature is not DONE until:
 | `qa/` | QA |
 | `deploy/`, `.github/`, root `Makefile`, root `.env.example` | Infrastructure |
 | `backend/Makefile`, `backend/.env.example` | Backend (infra variables are added through the TL) |
-| `flash_business_logic/` | PM, and only after Product Owner approval |
+| `docs/business/` | PM, and only after Product Owner approval |
 | `.ai/business/`, `.ai/planning/`, `.ai/reports/pm/` | PM |
 | `.ai/architecture/`, `.ai/reports/team-lead/` | TL |
 | `.ai/tasks/**` | TL creates; the assignee updates Status, Activity Log and Completion Report; QA and PM append their own sections |
 | `.ai/reports/qa/` | QA |
-| `DRF_SKILL.md` | TL, and only with explicit approval |
+| `docs/standards/DRF_SKILL.md` | TL, and only with explicit approval |
+| `docs/design/` | PM, and only after Product Owner approval |
+| `.claude/skills/`, `.claude/agents/` | TL, and only with explicit user approval |
 
 If a task needs a file outside its owner's area, the TL coordinates the change and records it in the task.
+
+## Skills
+
+Each agent preloads skills from `.claude/skills/`. They are short procedures with the real commands for its recurring jobs:
+
+| Agent | Skills |
+|---|---|
+| All | `flash-workflow` (IDs, status + Activity Log, blockers, end-of-turn report) |
+| PM | `pm-feature`, `pm-sprint`, `pm-acceptance` |
+| TL | `tl-design-breakdown`, `tl-review`, `tl-bug-routing-signoff`, `drf-standard` |
+| Backend | `backend-task`, `backend-state-money`, `drf-standard` |
+| Frontend | `frontend-screen` |
+| Fullstack | `fullstack-slice` + the Backend and Frontend skills |
+| QA | `qa-test-plan`, `qa-verify` |
+| Infrastructure | `infra-change`, `infra-deploy-verify` |
+
+- Precedence: this README, `agents/*.md` and the ADRs win over a skill. Report any conflict to the TL.
+- When a procedure here changes, update the matching skill in the same change.
+- `drf-standard` is a copy of `docs/standards/DRF_SKILL.md`. Re-copy it after any change to the standard.
+- How the built-in Claude Code skills (`/code-review`, `/security-review`, `/simplify`, `/run`, …) fit the workflow: see `CLAUDE.md` § Skills.
 
 ## Golden rule
 

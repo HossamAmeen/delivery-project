@@ -23,7 +23,7 @@ Sprint-01 target: one shared VPS, systemd mode, no Docker, SQLite, no Redis (ADR
 
 ```
 delivery_project/
-├── backend/                 # Django/DRF, structured exactly per DRF_SKILL.md §3
+├── backend/                 # Django/DRF, structured exactly per docs/standards/DRF_SKILL.md §3
 ├── frontend/                # Vue PWA (ADR-008, ACCEPTED)
 ├── mobile/                  # Flutter (later phase)
 ├── qa/                      # QA-owned black-box API + E2E tests, test plans (ADR-007)
@@ -32,9 +32,9 @@ delivery_project/
 ├── .github/workflows/       # CI/CD (ADR-014, pending BLK-012)
 ├── Makefile                 # ops targets (Infrastructure); backend/Makefile holds dev targets
 ├── .env.example             # deployment variables; backend/.env.example holds app variables
-├── flash_business_logic/    # canonical business rules (PM/PO)
-├── 06_brand/                # brand assets (duplicate of flash_business_logic/06_brand)
-├── DRF_SKILL.md             # backend engineering standard
+├── docs/business/    # canonical business rules (PM/PO)
+├── docs/design/                # brand assets (duplicate of docs/business/06_brand)
+├── docs/standards/DRF_SKILL.md             # backend engineering standard
 ├── .ai/                     # team operating system
 ├── .claude/agents/          # Claude Code subagent entry points
 └── CLAUDE.md
@@ -45,7 +45,7 @@ Deployment and container files live in the repo-root `deploy/`, not in `backend/
 ## 3. Backend
 
 ### 3.1 Standard
-`DRF_SKILL.md` in CREATE mode:
+`docs/standards/DRF_SKILL.md` in CREATE mode:
 - Python 3.13 (uv-managed on the server, ADR-016), Django ≥ 5.1, DRF, simplejwt, drf-spectacular, Jazzmin, django-environ, dj-database-url, django-cors-headers, gunicorn
 - pytest, pytest-django, pytest-cov, ruff
 - Docker/Compose: optional local tooling only, deferred (TASK-006 BACKLOG)

@@ -13,7 +13,7 @@ FEAT-001 — Backend Platform Foundation
 Create the backend CI pipeline on the chosen git provider (ADR-014; GitHub Actions `backend.yml` if confirmed). It runs on every push and pull request that touches `backend/` or `deploy/docker/backend/`.
 
 ## Business Requirement
-REQ-002; spec §37–38, §41; DRF_SKILL.md §57; ADR-014
+REQ-002; spec §37–38, §41; docs/standards/DRF_SKILL.md §57; ADR-014
 
 ## Agent
 Infrastructure

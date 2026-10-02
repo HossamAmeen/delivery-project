@@ -15,7 +15,7 @@ FEAT-001 — Backend Platform Foundation
 When picked up again, it provides under the ADR-012 layout: the backend Dockerfile (`python:3.13-slim`, non-root, gunicorn) and entrypoint, `deploy/docker/compose/local.yml`, and local-only root Makefile targets (`up`, `down`, `logs`). The root `Makefile` and root `.env.example` are now created by **TASK-012/TASK-013**; this task would only add local targets to them.
 
 ## Business Requirement
-REQ-002; DRF_SKILL.md §41–42, §52, §57; ADR-009, ADR-012; FEAT-001 criterion 1
+REQ-002; docs/standards/DRF_SKILL.md §41–42, §52, §57; ADR-009, ADR-012; FEAT-001 criterion 1
 
 ## Agent
 Infrastructure

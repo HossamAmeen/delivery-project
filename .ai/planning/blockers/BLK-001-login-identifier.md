@@ -52,4 +52,4 @@ RESOLVED
   - OTP is not part of the MVP login (not selected).
 - **Still open (not decided here, not to be invented):** whether email and/or phone are collected and verified at registration, and account onboarding/approval. These stay with **BLK-007** / FEAT-002.
 - **Documents updated:** `.ai/business/business-logic.md` §2, `.ai/business/requirements.md` (REQ-011, Change Log), `.ai/planning/backlog.md` (FEAT-001, FEAT-002), `.ai/planning/sprints/sprint-01.md`.
-- **Pending (not PM-writable in this session):** mirror into `flash_business_logic/00_core/02_roles_and_permissions.md` (PO-approved; orchestrator to schedule). TASK-003 Activity Log notification is carried in the sprint-01 handoff to the TL.
+- **Pending (not PM-writable in this session):** mirror into `docs/business/00_core/02_roles_and_permissions.md` (PO-approved; orchestrator to schedule). TASK-003 Activity Log notification is carried in the sprint-01 handoff to the TL.

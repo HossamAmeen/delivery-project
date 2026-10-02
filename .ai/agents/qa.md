@@ -5,7 +5,7 @@ Independently verify that every feature behaves as the **business logic** requir
 A developer saying "it works" is not evidence. Tests the developer wrote are not your verification.
 You verify against:
 - `business-logic.md`
-- `flash_business_logic/05_cross_app_flows/06_qa_contract.md`
+- `docs/business/05_cross_app_flows/06_qa_contract.md`
 - the feature's acceptance criteria
 
 ## 2. Independence rules
@@ -15,7 +15,7 @@ You verify against:
 
 ## 3. Read before every task
 1. Your task in `.ai/tasks/qa/`, plus the implementation tasks it verifies, including their Completion Reports and Review Logs.
-2. `.ai/business/business-logic.md` and the cited `flash_business_logic/` sections, especially `06_qa_contract.md`.
+2. `.ai/business/business-logic.md` and the cited `docs/business/` sections, especially `06_qa_contract.md`.
 3. The feature's acceptance criteria in `.ai/planning/backlog.md` and the sprint file.
 4. `.ai/architecture/api-contracts.md` and the live OpenAPI at `/api/schema/`.
 5. The backend and frontend implementation, read so you understand the user flow and can find risk areas.

@@ -5,17 +5,17 @@ Major changes need a new ADR, as defined in `agents/team-lead.md` §2. Major bus
 
 ---
 
-## ADR-001 — Backend follows `DRF_SKILL.md`
+## ADR-001 — Backend follows `docs/standards/DRF_SKILL.md`
 - **Status:** ACCEPTED (2026-09-27)
-- **Context:** The user supplied `DRF_SKILL.md` as the backend engineering standard.
-- **Decision:** The backend is built in CREATE mode per `DRF_SKILL.md`: structure, split settings, env configuration, common package, JWT, drf-spectacular, Jazzmin, Health API, DRF throttling, pytest ≥ 80% coverage, Docker local/staging/production, deploy templates, and a Makefile. Its §57 validation commands and §58 DoD are part of every backend task's DoD.
+- **Context:** The user supplied `docs/standards/DRF_SKILL.md` as the backend engineering standard.
+- **Decision:** The backend is built in CREATE mode per `docs/standards/DRF_SKILL.md`: structure, split settings, env configuration, common package, JWT, drf-spectacular, Jazzmin, Health API, DRF throttling, pytest ≥ 80% coverage, Docker local/staging/production, deploy templates, and a Makefile. Its §57 validation commands and §58 DoD are part of every backend task's DoD.
 - **Consequences:** Deviations need an ADR. The skill is generic, so Flash-specific rules (ADR-005, ADR-006) sit on top of it. The skill's deployment file *locations* are adapted by ADR-012.
 - **Runtime pin (2026-09-27, TASK-001 review):** Django **5.2 LTS** (pinned `5.2.17`; ≥ 5.1 is required by ADR-017's SQLite options; 6.x not adopted until Jazzmin/simplejwt support is proven). Upgrades within 5.2.x are routine; a major upgrade needs a TL decision.
 - **Test settings (2026-09-27):** the suite runs with `config.settings.test` (development + isolated LocMem cache, MD5 hasher, test-only app `tests.testapp`), selected by `--ds` in `backend/pytest.ini`.
 
 ## ADR-002 — Monorepo layout
 - **Status:** ACCEPTED (2026-09-27)
-- **Decision:** A single repository with `backend/`, `frontend/`, `mobile/`, `qa/`, `.ai/`, `flash_business_logic/`. Directory ownership is defined in `.ai/README.md`.
+- **Decision:** A single repository with `backend/`, `frontend/`, `mobile/`, `qa/`, `.ai/`, `docs/business/`. Directory ownership is defined in `.ai/README.md`.
 - **Consequences:** Agents have clear, non-overlapping write scopes. One version history covers business docs, contracts and code.
 
 ## ADR-003 — Custom User model with role, from the first migration
@@ -26,9 +26,9 @@ Major changes need a new ADR, as defined in `agents/team-lead.md` §2. Major bus
 
 ## ADR-004 — Business-logic sources of truth
 - **Status:** ACCEPTED (2026-09-27)
-- **Context:** `flash_business_logic/README.md` declares itself the single source of truth. The agent system requires `.ai/business/business-logic.md`.
+- **Context:** `docs/business/README.md` declares itself the single source of truth. The agent system requires `.ai/business/business-logic.md`.
 - **Decision:**
-  - `flash_business_logic/` is **canonical**.
+  - `docs/business/` is **canonical**.
   - `.ai/business/business-logic.md` is the agent-facing digest. It cites the source for every rule and marks gaps as UNDEFINED with blockers.
   - Changes follow `project-manager.md` §5.6: canonical first, then the digest, in the same change.
 - **Consequences:** Agents read the digest first and open the cited source for detail. If the two disagree, the canonical file wins and the difference is reported.
@@ -78,12 +78,12 @@ Major changes need a new ADR, as defined in `agents/team-lead.md` §2. Major bus
 ## ADR-009 — Python 3.13 runtime via Docker
 - **Status:** SUPERSEDED by ADR-016 (2026-09-27). The server is now the reference runtime; local Docker is optional.
 - **Original status:** ACCEPTED (2026-09-27)
-- **Context:** `DRF_SKILL.md` requires Python 3.13+. The development machine has 3.12.3.
+- **Context:** `docs/standards/DRF_SKILL.md` requires Python 3.13+. The development machine has 3.12.3.
 - **Decision:** Local Docker (`python:3.13-slim`) is the reference runtime for running and testing. Developers may use a local 3.13 venv if installed. Validation evidence must come from 3.13.
 
 ## ADR-010 — API paths and versioning
 - **Status:** ACCEPTED (2026-09-27)
-- **Decision:** Keep the `DRF_SKILL.md` paths (`/api/auth/…`, `/api/health/`, `/api/schema/`) with no URL version prefix for the MVP. Breaking changes after the first client release need a new ADR (a `/api/v2/` or header-based version).
+- **Decision:** Keep the `docs/standards/DRF_SKILL.md` paths (`/api/auth/…`, `/api/health/`, `/api/schema/`) with no URL version prefix for the MVP. Breaking changes after the first client release need a new ADR (a `/api/v2/` or header-based version).
 
 ## ADR-011 — Admin and Store surfaces
 - **Status:** ACCEPTED (2026-09-27). BLK-002 RESOLVED: the PO named one MVP web client (the Vue PWA).
@@ -98,7 +98,7 @@ Major changes need a new ADR, as defined in `agents/team-lead.md` §2. Major bus
 ## ADR-012 — Infrastructure layout and ownership (adapts DRF_SKILL §3, §41–52)
 - **Status:** ACCEPTED (2026-09-27). **Amended by ADR-015** (2026-09-27): the default and only implemented mode for sprint-01 is `systemd`; the `deploy/docker/**` and compose files are deferred (TASK-006 → BACKLOG), and `.github/` waits on BLK-012.
 - **Context:**
-  - `DRF_SKILL.md` places `docker/`, `deploy/` and `scripts/` inside `backend/`, and its Makefile mixes dev and deploy targets.
+  - `docs/standards/DRF_SKILL.md` places `docker/`, `deploy/` and `scripts/` inside `backend/`, and its Makefile mixes dev and deploy targets.
   - The agent-system spec (§25–49) adds a dedicated Infrastructure agent and a **repo-root** `deploy/` that must deploy the backend *and* the frontend.
   - DRF_SKILL §3 explicitly allows adapting the structure.
 - **Decision:**
@@ -135,7 +135,7 @@ Major changes need a new ADR, as defined in `agents/team-lead.md` §2. Major bus
 - **Consequences:**
   - TASK-006 (local Docker) moves from Backend to Infrastructure.
   - DRF_SKILL's deployment *requirements* (health check after deploy, templates, no hardcoding, Redis for throttling) still apply. Only their location changes.
-  - `DRF_SKILL.md` itself is not edited.
+  - `docs/standards/DRF_SKILL.md` itself is not edited.
 
 ## ADR-013 — Deployment modes, release layout, rollback and migrations
 - **Status:** ACCEPTED (2026-09-27). BLK-011 RESOLVED. **Amended by ADR-015** (target server, systemd details, `AUTO_ROLLBACK`) and **ADR-017** (SQLite backup before every migrate; rollback may restore it).
@@ -215,7 +215,7 @@ Major changes need a new ADR, as defined in `agents/team-lead.md` §2. Major bus
 
 ## ADR-016 — Python 3.13 on the server via `uv` (supersedes ADR-009)
 - **Status:** ACCEPTED (2026-09-27)
-- **Context:** `DRF_SKILL.md` requires Python 3.13+. The server has only python3.12 (Ubuntu 24.04); the local machine has 3.12.3; the PO requires the test suites to run on the server (REQ-009) and forbids Docker on the server.
+- **Context:** `docs/standards/DRF_SKILL.md` requires Python 3.13+. The server has only python3.12 (Ubuntu 24.04); the local machine has 3.12.3; the PO requires the test suites to run on the server (REQ-009) and forbids Docker on the server.
 - **Decision:**
   - `uv` is installed **for user `hossam` only** (no root, no apt changes, no system Python change) by `setup-server.sh`, pinned by `UV_VERSION` (installer `https://astral.sh/uv/${UV_VERSION}/install.sh`, into `~/.local/bin`). Then `uv python install --no-bin ${PYTHON_VERSION}` (default `3.13`) into `~/.local/share/uv/python` (`--no-bin`: no `python3.13` shim in `~/.local/bin`; scripts find the interpreter with `uv python find`). Idempotent.
   - Accepted user-level footprint (2026-09-27, TASK-012 review): `~/.local/bin/{uv,uvx}`, `~/.config/uv/uv-receipt.json` (written by the official installer), `~/.local/share/uv/**`, `~/.cache/uv/**`. Nothing system-wide.

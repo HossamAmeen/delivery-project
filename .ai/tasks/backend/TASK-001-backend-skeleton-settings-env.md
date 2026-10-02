@@ -10,10 +10,10 @@ Backend skeleton, split settings & environment configuration
 FEAT-001 — Backend Platform Foundation
 
 ## Description
-Create `backend/` following DRF_SKILL.md §3, §7, §8, §9, §37, §45: project skeleton, split settings, django-environ configuration, DATABASE_URL, requirements files, pytest.ini, Makefile, ruff config, .gitignore, .env.example, README.
+Create `backend/` following docs/standards/DRF_SKILL.md §3, §7, §8, §9, §37, §45: project skeleton, split settings, django-environ configuration, DATABASE_URL, requirements files, pytest.ini, Makefile, ruff config, .gitignore, .env.example, README.
 
 ## Business Requirement
-REQ-002, REQ-008, REQ-009; DRF_SKILL.md §3, §7–9, §37, §45, §78; ADR-012, ADR-015, ADR-016, ADR-017; FEAT-001 criteria 1, 2, 9; FEAT-004 "Backend: production settings" (criteria 4, 5, 11)
+REQ-002, REQ-008, REQ-009; docs/standards/DRF_SKILL.md §3, §7–9, §37, §45, §78; ADR-012, ADR-015, ADR-016, ADR-017; FEAT-001 criteria 1, 2, 9; FEAT-004 "Backend: production settings" (criteria 4, 5, 11)
 
 ## Agent
 Backend
@@ -27,7 +27,7 @@ Backend
 
 ## Acceptance Criteria
 
-- [ ] `backend/` matches the DRF_SKILL.md §3 layout for the parts in scope (apps/ empty except `__init__.py`).
+- [ ] `backend/` matches the docs/standards/DRF_SKILL.md §3 layout for the parts in scope (apps/ empty except `__init__.py`).
 - [ ] `config/settings/{base,development,production}.py` exist; production has DEBUG off and secure defaults (secure cookies, HSTS and SSL redirect configurable by env).
 - [ ] Every configurable value is read from env; `backend/.env.example` lists all variables from DRF_SKILL §8 and §78 plus the server variables below, with safe placeholders; `.env` is git-ignored.
 - [ ] `DATABASE_URL` via dj-database-url, SQLite default. When the engine is SQLite, `OPTIONS` = `timeout 20`, `transaction_mode "IMMEDIATE"`, `init_command` with `journal_mode=WAL; synchronous=NORMAL; busy_timeout=20000; foreign_keys=ON` and `CONN_MAX_AGE=0` (ADR-017). A settings test proves the options are applied for SQLite only.
@@ -51,7 +51,7 @@ Backend
 - A settings smoke test: settings load with only `.env.example`-style values; production settings refuse to start without SECRET_KEY.
 
 ## Plan Review Required
-No — standard work fully specified by DRF_SKILL.md and ADR-015/017
+No — standard work fully specified by docs/standards/DRF_SKILL.md and ADR-015/017
 
 ## Status
 
@@ -125,7 +125,7 @@ DONE
 - [x] Scope limited to the task; no business rules invented; authorization order respected where applicable
 - [x] API contract matches `api-contracts.md` (Foundation/Identity rows and error codes updated in this review)
 - [x] Tests meaningful; validation commands pass on the server; `makemigrations --check` clean (only `users/0001_initial`, non-destructive)
-- [x] No hardcoded secrets/domains/ports/paths; complies with `DRF_SKILL.md` and ADR-015/017/019
+- [x] No hardcoded secrets/domains/ports/paths; complies with `docs/standards/DRF_SKILL.md` and ADR-015/017/019
 
 **Commands run:** `make test-backend-remote REF=0a5f845` (DRF_SKILL §57 on the server, ADR-018), run `20260927-204315-12107`, ref `0a5f845` (`0a5f845768c0`), Python 3.13.15, explicit test env (`shared/.env` not read); results in `backend/.remote-results/20260927-204315-12107/`:
 ```

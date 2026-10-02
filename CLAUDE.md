@@ -3,22 +3,59 @@
 Flash is a delivery platform with four roles: Customer, Store, Driver and Admin.
 It is built by a controlled multi-agent team. **Read `.ai/README.md` before doing anything.**
 
+## Project layout
+```
+docs/                    ← what we build (read-only for code agents)
+├── business/            ← canonical business rules (PO-approved; PM edits)
+├── design/              ← brand assets: logo, brand notes
+└── standards/           ← engineering standards (DRF_SKILL.md)
+backend/  frontend/      ← application code (Backend / Frontend / Fullstack)
+qa/                      ← black-box QA suite (QA)
+deploy/  Makefile  .env.example  .github/   ← infrastructure (Infrastructure)
+.ai/                     ← team operating system: plans, architecture, tasks, reports
+.claude/agents/          ← the subagents
+.claude/skills/          ← project skills (procedures the agents load)
+```
+The code and infra paths are deliberately unchanged, because the deploy tooling and the live server depend on them.
+
 ## Sources of truth
-- Business rules: `flash_business_logic/` (canonical). The agent digest is `.ai/business/business-logic.md`.
-- Backend engineering standard: `DRF_SKILL.md` (mandatory for all backend work). Its deployment file locations are adapted by ADR-012 (repo-root `deploy/`).
+- Business rules: `docs/business/` (canonical). The agent digest is `.ai/business/business-logic.md`.
+- Brand and design: `docs/design/`. The frontend's icons are generated from it (`frontend/scripts/generate_icons.py`).
+- Backend engineering standard: `docs/standards/DRF_SKILL.md` (mandatory for all backend work). Its deployment file locations are adapted by ADR-012 (repo-root `deploy/`).
 - Architecture, ADRs and API contracts: `.ai/architecture/`.
 - Plans and work: `.ai/planning/`, `.ai/tasks/`, `.ai/reports/`.
 
 ## The team (Claude Code subagents in `.claude/agents/`)
-| Subagent | Instructions | Writes to |
+| Subagent | Instructions | Preloaded skills | Writes to |
+|---|---|---|---|
+| `project-manager` | `.ai/agents/project-manager.md` | `pm-feature`, `pm-sprint`, `pm-acceptance` | `.ai/business`, `.ai/planning`, `.ai/reports/pm`, `docs/business` (after PO approval) |
+| `team-lead` | `.ai/agents/team-lead.md` | `tl-design-breakdown`, `tl-review`, `tl-bug-routing-signoff`, `drf-standard` | `.ai/architecture`, `.ai/tasks`, `.ai/reports/team-lead` |
+| `backend-developer` | `.ai/agents/backend.md` | `backend-task`, `backend-state-money`, `drf-standard` | `backend/` |
+| `frontend-developer` | `.ai/agents/frontend.md` | `frontend-screen` | `frontend/`, `mobile/` |
+| `fullstack-developer` | `.ai/agents/fullstack.md` | `fullstack-slice`, plus the backend and frontend skills | only what TL assigns in `.ai/tasks/fullstack/` |
+| `qa-engineer` | `.ai/agents/qa.md` | `qa-test-plan`, `qa-verify` | `qa/`, `.ai/reports/qa` |
+| `infrastructure-engineer` | `.ai/agents/infrastructure.md` | `infra-change`, `infra-deploy-verify` | `deploy/`, `.github/`, root `Makefile`, root `.env.example`, `.ai/reports/infrastructure` |
+
+Every agent also preloads `flash-workflow`: ID allocation, status changes with Activity Log lines, blockers and the end-of-turn report.
+
+## Skills
+
+### Project skills (`.claude/skills/`)
+- Each skill is a short, step-by-step procedure with the real commands for one recurring job. They are attached to agents with the `skills:` field in `.claude/agents/*.md` and load when the agent starts.
+- Precedence: the agent instruction file (`.ai/agents/*.md`) and the ADRs win over a skill. An agent that finds a conflict reports it.
+- `drf-standard` is a verbatim copy of `docs/standards/DRF_SKILL.md` under a header listing the Flash ADR deviations. The `docs/` file is canonical. After any change to it, re-copy the body into the skill.
+- The TL maintains the skills, and changes need the user's approval (the same rule as `DRF_SKILL.md`). When a procedure in `.ai/agents/*.md` changes, update the matching skill in the same change.
+- The main session must not use a role skill to do an agent's work itself. It calls the agent.
+
+### Built-in Claude Code skills (general)
+| Skill | Use in Flash | Not for |
 |---|---|---|
-| `project-manager` | `.ai/agents/project-manager.md` | `.ai/business`, `.ai/planning`, `.ai/reports/pm` |
-| `team-lead` | `.ai/agents/team-lead.md` | `.ai/architecture`, `.ai/tasks`, `.ai/reports/team-lead` |
-| `backend-developer` | `.ai/agents/backend.md` | `backend/` |
-| `frontend-developer` | `.ai/agents/frontend.md` | `frontend/`, `mobile/` |
-| `fullstack-developer` | `.ai/agents/fullstack.md` | only what TL assigns in `.ai/tasks/fullstack/` |
-| `qa-engineer` | `.ai/agents/qa.md` | `qa/`, `.ai/reports/qa` |
-| `infrastructure-engineer` | `.ai/agents/infrastructure.md` | `deploy/`, `.github/`, root `Makefile`, root `.env.example`, `.ai/reports/infrastructure` |
+| `/code-review` | An extra pass on a diff before or alongside the TL review. Findings go to the TL, who records them in the task's Review Log. | Replacing the TL review or its validation commands |
+| `/security-review` | Before release of anything that touches auth, permissions, money/ledger, secrets or deploy tooling. File the findings as bugs or TL review findings. | Replacing QA permission tests |
+| `/simplify` | Cleanup of a developer's own changes before `READY_FOR_REVIEW`, inside the task's allowed paths only. | Changing behaviour or contracts |
+| `/run` | Local preview of the PWA build (the local machine is for building only). | QA evidence. QA runs on the server only (ADR-018). |
+| `/update-config`, `/fewer-permission-prompts` | Permission and hook settings in `.claude/settings*.json`. The user approves them. | Granting agents live production actions |
+| `/loop`, `/schedule` | Polling or scheduled read-only checks (for example `make status` / `make health`). | Live deploys, rollbacks or migrations |
 
 ## Orchestration (main session)
 The main session is the orchestrator. It does not do the agents' work itself. It calls them in workflow order and passes each one the relevant ID:
@@ -51,3 +88,4 @@ PM (feature, sprint) → TL (design, contracts, tasks) → [TL plan review]
 - **QA runs on the server, never locally.** The local machine is for building only.
 - 2026-09-28: **Sprint-01 CLOSED.** FEAT-001, FEAT-003 and FEAT-004 are DONE, live at release `20260927-232246` / `d6669b6` (https://delivery.hossam-ameen.online, https://api.delivery.hossam-ameen.online). Sprint-02 (`.ai/planning/sprints/sprint-02.md`) is a DRAFT waiting on BLK-007 from the PO.
 - Permission note: the auto-mode classifier denies agents live production actions (`make deploy/rollback/restart/migrate`, remote user creation) even with allow rules, so the PO runs those. The agents can run the server tests (`make test-backend-remote`, `make qa-remote`) and the read-only ops.
+- 2026-10-02: Docs reorganized under `docs/` (`business/` ← `flash_business_logic/`, `design/` ← `06_brand/`, `standards/` ← `DRF_SKILL.md`). All references were updated. Code and infra paths are unchanged. Project skills were added in `.claude/skills/` and attached to every agent.

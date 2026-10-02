@@ -19,7 +19,7 @@ Critical / High / Medium / Low
 
 ## Business Rule Violated
 
-`flash_business_logic/<file>.md` § … / REQ-NNN / acceptance criterion #
+`docs/business/<file>.md` § … / REQ-NNN / acceptance criterion #
 
 ## Steps to Reproduce
 

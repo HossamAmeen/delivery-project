@@ -14,7 +14,7 @@ The live OpenAPI (`/api/schema/`) must match this file. If they disagree, that i
 ### 1.1 Transport and auth
 - JSON over HTTPS, UTF-8.
 - Auth header: `Authorization: Bearer <access>` (simplejwt). Refresh through `/api/auth/token/refresh/`.
-- No URL versioning for the MVP (ADR-010). Paths follow `DRF_SKILL.md`.
+- No URL versioning for the MVP (ADR-010). Paths follow `docs/standards/DRF_SKILL.md`.
 - Trailing slash: required (Django default).
 - **Cross-origin (ADR-008):** the PWA (`https://${WEB_DOMAIN}`) and the API are different origins. The API allows exactly `CORS_ALLOWED_ORIGINS=https://${WEB_DOMAIN}` (django-cors-headers), without credentials (no cookies; the client sends `credentials: 'omit'`), and **exposes `Retry-After`** (`CORS_EXPOSE_HEADERS = ["Retry-After"]`, a fixed setting, not an env var) so the browser can read the wait time on a cross-origin 429. Added 2026-09-27 (TASK-007 review); implemented in `backend/config/settings/base.py` and covered by `backend/tests/test_settings.py`.
 

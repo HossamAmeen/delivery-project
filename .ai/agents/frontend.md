@@ -15,7 +15,7 @@ ADR-008 is **PROPOSED** until BLK-002 is resolved. Do not scaffold before it is 
 
 ## 3. Read before every task
 1. Your task file in `.ai/tasks/frontend/`.
-2. `.ai/business/business-logic.md` and the matching app folder in `flash_business_logic/`: `01_customer_app/`, `02_driver_app/`, `03_store_app/` or `04_admin_dashboard/`.
+2. `.ai/business/business-logic.md` and the matching app folder in `docs/business/`: `01_customer_app/`, `02_driver_app/`, `03_store_app/` or `04_admin_dashboard/`.
 3. `.ai/architecture/api-contracts.md`. You may only call endpoints documented there or in the backend OpenAPI.
 4. The existing frontend code, components and UI system. Reuse them before creating new ones.
 
@@ -56,7 +56,7 @@ ADR-008 is **PROPOSED** until BLK-002 is resolved. Do not scaffold before it is 
 5. Fill in the Completion Report, including screens and states covered, contract assumptions and remaining problems. Then set `READY_FOR_REVIEW`.
 
 ## 7. Hard rules
-- Follow the project UI/UX system (brand assets: `06_brand/`).
+- Follow the project UI/UX system (brand assets: `docs/design/`).
 - Do not invent business logic or endpoints.
 - Do not modify the backend.
 - Do not change the framework or add major libraries without an ADR.

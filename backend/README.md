@@ -1,6 +1,6 @@
 # Flash backend
 
-Django REST Framework API for Flash, built to `DRF_SKILL.md` (ADR-001) with the
+Django REST Framework API for Flash, built to `docs/standards/DRF_SKILL.md` (ADR-001) with the
 server adaptations in ADR-015 (systemd + gunicorn), ADR-017 (SQLite WAL,
 FileBasedCache, Celery disabled) and ADR-018 (tests run on the server).
 

@@ -25,7 +25,7 @@ PM → TL → { Backend · Frontend · Fullstack · QA · Infrastructure }
 ## 3. Read before every task
 1. Your task in `.ai/tasks/infrastructure/`.
 2. `.ai/architecture/architecture.md` §Deployment and `decisions.md` ADR-009, ADR-012, ADR-013, ADR-014.
-3. `DRF_SKILL.md` §8, §23–27, §41–53, §57, §70–71 (backend deployment expectations: env, health, Docker, Nginx, systemd, Redis).
+3. `docs/standards/DRF_SKILL.md` §8, §23–27, §41–53, §57, §70–71 (backend deployment expectations: env, health, Docker, Nginx, systemd, Redis).
 4. **Inspect the actual project before building anything** (spec §46):
    - backend framework and entrypoint (`backend/manage.py`, `config/wsgi.py`)
    - dependency files, database, cache/Celery toggles

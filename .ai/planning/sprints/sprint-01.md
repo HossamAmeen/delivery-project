@@ -36,7 +36,7 @@ Deliver the DRF backend foundation and the Vue PWA shell, deployed over HTTPS to
 | Initialize git repository + initial commit | Orchestrator (PO consent) | DONE (`8b5dc17`, `main`) |
 | Resolve BLK-001, BLK-002, BLK-011 | PO via PM | DONE 2026-09-27 |
 | Choose git provider / CI platform (BLK-012 remainder) | PO via PM | OPEN |
-| Mirror the BLK-001/BLK-002 decisions into `flash_business_logic/` | PM (PO-approved), when the orchestrator allows it | OPEN |
+| Mirror the BLK-001/BLK-002 decisions into `docs/business/` | PM (PO-approved), when the orchestrator allows it | OPEN |
 | Circulate BLK-003, BLK-007 (needed for sprint-02/04 planning) | PM | OPEN |
 | Revise the technical plan and create the FEAT-004 tasks, re-scope TASK-006/008/009/010 | TL | OPEN |
 
@@ -52,7 +52,7 @@ Deliver the DRF backend foundation and the Vue PWA shell, deployed over HTTPS to
 | **Shared production server:** a Flash deploy could break the dental-clinic app (nginx reload with a bad config, port clash, resource exhaustion, certbot touching other sites) | FEAT-004 AC9: separate site files/service/path/port, `nginx -t` before every reload, QA checks the dental sites before and after the deploy and the rollback. TL plan review is mandatory for the deploy tasks. |
 | Small server (3.8 GB RAM, **no swap**, about 13 GB disk): a frontend build or dependency install on the server could trigger the OOM killer | Build locally where possible (the local machine is for building). Prune releases/backups. FEAT-004 AC10. |
 | Python 3.13 is not on the server (python3.12 only) | TL ADR (e.g. `uv`-managed 3.13) before the backend deploy task starts. ADR-009 ("Docker as reference runtime") must be revised: the server becomes the reference runtime. |
-| SQLite deviates from `DRF_SKILL.md` (PostgreSQL); no Redis means LocMem throttling/cache per process | TL ADR recording the PO choice. Keep `DATABASE_URL`-driven config so a PostgreSQL move is config + migration. Revisit before concurrency-heavy features (assignment, ledger). |
+| SQLite deviates from `docs/standards/DRF_SKILL.md` (PostgreSQL); no Redis means LocMem throttling/cache per process | TL ADR recording the PO choice. Keep `DATABASE_URL`-driven config so a PostgreSQL move is config + migration. Revisit before concurrency-heavy features (assignment, ledger). |
 | Migrations on SQLite are hard to reverse | Pre-migrate DB backup and a rollback that restores it (FEAT-004 AC2, AC8). |
 | QA only on the server means bugs surface late | Deploy early and often (first backend deploy right after TASK-001/004), and let QA write the harness (TASK-008) from day 1. |
 | No CI: quality gates rely on manual runs | Backend test suite + lint run on the server as part of QA evidence (FEAT-001 AC9). CI follows BLK-012. |
@@ -68,7 +68,7 @@ Deliver the DRF backend foundation and the Vue PWA shell, deployed over HTTPS to
 ## Handoff to Team Lead
 2026-09-27: FEAT-001, FEAT-003 and FEAT-004 are handed to the TL for technical (re)planning. Please:
 1. Revise `.ai/reports/team-lead/sprint-01-technical-plan.md` for the systemd single-server deployment. No Docker on the server. QA and backend tests run on the server.
-2. Record the ADRs: Python 3.13 provisioning on the server (e.g. `uv`); SQLite + no Redis (deviation from `DRF_SKILL.md`, PO decision); ADR-012 default mode `systemd` + backend port (8010 proposed); revise ADR-009 (reference runtime = server); accept ADR-008 (BLK-002 resolved); decide ADR-011.
+2. Record the ADRs: Python 3.13 provisioning on the server (e.g. `uv`); SQLite + no Redis (deviation from `docs/standards/DRF_SKILL.md`, PO decision); ADR-012 default mode `systemd` + backend port (8010 proposed); revise ADR-009 (reference runtime = server); accept ADR-008 (BLK-002 resolved); decide ADR-011.
 3. Create the FEAT-004 tasks (Infrastructure owner, plus Backend/Frontend pieces for production settings and the build contract, plus a QA on-server verification task). Mandatory plan review for anything that touches nginx, certbot or systemd on the shared server.
 4. Update the affected tasks' Activity Logs, which the PM cannot write this session:
    - TASK-003: BLK-001 RESOLVED → username + password.
@@ -77,7 +77,7 @@ Deliver the DRF backend foundation and the Vue PWA shell, deployed over HTTPS to
    - TASK-006: re-scope. Local Docker is optional tooling, not an acceptance gate.
    - TASK-008/TASK-009: the harness targets the server.
    - TASK-011: stays BLOCKED on BLK-012 (remote/provider).
-5. Constraints (unchanged): `DRF_SKILL.md` CREATE-mode order, custom User model before the first migration (ADR-003), no domain apps besides `users`. Never touch dental-clinic resources.
+5. Constraints (unchanged): `docs/standards/DRF_SKILL.md` CREATE-mode order, custom User model before the first migration (ADR-003), no domain apps besides `users`. Never touch dental-clinic resources.
 
 ## Exit criteria result (2026-09-28)
 | Exit criterion | Result |

@@ -2,10 +2,10 @@
 
 ## 1. Mission
 Implement the Flash backend tasks the Team Lead assigns to you, using Django REST Framework.
-The backend is the **only** authority for state, assignment, pricing, fees, financial totals and permissions (`flash_business_logic/00_core/09_audit_and_concurrency.md`).
+The backend is the **only** authority for state, assignment, pricing, fees, financial totals and permissions (`docs/business/00_core/09_audit_and_concurrency.md`).
 
 ## 2. Mandatory standard
-**`DRF_SKILL.md` is your engineering standard. Read it fully before your first task and follow it.**
+**`docs/standards/DRF_SKILL.md` is your engineering standard. Read it fully before your first task and follow it.**
 It covers:
 - project structure and split settings
 - `.env` configuration and the `common/` package (BaseModel, soft delete, managers, exception handler, standard responses, pagination, throttling)
@@ -24,7 +24,7 @@ Mode:
 
 ## 3. Read before every task
 1. Your task file in `.ai/tasks/backend/`.
-2. `.ai/business/business-logic.md`, plus the cited `flash_business_logic/` sections.
+2. `.ai/business/business-logic.md`, plus the cited `docs/business/` sections.
 3. `.ai/architecture/architecture.md`, `api-contracts.md` and `decisions.md`.
 4. Dependencies. Tasks you depend on must be at least `READY_FOR_QA`. If they are not, you are blocked.
 5. The existing code and tests in the affected apps.
@@ -73,13 +73,13 @@ These come from the business logic and ADR-005 and ADR-006. They are not optiona
 ## 6. Procedure
 1. Set the task to `IN_PROGRESS` and add an Activity Log line.
 2. If `Plan Review Required: Yes`, write `## Implementation Plan`, then wait for the TL's APPROVED before coding.
-3. Implement in order: model → migration → service/selector → serializer → view → URL → permission → tests → OpenAPI (`DRF_SKILL.md` §56).
+3. Implement in order: model → migration → service/selector → serializer → view → URL → permission → tests → OpenAPI (`docs/standards/DRF_SKILL.md` §56).
 4. Write tests for each of these, as applicable:
    - models and managers
    - serializers (valid and invalid input)
    - APIs (authentication, authorization, success, validation, 404, pagination, throttling)
    - services (happy path, business rules, failures, edge cases, idempotency, concurrency)
-5. Run every command in `DRF_SKILL.md` §57 and paste the summarized results into the Completion Report.
+5. Run every command in `docs/standards/DRF_SKILL.md` §57 and paste the summarized results into the Completion Report.
 6. Update `.ai/architecture/api-contracts.md` if the implementation refines a contract. If the change goes beyond a refinement, ask the TL first.
 7. Fill in `## Completion Report`, including the remaining problems, then set `READY_FOR_REVIEW`.
 

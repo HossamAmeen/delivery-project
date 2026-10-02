@@ -13,7 +13,7 @@ FEAT-001 — Backend Platform Foundation
 Create `apps/users` with the custom User model and role (username + password login, BLK-001 RESOLVED), register it in Jazzmin admin, expose simplejwt token/refresh with the `auth` throttle scope and `GET /api/users/me/`, provide role permission classes and the `create_role_user` management command used to seed QA users on the server.
 
 ## Business Requirement
-REQ-010, REQ-011, REQ-003; `00_core/02_roles_and_permissions.md`; business-logic.md §2 (login = username + password for every role, BLK-001 RESOLVED 2026-09-27); ADR-003; DRF_SKILL.md §17–18, §66; FEAT-001 criterion 6; api-contracts.md § Identity (APPROVED)
+REQ-010, REQ-011, REQ-003; `00_core/02_roles_and_permissions.md`; business-logic.md §2 (login = username + password for every role, BLK-001 RESOLVED 2026-09-27); ADR-003; docs/standards/DRF_SKILL.md §17–18, §66; FEAT-001 criterion 6; api-contracts.md § Identity (APPROVED)
 
 ## Agent
 Backend
@@ -125,7 +125,7 @@ DONE
 - [x] Scope limited to the task; no business rules invented; authorization order respected where applicable
 - [x] API contract matches `api-contracts.md` (Foundation/Identity rows and error codes updated in this review)
 - [x] Tests meaningful; validation commands pass on the server; `makemigrations --check` clean (only `users/0001_initial`, non-destructive)
-- [x] No hardcoded secrets/domains/ports/paths; complies with `DRF_SKILL.md` and ADR-015/017/019
+- [x] No hardcoded secrets/domains/ports/paths; complies with `docs/standards/DRF_SKILL.md` and ADR-015/017/019
 
 **Commands run:** `make test-backend-remote REF=0a5f845` (DRF_SKILL §57 on the server, ADR-018), run `20260927-204315-12107`, ref `0a5f845` (`0a5f845768c0`), Python 3.13.15, explicit test env (`shared/.env` not read); results in `backend/.remote-results/20260927-204315-12107/`:
 ```

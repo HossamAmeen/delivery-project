@@ -1,6 +1,6 @@
 # Glossary
 
-Use these terms in the backend, frontend, mobile, admin, QA and docs. Source: `flash_business_logic/00_core/10_shared_terms.md`, extended.
+Use these terms in the backend, frontend, mobile, admin, QA and docs. Source: `docs/business/00_core/10_shared_terms.md`, extended.
 
 ## Business
 | Term | Meaning |
@@ -40,7 +40,7 @@ Use these terms in the backend, frontend, mobile, admin, QA and docs. Source: `f
 |---|---|
 | PO | Product Owner: the human who approves business-rule changes |
 | FEAT / TASK / BUG / BLK / ADR / REQ | Artifact IDs (see `.ai/README.md`) |
-| DoD | Definition of Done (`.ai/README.md` and `DRF_SKILL.md` §58) |
+| DoD | Definition of Done (`.ai/README.md` and `docs/standards/DRF_SKILL.md` §58) |
 | Plan review | TL approval of an implementation plan before coding |
 | Standard envelope | `{success, message, data}` / `{success, message, errors}` (DRF_SKILL §19) |
 | Contract | The documented request/response of an endpoint in `architecture/api-contracts.md` |

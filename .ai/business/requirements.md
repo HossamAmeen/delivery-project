@@ -7,7 +7,7 @@ Status: `DEFINED` (ready for design) · `PARTIAL` (usable, but has open points) 
 | ID | Requirement | Source | Status |
 |---|---|---|---|
 | REQ-001 | The backend is the single authority for state, assignment, pricing, fees, totals and permissions | core/09, README | DEFINED |
-| REQ-002 | The backend follows the DRF engineering standard (settings, env, JWT, OpenAPI, health, throttling, tests, Docker, deploy) | DRF_SKILL.md | DEFINED |
+| REQ-002 | The backend follows the DRF engineering standard (settings, env, JWT, OpenAPI, health, throttling, tests, Docker, deploy) | docs/standards/DRF_SKILL.md | DEFINED |
 | REQ-003 | Every API action validates authentication → role → ownership → transition → business constraints | core/02 | DEFINED |
 | REQ-004 | Important actions are audited (status, assignment, finance, admin, catalog, cancellation) | core/09 | DEFINED |
 | REQ-005 | Assignment, transitions, completion and ledger are race-safe and idempotent | core/09, core/06 | DEFINED |
@@ -88,9 +88,9 @@ Advanced analytics, deep reconciliation, configurable assignment rules, advanced
 ## Change Log
 | Date | Change | Requested by | Approved by | Docs updated |
 |---|---|---|---|---|
-| 2026-09-27 | Initial catalog created from `flash_business_logic/` | PM (setup) | — | — |
+| 2026-09-27 | Initial catalog created from `docs/business/` | PM (setup) | — | — |
 | 2026-09-27 | Login identifier = username + password for all roles (REQ-011) | Product Owner | Product Owner | BLK-001, business-logic §2, backlog |
 | 2026-09-27 | MVP client = Vue 3 PWA (Vite) at the web domain; Flutter later | Product Owner | Product Owner | BLK-002, business-logic §1, backlog, roadmap |
 | 2026-09-27 | REQ-008 added: hosting and deployment on the shared VPS (systemd, SQLite, no Redis, TLS, two domains) | Product Owner | Product Owner | BLK-011, backlog FEAT-004, sprint-01 |
 | 2026-09-27 | REQ-009 added: QA runs on the server, not locally | Product Owner | Product Owner | sprint-01, backlog FEAT-001/003/004 |
-| 2026-09-28 | BLK-001/BLK-002 decisions mirrored into `flash_business_logic/` (00_core/02 § Authentication; README § Product surfaces) | PM | Product Owner (2026-09-27) | flash_business_logic, business-logic.md sync line |
+| 2026-09-28 | BLK-001/BLK-002 decisions mirrored into `docs/business/` (00_core/02 § Authentication; README § Product surfaces) | PM | Product Owner (2026-09-27) | docs/business, business-logic.md sync line |

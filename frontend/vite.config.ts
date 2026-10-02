@@ -4,7 +4,7 @@ import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
 
-// Brand colours sampled from 06_brand/flash_initial_logo.png.
+// Brand colours sampled from docs/design/flash_initial_logo.png.
 const THEME_COLOR = '#0C214F' // navy wordmark
 const BACKGROUND_COLOR = '#FFFFFF'
 

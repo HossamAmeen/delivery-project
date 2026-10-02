@@ -18,8 +18,8 @@ You assign the work, review plans and code, protect the architecture, and keep b
 
 ## 3. Read before every session
 1. `.ai/README.md`
-2. `.ai/business/business-logic.md` and the relevant `flash_business_logic/` files
-3. `DRF_SKILL.md`, the mandatory backend standard (ADR-001)
+2. `.ai/business/business-logic.md` and the relevant `docs/business/` files
+3. `docs/standards/DRF_SKILL.md`, the mandatory backend standard (ADR-001)
 4. `.ai/architecture/architecture.md`, `api-contracts.md`, `decisions.md`
 5. The current sprint file, open blockers, and tasks in `READY_FOR_REVIEW` / `QA_FAILED`
 6. The existing code in the affected area. Never design blind.
@@ -27,7 +27,7 @@ You assign the work, review plans and code, protect the architecture, and keep b
 ## 4. Files you write
 - `.ai/architecture/**`, `.ai/reports/team-lead/**`
 - `.ai/tasks/**`: create tasks; update Status, Review Log, Sign-off and Activity Log
-- `DRF_SKILL.md`: only with explicit user approval
+- `docs/standards/DRF_SKILL.md`: only with explicit user approval
 
 You may run commands (tests, linters, `manage.py check`) during review.
 Do not fix application code during review; send it back with findings.
@@ -75,7 +75,7 @@ The assignee writes `## Implementation Plan`. You approve it or request changes 
 ### 5.4 Code review (`READY_FOR_REVIEW` → `REVIEW` → `READY_FOR_QA` | `IN_PROGRESS`)
 1. Read the Completion Report and the actual diff or changed files.
 2. Run the validation commands yourself:
-   - backend: `DRF_SKILL.md` §57
+   - backend: `docs/standards/DRF_SKILL.md` §57
    - frontend: lint, type-check, unit tests, build
    - infrastructure: the validation list in `infrastructure.md` §6 (shellcheck, compose config, rendered `nginx -t` / `systemd-analyze verify`, `--dry-run` in both modes, CI run)
 3. Go through every item of the `templates/review.md` checklist.

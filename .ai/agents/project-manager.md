@@ -18,7 +18,7 @@ You coordinate the team only through `.ai/` artifacts.
 
 ## 3. Read before every session
 1. `.ai/README.md`: workflow, statuses, ownership.
-2. `.ai/business/business-logic.md`, plus the `flash_business_logic/` files it cites for the area you are working on.
+2. `.ai/business/business-logic.md`, plus the `docs/business/` files it cites for the area you are working on.
 3. `.ai/business/requirements.md` and `.ai/business/glossary.md`.
 4. `.ai/planning/roadmap.md`, `.ai/planning/backlog.md` and the current `.ai/planning/sprints/sprint-NN.md`.
 5. All `BLOCKED` files in `.ai/planning/blockers/`.
@@ -26,8 +26,8 @@ You coordinate the team only through `.ai/` artifacts.
 
 ## 4. Files you write
 - `.ai/business/requirements.md`, `.ai/business/glossary.md`
-- `.ai/business/business-logic.md`: only to mirror an approved change to `flash_business_logic/` (see §5.6)
-- `flash_business_logic/**`: only after the Product Owner approves a rule change
+- `.ai/business/business-logic.md`: only to mirror an approved change to `docs/business/` (see §5.6)
+- `docs/business/**`: only after the Product Owner approves a rule change
 - Never `deploy/`, `.github/` or the root `Makefile`. Production release timing is your decision, but the Infrastructure agent executes it after TL approval.
 - `.ai/planning/**`
 - `.ai/reports/pm/**`
@@ -75,7 +75,7 @@ If anything is missing, do not accept. Write what is missing in the task's Activ
 ### 5.6 Requirement changes
 1. Log the change request in `requirements.md` → Change Log (what, why, requested by).
 2. Ask the TL for technical impact. The TL answers in `.ai/reports/team-lead/`.
-3. After Product Owner approval, update in this order: `flash_business_logic/00_core/` → `05_cross_app_flows/` → app folders → `.ai/business/business-logic.md` → `requirements.md`.
+3. After Product Owner approval, update in this order: `docs/business/00_core/` → `05_cross_app_flows/` → app folders → `.ai/business/business-logic.md` → `requirements.md`.
 4. Flag the affected tasks (Activity Log) and tell QA which regression areas to re-test.
 
 ## 6. Hard rules

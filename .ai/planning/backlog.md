@@ -9,7 +9,7 @@ Features without an explicit Infrastructure line are **Infrastructure: N/A unles
 
 ### FEAT-001 — Backend Platform Foundation
 - **Priority:** P0 · **Status:** DONE (accepted 2026-09-28, `.ai/reports/pm/sprint-01-acceptance-2026-09-28.md`) · **Sprint:** sprint-01
-- **Business refs:** REQ-001, REQ-002, REQ-006, REQ-009, REQ-011 (login identifier); `DRF_SKILL.md` §4 (CREATE mode); ADR-003
+- **Business refs:** REQ-001, REQ-002, REQ-006, REQ-009, REQ-011 (login identifier); `docs/standards/DRF_SKILL.md` §4 (CREATE mode); ADR-003
 - **User value:** Every later feature is built on a secure, tested, documented and containerized backend.
 - **Work needed:** Backend: Required · Frontend: N/A (no UI; FEAT-003 consumes it) · QA: Required (on the server, REQ-009) · Infrastructure: Required (server runtime via FEAT-004; backend CI deferred on BLK-012)
 - **Dependencies:** none for the build. Acceptance evidence needs the FEAT-004 server deployment (REQ-009).
@@ -38,7 +38,7 @@ Features without an explicit Infrastructure line are **Infrastructure: N/A unles
 
 ### FEAT-003 — Frontend Foundation (Vue PWA)
 - **Priority:** P0 · **Status:** DONE (accepted 2026-09-28) · **Sprint:** sprint-01
-- **Business refs:** REQ-001, REQ-037; `01_customer_app/user_flow.md` (UI states); `06_brand/`
+- **Business refs:** REQ-001, REQ-037; `01_customer_app/user_flow.md` (UI states); `docs/design/`
 - **User value:** A consistent, installable client shell that every screen is built on.
 - **Work needed:** Backend: N/A (consumes FEAT-001 contracts) · Frontend: Required · QA: Required (against the deployed web domain, REQ-009) · Infrastructure: Required (static build served by nginx at `WEB_DOMAIN` via FEAT-004; `frontend.yml` CI deferred on BLK-012; no Docker on the server)
 - **Dependencies:** FEAT-001 contracts (APPROVED); FEAT-004 for deployment. BLK-002 RESOLVED.
@@ -54,7 +54,7 @@ Features without an explicit Infrastructure line are **Infrastructure: N/A unles
 
 ### FEAT-004 — Deployment & Environments
 - **Priority:** P0 · **Status:** DONE for the sprint-01 criteria (accepted 2026-09-28). The deferred criteria below remain BACKLOG. **Sprint:** sprint-01 (pulled in 2026-09-27 on PO instruction). CI/CD is deferred until BLK-012. Production go-live readiness is reviewed in sprint-09.
-- **Business refs:** REQ-002, REQ-008, REQ-009; BLK-011 (RESOLVED); `DRF_SKILL.md` §41–53, §70–74; ADR-012, ADR-013, ADR-014
+- **Business refs:** REQ-002, REQ-008, REQ-009; BLK-011 (RESOLVED); `docs/standards/DRF_SKILL.md` §41–53, §70–74; ADR-012, ADR-013, ADR-014
 - **User value:** The PO can see and use Flash on real HTTPS domains now, and every later feature ships to the same server safely, repeatably and reversibly, without harming the co-hosted dental-clinic app.
 - **Target (BLK-011):** one shared GCP VPS (Ubuntu 24.04, `34.123.215.195`, SSH `hossam`, key path `~/.ssh/id_ed25519`), 2 vCPU / 3.8 GB RAM / no swap / about 13 GB free. `DEPLOYMENT_MODE=systemd`, no Docker. SQLite, no Redis. nginx 1.24 + certbot. `API_DOMAIN=api.delivery.hossam-ameen.online`, `WEB_DOMAIN=delivery.hossam-ameen.online`. Backend on `127.0.0.1:8010` (proposed; the TL confirms). One environment (production-like "staging"). Operator-triggered deploys only.
 - **Work needed:** Backend: Required (production settings for SQLite/no-Redis, trusted proxy/HTTPS headers, static/media paths, allowed hosts/CORS for the two domains) · Frontend: Required (static build contract, API base URL from `VITE_*` env) · QA: Required (**on the server**: post-deploy smoke, health, rollback verification, dental non-interference check) · **Infrastructure: Required (owner)**

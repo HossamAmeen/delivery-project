@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate the Flash PWA icons from the brand logo (TASK-007).
 
-Run from `frontend/` whenever `06_brand/flash_initial_logo.png` changes:
+Run from `frontend/` whenever `docs/design/flash_initial_logo.png` changes:
 
     python3 scripts/generate_icons.py
 
@@ -16,7 +16,7 @@ from PIL import Image
 
 HERE = Path(__file__).resolve().parent
 FRONTEND = HERE.parent
-SOURCE = FRONTEND.parent / "06_brand" / "flash_initial_logo.png"
+SOURCE = FRONTEND.parent / "docs" / "design" / "flash_initial_logo.png"
 ICONS = FRONTEND / "public" / "icons"
 ASSETS = FRONTEND / "src" / "assets"
 

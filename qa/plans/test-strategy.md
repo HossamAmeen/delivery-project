@@ -2,7 +2,7 @@
 
 Owner: QA · Task: TASK-008 · Version: 1.0 (2026-09-27)
 Sources: `.ai/agents/qa.md`, ADR-007, ADR-015–ADR-019, `api-contracts.md`, `backlog.md` (FEAT-001/003/004),
-`business-logic.md`, `flash_business_logic/05_cross_app_flows/06_qa_contract.md`, REQ-009.
+`business-logic.md`, `docs/business/05_cross_app_flows/06_qa_contract.md`, REQ-009.
 
 ## 1. Principles
 

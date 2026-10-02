@@ -1,14 +1,14 @@
 # Flash — Business Logic (Agent Digest)
 
 > **Read this before implementing any business functionality.**
-> This is a structured digest of `flash_business_logic/`, the canonical detailed source (ADR-004).
-> Each rule cites its source as `[core/03]` = `flash_business_logic/00_core/03_order_lifecycle.md`,
+> This is a structured digest of `docs/business/`, the canonical detailed source (ADR-004).
+> Each rule cites its source as `[core/03]` = `docs/business/00_core/03_order_lifecycle.md`,
 > `[flow/06]` = `05_cross_app_flows/06_qa_contract.md`, `[driver]` = `02_driver_app/`, and so on.
 >
 > **UNDEFINED** marks a rule the business has not specified yet. Do not implement a guess.
 > Follow the linked blocker (`.ai/planning/blockers/`).
 
-Last synced with `flash_business_logic/`: 2026-09-27. PO decisions of 2026-09-27 (BLK-001, BLK-002) were mirrored into `flash_business_logic/00_core/02_roles_and_permissions.md` and `README.md` on 2026-09-28.
+Last synced with `docs/business/`: 2026-09-27. PO decisions of 2026-09-27 (BLK-001, BLK-002) were mirrored into `docs/business/00_core/02_roles_and_permissions.md` and `README.md` on 2026-09-28.
 
 ---
 
